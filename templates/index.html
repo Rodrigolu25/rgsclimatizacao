@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+    <img src="{{ url_for('static', filename='imagem/logo.png') }}" alt="Logo da Empresa"
+         style="max-width: 600px; width: 100%; height: auto;">
+</div>
+{% endblock %}

@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>📊 Planilha de Precificação - Serviços de Ar Condicionado</h1>
+
+    <!-- Seção de Custos Fixos -->
+    <div class="card">
+        <h2 class="section-title">💼 Custos Fixos Mensais</h2>
+
+        <div class="form-group">
+            <label for="prolabore">Pró-labore (seu salário):</label>
+            <input type="number" id="prolabore" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="aluguel">Aluguel do espaço:</label>
+            <input type="number" id="aluguel" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="agua">Água:</label>
+            <input type="number" id="agua" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="luz">Energia Elétrica:</label>
+            <input type="number" id="luz" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="internet">Internet/Telefone:</label>
+            <input type="number" id="internet" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="contador">Contador/Impostos:</label>
+            <input type="number" id="contador" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="marketing">Marketing:</label>
+            <input type="number" id="marketing" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="outros_fixos">Outros custos fixos:</label>
+            <input type="number" id="outros_fixos" step="0.01" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="horas_trabalhadas">Horas trabalhadas por mês:</label>
+            <input type="number" id="horas_trabalhadas" min="1" value="176">
+            <small>(22 dias × 8 horas)</small>
+        </div>
+    </div>
+
+    <!-- Seção de Tipo de Serviço -->
+    <div class="card">
+        <h2 class="section-title">🔧 Tipo de Serviço</h2>
+
+        <div class="form-group">
+            <label for="tipo_servico">Selecione o tipo de serviço:</label>
+            <select id="tipo_servico" class="form-control">
+                <option value="instalacao">Instalação</option>
+                <option value="manutencao">Manutenção</option>
+                <option value="limpeza">Limpeza</option>
+            </select>
+        </div>
+
+        <!-- Conteúdo para Instalação -->
+        <div id="instalacao" class="service-type">
+            <div class="form-group">
+                <label for="mao_obra_instalacao">Mão de obra (R$/hora):</label>
+                <input type="number" id="mao_obra_instalacao" step="0.01" min="0" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="tempo_instalacao">Tempo médio (horas):</label>
+                <input type="number" id="tempo_instalacao" step="0.5" min="0.5" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="materiais_instalacao">Materiais (R$):</label>
+                <input type="number" id="materiais_instalacao" step="0.01" min="0" value="0">
+            </div>
+        </div>
+
+        <!-- Conteúdo para Manutenção -->
+        <div id="manutencao" class="service-type" style="display: none;">
+            <div class="form-group">
+                <label for="mao_obra_manutencao">Mão de obra (R$/hora):</label>
+                <input type="number" id="mao_obra_manutencao" step="0.01" min="0" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="tempo_manutencao">Tempo médio (horas):</label>
+                <input type="number" id="tempo_manutencao" step="0.5" min="0.5" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="materiais_manutencao">Materiais (R$):</label>
+                <input type="number" id="materiais_manutencao" step="0.01" min="0" value="0">
+            </div>
+        </div>
+
+        <!-- Conteúdo para Limpeza -->
+        <div id="limpeza" class="service-type" style="display: none;">
+            <div class="form-group">
+                <label for="mao_obra_limpeza">Mão de obra (R$/hora):</label>
+                <input type="number" id="mao_obra_limpeza" step="0.01" min="0" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="tempo_limpeza">Tempo médio (horas):</label>
+                <input type="number" id="tempo_limpeza" step="0.5" min="0.5" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="materiais_limpeza">Materiais (R$):</label>
+                <input type="number" id="materiais_limpeza" step="0.01" min="0" value="0">
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Custos Variáveis -->
+    <div class="card">
+        <h2 class="section-title">🚗 Custos Variáveis</h2>
+
+        <div class="form-group">
+            <label for="deslocamento_km">Distância do deslocamento (km):</label>
+            <input type="number" id="deslocamento_km" step="0.1" min="0" value="0">
+        </div>
+
+        <div class="form-group">
+            <label for="custo_km">Custo por km (R$):</label>
+            <input type="number" id="custo_km" step="0.01" min="0" value="0.50">
+        </div>
+
+        <div class="form-group">
+            <label for="outros_variaveis">Outros custos variáveis (R$):</label>
+            <input type="number" id="outros_variaveis" step="0.01" min="0" value="0">
+        </div>
+    </div>
+
+    <!-- Seção de Margem de Lucro -->
+    <div class="card">
+        <h2 class="section-title">💰 Margem de Lucro</h2>
+
+        <div class="form-group">
+            <label for="margem_lucro">Margem de lucro desejada (%):</label>
+            <input type="number" id="margem_lucro" step="0.5" min="0" value="30">
+        </div>
+
+        <div class="form-group">
+            <label for="impostos">Impostos (%):</label>
+            <input type="number" id="impostos" step="0.5" min="0" value="15">
+        </div>
+
+        <div class="form-group">
+            <label for="reserva_imprevistos">Reserva para imprevistos (%):</label>
+            <input type="number" id="reserva_imprevistos" step="0.5" min="0" value="5">
+        </div>
+    </div>
+
+    <!-- Botões -->
+    <div class="botoes">
+        <button id="calcular">Calcular Preço Final</button>
+        <button id="salvar-servico" style="display: none;">Salvar Serviço Realizado</button>
+        <button id="limpar" class="btn-danger">Limpar Informações</button>
+    </div>
+
+    <!-- Resultados -->
+    <div id="resultados" class="card result-card" style="display: none;">
+        <h2 class="section-title">📝 Resultado da Precificação</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Valor (R$)</th>
+                </tr>
+            </thead>
+            <tbody id="resultados-body">
+                <!-- Preenchido pelo JavaScript -->
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px; text-align: right;">
+            <p class="total-value">Preço Final Sugerido: R$ <span id="preco-final">0,00</span></p>
+        </div>
+    </div>
+
+    <!-- Histórico de Serviços -->
+    <div class="card">
+        <h2 class="section-title">📅 Histórico de Serviços Realizados</h2>
+        
+        <div class="form-group">
+            <label for="data-servico">Data do Serviço:</label>
+            <input type="date" id="data-servico">
+        </div>
+        
+        <div class="form-group">
+            <label for="valor-cobrado">Valor Cobrado (R$):</label>
+            <input type="number" id="valor-cobrado" step="0.01" min="0" value="0">
+        </div>
+        
+        <button id="adicionar-servico">Adicionar Serviço ao Histórico</button>
+        
+        <div style="margin-top: 20px;">
+            <h3>Serviços Realizados</h3>
+            <table id="tabela-servicos" style="width: 100%; margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Valor (R$)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-servicos">
+                    <!-- Preenchido pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Relatório Financeiro -->
+    <div class="card">
+        <h2 class="section-title">📊 Relatório Financeiro</h2>
+        
+        <button id="gerar-relatorio">Gerar Relatório</button>
+        
+        <div id="relatorio-resultado" style="margin-top: 20px; display: none;">
+            <h3>Resumo Financeiro</h3>
+            <table style="width: 100%;">
+                <tr>
+                    <td>Total Recebido em Serviços:</td>
+                    <td id="total-recebido">R$ 0,00</td>
+                </tr>
+                <tr>
+                    <td>Total de Custos Fixos:</td>
+                    <td id="total-custos-fixos">R$ 0,00</td>
+                </tr>
+                <tr>
+                    <td>Saldo Final:</td>
+                    <td id="saldo-final" style="font-weight: bold;">R$ 0,00</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Armazenamento dos serviços realizados
+    let servicosRealizados = JSON.parse(localStorage.getItem('servicosRealizados')) || [];
+    
+    // Função para atualizar a lista de serviços
+    function atualizarListaServicos() {
+        const lista = document.getElementById('lista-servicos');
+        lista.innerHTML = '';
+        
+        servicosRealizados.forEach((servico, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${new Date(servico.data).toLocaleDateString()}</td>
+                <td>${servico.tipo}</td>
+                <td>R$ ${servico.valor.toFixed(2)}</td>
+                <td><button class="btn-remover" data-index="${index}">Remover</button></td>
+            `;
+            lista.appendChild(tr);
+        });
+        
+        // Adiciona eventos aos botões de remover
+        document.querySelectorAll('.btn-remover').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = e.target.getAttribute('data-index');
+                servicosRealizados.splice(index, 1);
+                localStorage.setItem('servicosRealizados', JSON.stringify(servicosRealizados));
+                atualizarListaServicos();
+            });
+        });
+    }
+    
+    // Inicializa a lista de serviços
+    atualizarListaServicos();
+
+    // Troca entre tipos de serviço
+    document.getElementById('tipo_servico').addEventListener('change', (e) => {
+        // Esconde todos os tipos de serviço
+        document.querySelectorAll('.service-type').forEach(s => s.style.display = 'none');
+        
+        // Mostra apenas o selecionado
+        document.getElementById(e.target.value).style.display = 'block';
+    });
+
+    // Cálculo do preço final
+    document.getElementById('calcular').addEventListener('click', () => {
+        // Custos fixos
+        const prolabore = parseFloat(document.getElementById('prolabore').value) || 0;
+        const aluguel = parseFloat(document.getElementById('aluguel').value) || 0;
+        const agua = parseFloat(document.getElementById('agua').value) || 0;
+        const luz = parseFloat(document.getElementById('luz').value) || 0;
+        const internet = parseFloat(document.getElementById('internet').value) || 0;
+        const contador = parseFloat(document.getElementById('contador').value) || 0;
+        const marketing = parseFloat(document.getElementById('marketing').value) || 0;
+        const outros_fixos = parseFloat(document.getElementById('outros_fixos').value) || 0;
+        const horas_trabalhadas = parseFloat(document.getElementById('horas_trabalhadas').value) || 176;
+
+        const custos_fixos_mensais = prolabore + aluguel + agua + luz + internet + contador + marketing + outros_fixos;
+        const custo_fixo_hora = custos_fixos_mensais / horas_trabalhadas;
+
+        // Tipo de serviço selecionado
+        const tipo_servico = document.getElementById('tipo_servico').value;
+
+        // Custos do serviço
+        let mao_obra, tempo_medio, materiais;
+
+        if (tipo_servico === 'instalacao') {
+            mao_obra = parseFloat(document.getElementById('mao_obra_instalacao').value) || 0;
+            tempo_medio = parseFloat(document.getElementById('tempo_instalacao').value) || 0;
+            materiais = parseFloat(document.getElementById('materiais_instalacao').value) || 0;
+        } else if (tipo_servico === 'manutencao') {
+            mao_obra = parseFloat(document.getElementById('mao_obra_manutencao').value) || 0;
+            tempo_medio = parseFloat(document.getElementById('tempo_manutencao').value) || 0;
+            materiais = parseFloat(document.getElementById('materiais_manutencao').value) || 0;
+        } else {
+            mao_obra = parseFloat(document.getElementById('mao_obra_limpeza').value) || 0;
+            tempo_medio = parseFloat(document.getElementById('tempo_limpeza').value) || 0;
+            materiais = parseFloat(document.getElementById('materiais_limpeza').value) || 0;
+        }
+
+        const custo_mao_obra = mao_obra * tempo_medio;
+        const custo_fixo_proporcional = custo_fixo_hora * tempo_medio;
+
+        // Custos variáveis
+        const deslocamento_km = parseFloat(document.getElementById('deslocamento_km').value) || 0;
+        const custo_km = parseFloat(document.getElementById('custo_km').value) || 0;
+        const outros_variaveis = parseFloat(document.getElementById('outros_variaveis').value) || 0;
+
+        const custo_deslocamento = deslocamento_km * custo_km;
+
+        // Margens
+        const margem_lucro = parseFloat(document.getElementById('margem_lucro').value) || 0;
+        const impostos = parseFloat(document.getElementById('impostos').value) || 0;
+        const reserva_imprevistos = parseFloat(document.getElementById('reserva_imprevistos').value) || 0;
+
+        // Cálculos finais
+        const custo_total = custo_mao_obra + materiais + custo_fixo_proporcional + custo_deslocamento + outros_variaveis;
+        const valor_imprevistos = custo_total * (reserva_imprevistos / 100);
+        const custo_com_imprevistos = custo_total + valor_imprevistos;
+        const valor_lucro = custo_com_imprevistos * (margem_lucro / 100);
+        const preco_antes_impostos = custo_com_imprevistos + valor_lucro;
+        const valor_impostos = preco_antes_impostos * (impostos / 100);
+        const preco_final = preco_antes_impostos + valor_impostos;
+
+        // Exibir resultados
+        const resultadosBody = document.getElementById('resultados-body');
+        resultadosBody.innerHTML = `
+            <tr>
+                <td>Custo de Mão de Obra (${tempo_medio}h × R$${mao_obra.toFixed(2)}/h)</td>
+                <td>R$ ${custo_mao_obra.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Materiais</td>
+                <td>R$ ${materiais.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Custos Fixos Proporcionais (${tempo_medio}h)</td>
+                <td>R$ ${custo_fixo_proporcional.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Custo de Deslocamento (${deslocamento_km}km × R$${custo_km.toFixed(2)}/km)</td>
+                <td>R$ ${custo_deslocamento.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Outros Custos Variáveis</td>
+                <td>R$ ${outros_variaveis.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td><strong>Subtotal</strong></td>
+                <td><strong>R$ ${custo_total.toFixed(2)}</strong></td>
+            </tr>
+            <tr>
+                <td>Reserva para Imprevistos (${reserva_imprevistos}%)</td>
+                <td>R$ ${valor_imprevistos.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Margem de Lucro (${margem_lucro}%)</td>
+                <td>R$ ${valor_lucro.toFixed(2)}</td>
+            </tr>
+            <tr>
+                <td>Impostos (${impostos}%)</td>
+                <td>R$ ${valor_impostos.toFixed(2)}</td>
+            </tr>
+        `;
+
+        document.getElementById('preco-final').textContent = preco_final.toFixed(2);
+        document.getElementById('resultados').style.display = 'block';
+        document.getElementById('salvar-servico').style.display = 'inline-block';
+        
+        // Rolagem suave para os resultados
+        document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Botão para salvar serviço realizado
+    document.getElementById('salvar-servico').addEventListener('click', () => {
+        const tipoServico = document.getElementById('tipo_servico').value;
+        const tipoServicoTexto = document.getElementById('tipo_servico').options[document.getElementById('tipo_servico').selectedIndex].text;
+        const valor = parseFloat(document.getElementById('preco-final').textContent);
+        
+        // Define a data atual como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('data-servico').value = hoje;
+        document.getElementById('valor-cobrado').value = valor.toFixed(2);
+        
+        alert(`Serviço de ${tipoServicoTexto} no valor de R$ ${valor.toFixed(2)} pronto para ser adicionado ao histórico. Preencha a data se necessário e clique em "Adicionar Serviço ao Histórico".`);
+    });
+
+    // Botão para adicionar serviço ao histórico
+    document.getElementById('adicionar-servico').addEventListener('click', () => {
+        const dataServico = document.getElementById('data-servico').value;
+        const valorCobrado = parseFloat(document.getElementById('valor-cobrado').value) || 0;
+        const tipoServico = document.getElementById('tipo_servico').value;
+        const tipoServicoTexto = document.getElementById('tipo_servico').options[document.getElementById('tipo_servico').selectedIndex].text;
+        
+        if (!dataServico) {
+            alert('Por favor, informe a data do serviço.');
+            return;
+        }
+        
+        if (valorCobrado <= 0) {
+            alert('Por favor, informe um valor válido para o serviço.');
+            return;
+        }
+        
+        servicosRealizados.push({
+            data: dataServico,
+            tipo: tipoServicoTexto,
+            valor: valorCobrado
+        });
+        
+        localStorage.setItem('servicosRealizados', JSON.stringify(servicosRealizados));
+        atualizarListaServicos();
+        
+        // Limpa os campos
+        document.getElementById('valor-cobrado').value = '0';
+    });
+
+    // Botão para gerar relatório financeiro
+    document.getElementById('gerar-relatorio').addEventListener('click', () => {
+        // Calcula o total recebido
+        const totalRecebido = servicosRealizados.reduce((total, servico) => total + servico.valor, 0);
+        
+        // Pega os custos fixos
+        const prolabore = parseFloat(document.getElementById('prolabore').value) || 0;
+        const aluguel = parseFloat(document.getElementById('aluguel').value) || 0;
+        const agua = parseFloat(document.getElementById('agua').value) || 0;
+        const luz = parseFloat(document.getElementById('luz').value) || 0;
+        const internet = parseFloat(document.getElementById('internet').value) || 0;
+        const contador = parseFloat(document.getElementById('contador').value) || 0;
+        const marketing = parseFloat(document.getElementById('marketing').value) || 0;
+        const outros_fixos = parseFloat(document.getElementById('outros_fixos').value) || 0;
+        
+        const custosFixos = prolabore + aluguel + agua + luz + internet + contador + marketing + outros_fixos;
+        const saldoFinal = totalRecebido - custosFixos;
+        
+        // Atualiza o relatório
+        document.getElementById('total-recebido').textContent = `R$ ${totalRecebido.toFixed(2)}`;
+        document.getElementById('total-custos-fixos').textContent = `R$ ${custosFixos.toFixed(2)}`;
+        document.getElementById('saldo-final').textContent = `R$ ${saldoFinal.toFixed(2)}`;
+        
+        // Colore o saldo de verde ou vermelho
+        const saldoElement = document.getElementById('saldo-final');
+        saldoElement.style.color = saldoFinal >= 0 ? 'green' : 'red';
+        
+        document.getElementById('relatorio-resultado').style.display = 'block';
+    });
+
+    // Botão limpar: restaura os valores iniciais e esconde resultado
+    document.getElementById('limpar').addEventListener('click', () => {
+        // Resetar inputs fixos
+        document.getElementById('prolabore').value = "0";
+        document.getElementById('aluguel').value = "0";
+        document.getElementById('agua').value = "0";
+        document.getElementById('luz').value = "0";
+        document.getElementById('internet').value = "0";
+        document.getElementById('contador').value = "0";
+        document.getElementById('marketing').value = "0";
+        document.getElementById('outros_fixos').value = "0";
+        document.getElementById('horas_trabalhadas').value = "176";
+
+        // Resetar select
+        document.getElementById('tipo_servico').value = "instalacao";
+        
+        // Resetar inputs serviços instalação
+        document.getElementById('mao_obra_instalacao').value = "0";
+        document.getElementById('tempo_instalacao').value = "0";
+        document.getElementById('materiais_instalacao').value = "0";
+
+        // Resetar inputs serviços manutenção
+        document.getElementById('mao_obra_manutencao').value = "0";
+        document.getElementById('tempo_manutencao').value = "0";
+        document.getElementById('materiais_manutencao').value = "0";
+
+        // Resetar inputs serviços limpeza
+        document.getElementById('mao_obra_limpeza').value = "0";
+        document.getElementById('tempo_limpeza').value = "0";
+        document.getElementById('materiais_limpeza').value = "0";
+
+        // Resetar custos variáveis
+        document.getElementById('deslocamento_km').value = "0";
+        document.getElementById('custo_km').value = "0.50";
+        document.getElementById('outros_variaveis').value = "0";
+
+        // Resetar margem lucro, impostos e reserva
+        document.getElementById('margem_lucro').value = "30";
+        document.getElementById('impostos').value = "15";
+        document.getElementById('reserva_imprevistos').value = "5";
+
+        // Mostrar apenas instalação
+        document.querySelectorAll('.service-type').forEach(s => s.style.display = 'none');
+        document.getElementById('instalacao').style.display = 'block';
+
+        // Esconder resultado
+        document.getElementById('resultados').style.display = "none";
+        document.getElementById('salvar-servico').style.display = "none";
+    });
+</script>
+{% endblock %}

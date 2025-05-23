@@ -1,3 +1,4 @@
 Flask==2.0.1
 fpdf2==2.5.6
 gunicorn==21.2.0
+Werkzeug==2.0.3  # Versão específica compatível com Flask 2.0.1 

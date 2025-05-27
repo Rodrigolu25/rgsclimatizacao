@@ -47,12 +47,13 @@
             border-bottom: none;
         }
         
+        /* Ajuste para o tamanho do ícone dentro dos botões pequenos */
         .btn-group-sm > .btn {
-            padding: 0.25rem 0.4rem;
+            padding: 0.25rem 0.5rem; /* Ajustado para melhor visualização */
         }
         
         .btn-group-sm > .btn i {
-            font-size: 1rem; /* Ajuste no tamanho do ícone */
+            font-size: 0.9rem; /* Tamanho do ícone ajustado para mobile */
         }
     }
 
@@ -69,6 +70,11 @@
         
         .badge {
             font-size: 0.75rem;
+        }
+        
+        /* Garante que o texto "Editar", "Excluir", etc. não apareça em telas muito pequenas */
+        .btn-group-sm > .btn .d-md-inline {
+            display: none !important;
         }
     }
     

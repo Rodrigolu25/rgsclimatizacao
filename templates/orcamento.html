@@ -1,45 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card p-4">
-        <h1><i class="fas fa-calculator"></i> Sistema de Orçamentos</h1>
+<div class="container mt-2">
+    <div class="card p-3">
+        <h1 class="h4"><i class="fas fa-calculator"></i> Sistema de Orçamentos</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+                    <div class="alert alert-{{ category }} mt-2 p-2">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         
-        <h2 class="mt-4"><i class="fas fa-plus-circle"></i> Novo Orçamento</h2>
+        <h2 class="h5 mt-3"><i class="fas fa-plus-circle"></i> Novo Orçamento</h2>
         <form method="POST" action="{{ url_for('orcamento') }}" id="formOrcamento">
-            <div class="form-row">
-                <div class="form-group col-md-6">
+            <div class="row">
+                <div class="form-group col-12 col-md-6">
                     <label for="cliente">Nome do Cliente:*</label>
-                    <input type="text" id="cliente" name="cliente" class="form-control" required>
+                    <input type="text" id="cliente" name="cliente" class="form-control form-control-sm" required>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-12 col-md-6">
                     <label for="telefone">Telefone:</label>
-                    <input type="tel" id="telefone" name="telefone" class="form-control" pattern="[0-9]{10,11}" placeholder="(XX)XXXXX-XXXX">
+                    <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" pattern="[0-9]{10,11}" placeholder="(XX)XXXXX-XXXX">
                 </div>
             </div>
             
-            <div class="form-row">
-                <div class="form-group col-md-6">
+            <div class="row">
+                <div class="form-group col-12 col-md-6">
                     <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="email@exemplo.com">
+                    <input type="email" id="email" name="email" class="form-control form-control-sm" placeholder="email@exemplo.com">
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-12 col-md-6">
                     <label for="data_servico">Data do Serviço:</label>
-                    <input type="date" id="data_servico" name="data_servico" class="form-control">
+                    <input type="date" id="data_servico" name="data_servico" class="form-control form-control-sm">
                 </div>
             </div>
             
             <div class="form-group">
                 <label for="servico">Tipo de Serviço:*</label>
-                <select id="servico" name="servico" class="form-control" required>
+                <select id="servico" name="servico" class="form-control form-control-sm" required>
                     <option value="">Selecione...</option>
                     <option value="Instalação de Ar Condicionado">Instalação de Ar Condicionado</option>
                     <option value="Manutenção Preventiva">Manutenção Preventiva</option>
@@ -52,20 +52,20 @@
                 </select>
             </div>
             
-            <div class="form-row">
-                <div class="form-group col-md-6">
+            <div class="row">
+                <div class="form-group col-12 col-md-6">
                     <label for="valor_base">Valor Base (R$):*</label>
-                    <input type="number" id="valor_base" name="valor_base" class="form-control" step="0.01" min="0" required>
+                    <input type="number" id="valor_base" name="valor_base" class="form-control form-control-sm" step="0.01" min="0" required>
                 </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-12 col-md-6">
                     <label for="desconto">Desconto (%):</label>
-                    <input type="number" id="desconto" name="desconto" class="form-control" step="0.01" min="0" max="100" value="0">
+                    <input type="number" id="desconto" name="desconto" class="form-control form-control-sm" step="0.01" min="0" max="100" value="0">
                 </div>
             </div>
             
             <div class="form-group">
                 <label for="forma_pagamento">Forma de Pagamento:</label>
-                <select id="forma_pagamento" name="forma_pagamento" class="form-control" onchange="toggleParcelamento()">
+                <select id="forma_pagamento" name="forma_pagamento" class="form-control form-control-sm" onchange="toggleParcelamento()">
                     <option value="dinheiro">Dinheiro</option>
                     <option value="pix">PIX</option>
                     <option value="debito">Cartão de Débito</option>
@@ -75,37 +75,36 @@
             </div>
             
             <div id="parcelamento_container" style="display:none;">
-                <div class="form-row">
-                    <div class="form-group col-md-4">
+                <div class="row">
+                    <div class="form-group col-12 col-md-4">
                         <label for="parcelas">Número de Parcelas:</label>
-                        <select id="parcelas" name="parcelas" class="form-control">
+                        <select id="parcelas" name="parcelas" class="form-control form-control-sm">
                             {% for i in range(1, 13) %}
                                 <option value="{{ i }}">{{ i }}x</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-12 col-md-4">
                         <label for="taxa_maquina">Taxa da Máquina (%):</label>
-                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control" step="0.01" min="0" value="0">
+                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control form-control-sm" step="0.01" min="0" value="0">
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-12 col-md-4">
                         <label for="valor_final">Valor Final (R$):</label>
-                        <input type="text" id="valor_final" class="form-control" readonly>
+                        <input type="text" id="valor_final" class="form-control form-control-sm" readonly>
                     </div>
                 </div>
             </div>
             
-            <!-- Campo oculto para enviar valor final calculado ao backend -->
             <input type="hidden" id="valor_final_hidden" name="valor_final_hidden" value="">
 
-            <div class="form-actions mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Salvar Orçamento
+            <div class="form-actions mt-3 d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                    <i class="fas fa-save"></i> Salvar
                 </button>
-                <button type="reset" class="btn btn-secondary" onclick="resetCampos()">
+                <button type="reset" class="btn btn-secondary btn-sm flex-grow-1" onclick="resetCampos()">
                     <i class="fas fa-eraser"></i> Limpar
                 </button>
-                <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-info">
+                <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-info btn-sm flex-grow-1">
                     <i class="fas fa-list"></i> Ver Todos
                 </a>
             </div>
@@ -133,7 +132,6 @@ function calcularValorFinal() {
     var taxaMaquina = parseFloat(document.getElementById("taxa_maquina").value) || 0;
     var parcelas = parseInt(document.getElementById("parcelas").value) || 1;
 
-    // Aplica desconto primeiro
     var valorComDesconto = valorBase * (1 - desconto / 100);
     var valorComTaxa = valorComDesconto + (valorComDesconto * (taxaMaquina / 100));
     var valorParcelado = valorComTaxa / parcelas;
@@ -142,7 +140,6 @@ function calcularValorFinal() {
     document.getElementById("valor_final_hidden").value = valorComTaxa.toFixed(2);
 }
 
-// Atualiza cálculo sempre que algum campo relevante mudar
 document.getElementById("valor_base").addEventListener("input", function() {
     if(document.getElementById("forma_pagamento").value === "credito") calcularValorFinal();
 });

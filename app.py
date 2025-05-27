@@ -128,37 +128,23 @@ def excluir_orcamento(id):
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/editar_orcamento/<int:id>', methods=['GET', 'POST'])
+@app.route('/editar_orcamento/<int:id>', methods=['GET', 'POST', 'PUT'])
 def editar_orcamento(id):
     orcamento = Orcamento.query.get_or_404(id)
     
-    if request.method == 'POST':
+    if request.method in ['POST', 'PUT']:
         try:
-            orcamento.cliente_nome = request.form.get('cliente')
-            orcamento.cliente_telefone = request.form.get('telefone', '')
-            orcamento.cliente_email = request.form.get('email', '')
-            orcamento.servico = request.form.get('servico')
-            orcamento.valor_base = float(request.form.get('valor_base', 0))
-            orcamento.desconto = float(request.form.get('desconto', 0))
-            orcamento.forma_pagamento = request.form.get('forma_pagamento', 'dinheiro')
-            orcamento.taxa_maquina = float(request.form.get('taxa_maquina', 0))
-            orcamento.parcelas = int(request.form.get('parcelas', 1))
-            orcamento.status = request.form.get('status', 'pendente')
-            orcamento.observacoes = request.form.get('observacoes', '')
-            
-            # Recalcular valor final
-            valor_com_desconto = orcamento.valor_base * (1 - orcamento.desconto / 100)
-            valor_com_taxa = valor_com_desconto + (valor_com_desconto * orcamento.taxa_maquina / 100)
-            orcamento.valor_final = round(valor_com_taxa, 2)
+            orcamento.cliente_nome = request.form['cliente']
+            orcamento.servico = request.form['servico']
+            orcamento.valor_final = float(request.form['valor'])
+            orcamento.status = request.form['status']
             
             db.session.commit()
             flash('Orçamento atualizado com sucesso!', 'success')
             return redirect(url_for('lista_orcamentos'))
-            
         except Exception as e:
             db.session.rollback()
-            flash(f'Erro ao atualizar orçamento: {str(e)}', 'error')
-            return redirect(url_for('editar_orcamento', id=id))
+            flash(f'Erro ao atualizar orçamento: {str(e)}', 'danger')
     
     return render_template('editar_orcamento.html', orcamento=orcamento)
 

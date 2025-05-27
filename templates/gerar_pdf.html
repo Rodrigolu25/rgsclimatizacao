@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Orçamento</title>
     <style>
         body {
@@ -59,7 +59,7 @@
     <h2>Orçamento Nº {{ orcamento.numero }}</h2>
 
     <div class="dados">
-        <p><strong>Cliente:</strong> {{ orcamento.cliente_nome }}</p>
+        <p><strong>Cliente:</strong> {{ orcamento.cliente_nome or 'Nome do cliente não informado' }}</p>
         <p><strong>Telefone:</strong> {{ orcamento.cliente_telefone }}</p>
         <p><strong>Email:</strong> {{ orcamento.cliente_email }}</p>
         <p><strong>Serviço:</strong> {{ orcamento.servico }}</p>

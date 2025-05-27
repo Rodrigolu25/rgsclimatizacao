@@ -163,7 +163,7 @@ def gerar_pdf(id):
             'margin-left': '0.75in',
             'encoding': 'UTF-8',
             'no-outline': None,
-            'enable-local-file-access': None,  # importante se usar arquivos locais
+            'enable-local-file-access': None,
         }
 
         import os
@@ -184,13 +184,18 @@ def gerar_pdf(id):
         pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
         response = make_response(pdf)
         response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'inline; filename=orcamento_{orcamento.numero}.pdf'
+
+        # Aqui alterei para usar o nome do cliente no nome do arquivo:
+        safe_name = orcamento.cliente_nome.replace(" ", "_")
+        response.headers['Content-Disposition'] = f'inline; filename={safe_name}.pdf'
+
         return response
 
     except Exception as e:
         print(f"Erro na geração do PDF do orçamento: {e}")
         flash(f'Erro ao gerar PDF do orçamento: {str(e)}', 'error')
         return render_template('gerar_pdf.html', orcamento=orcamento)
+
 
 @app.route('/precificacao')
 def precificacao():

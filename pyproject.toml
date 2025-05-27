@@ -1,0 +1,2 @@
+[tool.poetry.dependencies]
+pdfkit = "1.0.0"

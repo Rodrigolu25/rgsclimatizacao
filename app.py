@@ -152,17 +152,8 @@ def editar_orcamento(id):
 @app.route('/gerar_pdf/<int:id>', endpoint='gerar_pdf_orcamento')
 def gerar_pdf(id):
     try:
-        # Buscar o orçamento
         orcamento = Orcamento.query.get_or_404(id)
-        print(f"Orçamento encontrado: {orcamento.id}")
-        
-        # Renderizar template
         rendered = render_template('gerar_pdf.html', orcamento=orcamento)
-        print("Template de orçamento renderizado com sucesso")
-
-        # Configurações do PDF
-        import pdfkit
-        import os
 
         options = {
             'page-size': 'A4',
@@ -172,42 +163,34 @@ def gerar_pdf(id):
             'margin-left': '0.75in',
             'encoding': 'UTF-8',
             'no-outline': None,
-            'enable-local-file-access': None,
+            'enable-local-file-access': None,  # importante se usar arquivos locais
         }
 
-        # Configurar wkhtmltopdf
+        import os
         config = None
         wkhtmltopdf_paths = [
             r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
             r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
         ]
-
         for path in wkhtmltopdf_paths:
             if os.path.exists(path):
                 config = pdfkit.configuration(wkhtmltopdf=path)
                 print(f"wkhtmltopdf encontrado em: {path}")
                 break
+        
+        if not config:
+            print("wkhtmltopdf não encontrado! Verifique o caminho.")
 
-        # Gerar PDF
         pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
-        print("PDF do orçamento gerado com sucesso")
-
-        # Retornar PDF como resposta
         response = make_response(pdf)
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = f'inline; filename=orcamento_{orcamento.numero}.pdf'
         return response
 
-    except ImportError as import_error:
-        print(f"Biblioteca não encontrada: {import_error}")
-        flash('Para gerar PDF, instale: pip install pdfkit', 'warning')
+    except Exception as e:
+        print(f"Erro na geração do PDF do orçamento: {e}")
+        flash(f'Erro ao gerar PDF do orçamento: {str(e)}', 'error')
         return render_template('gerar_pdf.html', orcamento=orcamento)
-
-    except Exception as pdf_error:
-        print(f"Erro ao gerar PDF do orçamento: {pdf_error}")
-        flash(f'PDF não pôde ser gerado: {str(pdf_error)}. Mostrando em HTML.', 'warning')
-        return render_template('gerar_pdf.html', orcamento=orcamento)
-
 
 @app.route('/precificacao')
 def precificacao():

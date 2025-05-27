@@ -137,7 +137,7 @@
                 </div>
                 <div class="form-group col-12 col-md-6">
                     <label for="telefone">Telefone</label>
-                    <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" pattern="[0-9]{10,11}" placeholder="(XX)XXXXX-XXXX">
+                    <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" placeholder="Digite o telefone">
                 </div>
             </div>
             
@@ -270,12 +270,6 @@ function resetCampos() {
     document.getElementById("valor_final").value = "";
     document.getElementById("valor_final_hidden").value = "";
 }
-
-// Máscara para telefone
-document.getElementById("telefone").addEventListener("input", function(e) {
-    var x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-    e.target.value = !x[2] ? x[1] : '(' + x[1] + ')' + x[2] + (x[3] ? '-' + x[3] : '');
-});
 
 // Inicializa o formulário
 window.onload = function() {

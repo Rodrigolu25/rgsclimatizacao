@@ -1,172 +1,110 @@
 {% extends "base.html" %}
 
-{% block title %}Lista de Orçamentos{% endblock %}
-
-{% block content %}
-<div class="card">
-    <h2>Orçamentos Realizados</h2>
-    
-    {% if orcamentos %}
-    <table>
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Serviço</th>
-                <th>Valor Base</th>
-                <th>Taxa Cartão</th>
-                <th>Total</th>
-                <th>Observações</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for orcamento in orcamentos %}
-            <tr id="orcamento_{{ loop.index }}">
-                <td>{{ orcamento.cliente }}</td>
-                <td>{{ orcamento.servico }}</td>
-                <td>R$ {{ "{:.2f}".format(orcamento.valor_base) }}</td>
-                <td>{{ "{:.1f}".format(orcamento.taxa_cartao) }}%</td>
-                <td>R$ {{ "{:.2f}".format(orcamento.valor_total) }}</td>
-                <td>{{ orcamento.observacoes or '-' }}</td>
-                <td>
-                    <!-- Botão para visualizar -->
-                    <button type="button" 
-                        onclick="abrirModal({{ loop.index0 }})" 
-                        title="Visualizar orçamento completo" 
-                        style="font-size:1.2em; cursor:pointer; border:none; background:none; margin-right: 6px;">
-                        👁️
-                    </button>
-
-                    <!-- Botão para editar -->
-                    <a href="{{ url_for('editar_orcamento', index=loop.index0) }}" 
-                       title="Editar orçamento" 
-                       style="font-size:1.2em; cursor:pointer; text-decoration:none; margin-right: 6px;">
-                        ✏️
-                    </a>
-
-                    <!-- Botão para gerar/baixar PDF -->
-                    <a href="{{ url_for('gerar_pdf', index=loop.index0) }}" 
-                       title="Baixar orçamento em PDF" 
-                       style="font-size:1.2em; cursor:pointer; text-decoration:none; margin-right: 6px;">
-                        📄
-                    </a>
-
-                    <!-- Botão para excluir -->
-                    <button type="button" class="btn-excluir" 
-                        onclick="removerOrcamento({{ loop.index0 }}, 'orcamento_{{ loop.index }}')" 
-                        title="Excluir orçamento"
-                        style="font-size:1.2em; cursor:pointer; border:none; background:none;">
-                        🗑️
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <div style="margin-top: 20px; text-align: right;">
-        <p id="total-geral" class="total-value">
-            Total Geral: R$ {{ "{:.2f}".format(orcamentos|sum(attribute='valor_total')) }}
-        </p>
-    </div>
-    {% else %}
-    <p>Nenhum orçamento cadastrado ainda.</p>
-    {% endif %}
-</div>
-
-<!-- Modal para mostrar orçamento completo -->
-<div id="modalOrcamento" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000;">
-    <div style="background:#fff; max-width:700px; margin:50px auto; padding:20px; border-radius:8px; position:relative; max-height:80vh; overflow-y:auto;">
-        <button onclick="fecharModal()" 
-            style="position:absolute; top:10px; right:10px; font-size:1.5em; border:none; background:none; cursor:pointer;" 
-            title="Fechar modal">✖️
-        </button>
-        <h3>Detalhes do Orçamento</h3>
-        <div id="detalhesOrcamento">
-            <!-- Conteúdo será preenchido dinamicamente -->
-        </div>
-    </div>
-</div>
-
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
-{% block scripts %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h1><i class="fas fa-list"></i> Lista de Orçamentos</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Serviço</th>
+                        <th>Valor Final</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orcamento in orcamentos %}
+                    <tr>
+                        <td>{{ orcamento.numero }}</td>
+                        <td>{{ orcamento.cliente_nome }}</td>
+                        <td>{{ orcamento.servico }}</td>
+                        <td>R$ {{ "%.2f"|format(orcamento.valor_final) }}</td>
+                        <td>
+                            {% if orcamento.status == 'pendente' %}
+                                <span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> Pendente</span>
+                            {% elif orcamento.status == 'aprovado' %}
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Aprovado</span>
+                            {% elif orcamento.status == 'rejeitado' %}
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Rejeitado</span>
+                            {% elif orcamento.status == 'em_andamento' %}
+                                <span class="badge badge-info"><i class="fas fa-spinner"></i> Em Andamento</span>
+                            {% elif orcamento.status == 'concluido' %}
+                                <span class="badge badge-success"><i class="fas fa-check-double"></i> Concluído</span>
+                            {% elif orcamento.status == 'cancelado' %}
+                                <span class="badge badge-secondary"><i class="fas fa-ban"></i> Cancelado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</td>
+                       <td>
+                            <a href="{{ url_for('editar_orcamento', id=orcamento.id) }}" class="btn btn-sm btn-primary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button onclick="excluirOrcamento({{ orcamento.id }})" class="btn btn-sm btn-danger ms-1" title="Excluir">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <a href="{{ url_for('gerar_pdf_orcamento', id=orcamento.id) }}" class="btn btn-sm btn-info ms-1" title="Gerar PDF" target="_blank" rel="noopener">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            <a href="{{ url_for('recibo', id=orcamento.id) }}" class="btn btn-sm btn-secondary ms-1" title="Gerar Recibo" target="_blank" rel="noopener">
+                                <i class="fas fa-receipt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <a href="{{ url_for('orcamento') }}" class="btn btn-success mt-3">
+            <i class="fas fa-plus"></i> Novo Orçamento
+        </a>
+    </div>
+</div>
+
 <script>
-    const orcamentosData = {{ orcamentos|tojson }};
-
-    function removerOrcamento(index, rowId) {
-        if (confirm('Tem certeza que deseja excluir este orçamento?')) {
-            fetch(`/excluir_orcamento/${index}`, {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    const linha = document.getElementById(rowId);
-                    if (linha) {
-                        linha.remove();
-                        atualizarTotalGeral();
-                    }
-                } else {
-                    alert("Erro ao excluir: " + data.message);
-                }
-            })
-            .catch(err => {
-                alert("Erro ao excluir: " + err);
-            });
-        }
-    }
-
-    function atualizarTotalGeral() {
-        let total = 0.0;
-        const rows = document.querySelectorAll("tbody tr");
-        rows.forEach(row => {
-            const valorTexto = row.cells[4].textContent
-                .replace("R$", "")
-                .replace(",", ".")
-                .trim();
-            const valor = parseFloat(valorTexto);
-            if (!isNaN(valor)) {
-                total += valor;
+function excluirOrcamento(id) {
+    if (confirm('Tem certeza que deseja excluir este orçamento?')) {
+        fetch(`/excluir_orcamento/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert('Erro: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erro ao excluir orçamento');
         });
-
-        const totalEl = document.getElementById("total-geral");
-        if (totalEl) {
-            totalEl.textContent = "Total Geral: R$ " + total.toFixed(2);
-        }
     }
-
-    function abrirModal(index) {
-        const orcamento = orcamentosData[index];
-        if (!orcamento) return;
-
-        // Montar o conteúdo do modal com detalhes
-        const detalhes = `
-            <p><strong>Cliente:</strong> ${orcamento.cliente}</p>
-            <p><strong>Serviço:</strong> ${orcamento.servico}</p>
-            <p><strong>Valor Base:</strong> R$ ${orcamento.valor_base.toFixed(2)}</p>
-            <p><strong>Taxa Cartão:</strong> ${orcamento.taxa_cartao.toFixed(1)}%</p>
-            <p><strong>Valor Total:</strong> R$ ${orcamento.valor_total.toFixed(2)}</p>
-            <p><strong>Observações:</strong> ${orcamento.observacoes || '-'}</p>
-        `;
-
-        document.getElementById('detalhesOrcamento').innerHTML = detalhes;
-        document.getElementById('modalOrcamento').style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Bloquear scroll atrás do modal
-    }
-
-    function fecharModal() {
-        document.getElementById('modalOrcamento').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    // Fechar modal clicando fora da caixa branca
-    window.onclick = function(event) {
-        const modal = document.getElementById('modalOrcamento');
-        if (event.target === modal) {
-            fecharModal();
-        }
-    }
+}
 </script>
 {% endblock %}

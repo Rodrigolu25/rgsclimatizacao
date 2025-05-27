@@ -1,154 +1,165 @@
 {% extends "base.html" %}
 
-{% block title %}Novo Orçamento{% endblock %}
-
 {% block content %}
-<div class="card">
-    <h2>Novo Orçamento</h2>
-    <form id="orcamentoForm" method="POST" action="{{ url_for('orcamento') }}">
-        <div class="form-group">
-            <label for="cliente">Nome do Cliente:</label>
-            <input type="text" id="cliente" name="cliente" class="form-control" required>
-        </div>
+<div class="container mt-4">
+    <div class="card p-4">
+        <h1><i class="fas fa-calculator"></i> Sistema de Orçamentos</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <h2 class="mt-4"><i class="fas fa-plus-circle"></i> Novo Orçamento</h2>
+        <form method="POST" action="{{ url_for('orcamento') }}" id="formOrcamento">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="cliente">Nome do Cliente:*</label>
+                    <input type="text" id="cliente" name="cliente" class="form-control" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="telefone">Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone" class="form-control" pattern="[0-9]{10,11}" placeholder="(XX)XXXXX-XXXX">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="email@exemplo.com">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="data_servico">Data do Serviço:</label>
+                    <input type="date" id="data_servico" name="data_servico" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="servico">Tipo de Serviço:*</label>
+                <select id="servico" name="servico" class="form-control" required>
+                    <option value="">Selecione...</option>
+                    <option value="Instalação de Ar Condicionado">Instalação de Ar Condicionado</option>
+                    <option value="Manutenção Preventiva">Manutenção Preventiva</option>
+                    <option value="Manutenção Corretiva">Manutenção Corretiva</option>
+                    <option value="Limpeza Completa">Limpeza Completa</option>
+                    <option value="Recarga de Gás">Recarga de Gás</option>
+                    <option value="Troca de Peças">Troca de Peças</option>
+                    <option value="Diagnóstico">Diagnóstico</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="valor_base">Valor Base (R$):*</label>
+                    <input type="number" id="valor_base" name="valor_base" class="form-control" step="0.01" min="0" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="desconto">Desconto (%):</label>
+                    <input type="number" id="desconto" name="desconto" class="form-control" step="0.01" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="forma_pagamento">Forma de Pagamento:</label>
+                <select id="forma_pagamento" name="forma_pagamento" class="form-control" onchange="toggleParcelamento()">
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">PIX</option>
+                    <option value="debito">Cartão de Débito</option>
+                    <option value="credito">Cartão de Crédito</option>
+                    <option value="transferencia">Transferência Bancária</option>
+                </select>
+            </div>
+            
+            <div id="parcelamento_container" style="display:none;">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="parcelas">Número de Parcelas:</label>
+                        <select id="parcelas" name="parcelas" class="form-control">
+                            {% for i in range(1, 13) %}
+                                <option value="{{ i }}">{{ i }}x</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="taxa_maquina">Taxa da Máquina (%):</label>
+                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="valor_final">Valor Final (R$):</label>
+                        <input type="text" id="valor_final" class="form-control" readonly>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Campo oculto para enviar valor final calculado ao backend -->
+            <input type="hidden" id="valor_final_hidden" name="valor_final_hidden" value="">
 
-        <div class="form-group">
-            <label for="telefone">Telefone:</label>
-            <input type="text" id="telefone" name="telefone" class="form-control">
-        </div>
-
-        <div class="form-group">
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" class="form-control">
-        </div>
-        
-        <div class="form-group">
-            <label for="servico">Tipo de Serviço:</label>
-            <select id="servico" name="servico" class="form-control" required>
-                <option value="">Selecione...</option>
-                <option value="Instalação">Instalação</option>
-                <option value="Manutenção Preventiva">Manutenção Preventiva</option>
-                <option value="Manutenção Corretiva">Manutenção Corretiva</option>
-                <option value="Limpeza">Limpeza</option>
-                <option value="Recarga de Gás">Recarga de Gás</option>
-                <option value="Outro">Outro</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="valor_base">Valor Base (R$):</label>
-            <input type="number" id="valor_base" name="valor_base" class="form-control" step="0.01" min="0" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="taxa_cartao">Taxa de Cartão (%):</label>
-            <input type="number" id="taxa_cartao" name="taxa_cartao" class="form-control" step="0.1" min="0" max="20" value="0">
-            <p class="tax-info">Deixe em 0 para pagamento à vista ou sem taxa.</p>
-        </div>
-
-        <div class="form-group">
-            <label for="parcelas">Número de Parcelas:</label>
-            <select id="parcelas" name="parcelas" class="form-control" required>
-                <option value="1" selected>1x (À vista)</option>
-                <option value="2">2x</option>
-                <option value="3">3x</option>
-                <option value="4">4x</option>
-                <option value="5">5x</option>
-                <option value="6">6x</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="observacoes">Observações:</label>
-            <textarea id="observacoes" name="observacoes" class="form-control" rows="4"></textarea>
-        </div>
-        
-        <div class="form-group">
-            <button type="submit" class="btn">Salvar Orçamento</button>
-            <button type="button" class="btn" id="btnLimpar">Limpar</button>
-        </div>
-    </form>
-    
-    <div id="resultado" style="display: {{ 'block' if orcamento_id else 'none' }}; margin-top: 20px;">
-        <h3>Resumo do Orçamento</h3>
-        <p><strong>Valor Base:</strong> R$ <span id="resumo_valor_base">0,00</span></p>
-        <p><strong>Taxa de Cartão:</strong> <span id="resumo_taxa">0</span>%</p>
-        <p><strong>Parcelas:</strong> <span id="resumo_parcelas">1x (À vista)</span></p>
-        <p class="total-value">Total: R$ <span id="resumo_total">0,00</span></p>
-        <p id="resumo_valor_parcela" style="display:none;"><strong>Valor por Parcela:</strong> R$ <span>0,00</span></p>
-
-        {% if orcamento_id %}
-        <a href="{{ url_for('gerar_pdf', orcamento_id=orcamento_id) }}" target="_blank" class="btn btn-pdf">
-            Gerar PDF
-        </a>
-        {% endif %}
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Orçamento
+                </button>
+                <button type="reset" class="btn btn-secondary" onclick="resetCampos()">
+                    <i class="fas fa-eraser"></i> Limpar
+                </button>
+                <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-info">
+                    <i class="fas fa-list"></i> Ver Todos
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
-<style>
-    .btn-pdf {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 8px 15px;
-        background-color: #dc3545;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-    .btn-pdf:hover {
-        background-color: #bd2130;
-    }
-</style>
-{% endblock %}
-
-{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const valorBaseInput = document.getElementById('valor_base');
-        const taxaCartaoInput = document.getElementById('taxa_cartao');
-        const parcelasSelect = document.getElementById('parcelas');
-        const resultadoDiv = document.getElementById('resultado');
-        const btnLimpar = document.getElementById('btnLimpar');
-        const form = document.getElementById('orcamentoForm');
+function toggleParcelamento() {
+    var formaPagamento = document.getElementById("forma_pagamento").value;
+    var container = document.getElementById("parcelamento_container");
+    if (formaPagamento === "credito") {
+        container.style.display = "block";
+        calcularValorFinal();
+    } else {
+        container.style.display = "none";
+        document.getElementById("valor_final").value = "";
+        document.getElementById("valor_final_hidden").value = "";
+    }
+}
 
-        function calcularTotal() {
-            const valorBase = parseFloat(valorBaseInput.value) || 0;
-            const taxaCartao = parseFloat(taxaCartaoInput.value) || 0;
-            const parcelas = parseInt(parcelasSelect.value) || 1;
-            
-            if (valorBase > 0) {
-                const valorComTaxa = taxaCartao > 0 ? valorBase * (1 + taxaCartao/100) : valorBase;
-                const valorParcela = parcelas > 1 ? valorComTaxa / parcelas : valorComTaxa;
-                
-                document.getElementById('resumo_valor_base').textContent = valorBase.toFixed(2).replace('.', ',');
-                document.getElementById('resumo_taxa').textContent = taxaCartao.toFixed(2).replace('.', ',');
-                document.getElementById('resumo_parcelas').textContent = parcelas + (parcelas === 1 ? 'x (À vista)' : 'x');
-                document.getElementById('resumo_total').textContent = valorComTaxa.toFixed(2).replace('.', ',');
+function calcularValorFinal() {
+    var valorBase = parseFloat(document.getElementById("valor_base").value) || 0;
+    var desconto = parseFloat(document.getElementById("desconto").value) || 0;
+    var taxaMaquina = parseFloat(document.getElementById("taxa_maquina").value) || 0;
+    var parcelas = parseInt(document.getElementById("parcelas").value) || 1;
 
-                const valorParcelaEl = document.getElementById('resumo_valor_parcela');
-                if(parcelas > 1){
-                    valorParcelaEl.style.display = 'block';
-                    valorParcelaEl.querySelector('span').textContent = valorParcela.toFixed(2).replace('.', ',');
-                } else {
-                    valorParcelaEl.style.display = 'none';
-                }
+    // Aplica desconto primeiro
+    var valorComDesconto = valorBase * (1 - desconto / 100);
+    var valorComTaxa = valorComDesconto + (valorComDesconto * (taxaMaquina / 100));
+    var valorParcelado = valorComTaxa / parcelas;
 
-                resultadoDiv.style.display = 'block';
-            } else {
-                resultadoDiv.style.display = 'none';
-            }
-        }
+    document.getElementById("valor_final").value = valorComTaxa.toFixed(2) + " (R$ " + valorParcelado.toFixed(2) + " por parcela)";
+    document.getElementById("valor_final_hidden").value = valorComTaxa.toFixed(2);
+}
 
-        valorBaseInput.addEventListener('input', calcularTotal);
-        taxaCartaoInput.addEventListener('input', calcularTotal);
-        parcelasSelect.addEventListener('change', calcularTotal);
+// Atualiza cálculo sempre que algum campo relevante mudar
+document.getElementById("valor_base").addEventListener("input", function() {
+    if(document.getElementById("forma_pagamento").value === "credito") calcularValorFinal();
+});
+document.getElementById("desconto").addEventListener("input", function() {
+    if(document.getElementById("forma_pagamento").value === "credito") calcularValorFinal();
+});
+document.getElementById("taxa_maquina").addEventListener("input", calcularValorFinal);
+document.getElementById("parcelas").addEventListener("change", calcularValorFinal);
 
-        btnLimpar.addEventListener('click', function() {
-            form.reset();
-            resultadoDiv.style.display = 'none';
-        });
+function resetCampos() {
+    document.getElementById("parcelamento_container").style.display = "none";
+    document.getElementById("valor_final").value = "";
+    document.getElementById("valor_final_hidden").value = "";
+}
 
-        // Calcula ao carregar a página (útil se valores já estiverem preenchidos)
-        calcularTotal();
-    });
+window.onload = function() {
+    toggleParcelamento();
+};
 </script>
 {% endblock %}

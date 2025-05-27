@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Orçamento</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 40px;
+            color: #333;
+        }
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+        }
+        .nome-empresa {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+        .contato-empresa {
+            font-size: 12px;
+            color: #555;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .dados {
+            margin-top: 30px;
+            font-size: 16px;
+        }
+        .dados strong {
+            display: inline-block;
+            width: 150px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nome-empresa">RGS CLIMATIZAÇÃO</div>
+        <div class="contato-empresa">
+            Telefone: (33)98827-3510 | Email: rgs.climatizacao.to@gmail.com
+        </div>
+    </div>
+
+    <h2>Orçamento Nº {{ orcamento.numero }}</h2>
+
+    <div class="dados">
+        <p><strong>Cliente:</strong> {{ orcamento.cliente_nome }}</p>
+        <p><strong>Telefone:</strong> {{ orcamento.cliente_telefone }}</p>
+        <p><strong>Email:</strong> {{ orcamento.cliente_email }}</p>
+        <p><strong>Serviço:</strong> {{ orcamento.servico }}</p>
+        <p><strong>Valor Base:</strong> R$ {{ '%.2f'|format(orcamento.valor_base) }}</p>
+        <p><strong>Desconto:</strong> {{ '%.2f'|format(orcamento.desconto) }}%</p>
+        <p><strong>Forma de Pagamento:</strong> {{ orcamento.forma_pagamento }}</p>
+        <p><strong>Valor Final:</strong> R$ {{ '%.2f'|format(orcamento.valor_final) }}</p>
+        <p><strong>Data:</strong> {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</p>
+        {% if orcamento.observacoes %}
+        <p><strong>Observações:</strong> {{ orcamento.observacoes }}</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        Obrigado por confiar no nosso serviço. Entre em contato para dúvidas ou agendamentos.
+    </div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Pagamento</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 40px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nome-empresa {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+        .titulo-documento {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            text-decoration: underline;
+        }
+        .dados {
+            margin-top: 30px;
+            font-size: 16px;
+        }
+        .dados strong {
+            display: inline-block;
+            width: 200px;
+        }
+        .valor-extenso {
+            margin: 20px 0;
+            padding: 10px;
+            border-top: 1px dashed #333;
+            border-bottom: 1px dashed #333;
+            font-style: italic;
+        }
+        .assinaturas {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .assinatura {
+            text-align: center;
+            width: 40%;
+            border-top: 1px solid #333;
+            padding-top: 5px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nome-empresa">RGS CLIMATIZAÇÃO</div>
+        <div>CNPJ: XX.XXX.XXX/0001-XX</div>
+        <div>Endereço: Rua Exemplo, 123 - Cidade/UF</div>
+    </div>
+
+    <div class="titulo-documento">RECIBO DE PAGAMENTO</div>
+
+    <div class="dados">
+        <p><strong>Número do Recibo:</strong> {{ recibo.numero }}</p>
+        <p><strong>Cliente:</strong> {{ recibo.cliente_nome }}</p>
+        <p><strong>CPF/CNPJ:</strong> {{ recibo.cliente_documento }}</p>
+        <p><strong>Referente a:</strong> {{ recibo.referente }}</p>
+        <p><strong>Valor Recebido:</strong> R$ {{ '%.2f'|format(recibo.valor) }}</p>
+        <p><strong>Forma de Pagamento:</strong> {{ recibo.forma_pagamento }}</p>
+        {% if recibo.parcelas > 1 %}
+        <p><strong>Parcelas:</strong> {{ recibo.parcelas }}x de R$ {{ '%.2f'|format(recibo.valor_parcela) }}</p>
+        {% endif %}
+        <p><strong>Data do Recebimento:</strong> {{ recibo.data_emissao.strftime('%d/%m/%Y') }}</p>
+        
+        <div class="valor-extenso">
+            Valor por extenso: {{ recibo.valor_extenso }}
+        </div>
+    </div>
+
+    <div class="assinaturas">
+        <div class="assinatura">
+            _________________________________<br>
+            {{ recibo.cliente_nome }}<br>
+            Cliente
+        </div>
+        <div class="assinatura">
+            _________________________________<br>
+            {{ recibo.emitente_nome }}<br>
+            RGS Climatização
+        </div>
+    </div>
+
+    <div class="footer">
+        Este documento não substitui uma nota fiscal. Em caso de dúvidas, entre em contato: (XX) XXXX-XXXX
+    </div>
+</body>
+</html>

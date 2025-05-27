@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ar Condicionado Pro - {% block title %}{% endblock %}</title>
+    <!-- Adicione o Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <header>
         <div class="container">
-            <h1>Ar Condicionado Pro</h1>
+            <h1><i class="fas fa-fan"></i> Ar Condicionado Pro</h1>
         </div>
     </header>
-    
+
     <nav>
         <div class="container">
             <ul>
-                <li><a href="{{ url_for('index') }}">Início</a></li>
-                <li><a href="{{ url_for('orcamento') }}">Novo Orçamento</a></li>
-                <li><a href="{{ url_for('lista_orcamentos') }}">Orçamentos</a></li>
-                <li><a href="{{ url_for('precificacao') }}">Precificação</a></li>
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="{{ url_for('orcamento') }}"><i class="fas fa-file-invoice-dollar"></i> Novo Orçamento</a></li>
+                <li><a href="{{ url_for('precificacao') }}"><i class="fas fa-tags"></i> Precificação</a></li>
             </ul>
         </div>
     </nav>
-    
+
     <main class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="card" style="background-color: #e3f2fd;">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
-        
+
         {% block content %}{% endblock %}
     </main>
-    
+
     <footer style="text-align: center; padding: 20px; margin-top: 30px; background-color: var(--dark-color); color: white;">
-        <p>&copy; 2025 Ar Condicionado Pro - Todos os direitos reservados</p>
+        <p><i class="far fa-copyright"></i> 2025 Ar Condicionado Pro - Todos os direitos reservados</p>
     </footer>
-    
+
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

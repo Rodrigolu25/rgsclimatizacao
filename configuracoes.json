@@ -1,0 +1,15 @@
+{
+    "empresa": {
+        "nome": "Sua Empresa Ltda",
+        "documento": "00.000.000/0001-00",
+        "endereco": "Rua Exemplo, 123 - Centro",
+        "telefone": "(11) 9999-9999",
+        "email": "contato@suaempresa.com.br"
+    },
+    "sistema": {
+        "horas_trabalho_mes": 160,
+        "validade_orcamento_dias": 7,
+        "taxa_cartao_padrao": 3.5,
+        "taxa_maquina_padrao": 2.0
+    }
+}

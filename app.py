@@ -1,302 +1,344 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file
-import json
-import os
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-
+from flask import make_response
+import pdfkit
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///orcamentos.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
+db = SQLAlchemy(app)
 
-# Arquivos de dados
-ORCAMENTOS_FILE = 'orcamentos.json'
-PRECIFICACOES_FILE = 'precificacoes.json'
-CUSTOS_FIXOS_FILE = 'custos_fixos.json'
-TIPOS_SERVICO_FILE = 'tipos_servico.json'
+class Orcamento(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    numero = db.Column(db.String(20), unique=True)
+    cliente_nome = db.Column(db.String(100))
+    cliente_telefone = db.Column(db.String(20))
+    cliente_email = db.Column(db.String(100))
+    servico = db.Column(db.String(100))
+    valor_base = db.Column(db.Float)
+    desconto = db.Column(db.Float)
+    valor_final = db.Column(db.Float)
+    forma_pagamento = db.Column(db.String(50))
+    taxa_cartao = db.Column(db.Float, default=0.0)
+    taxa_maquina = db.Column(db.Float, default=0.0)
+    parcelas = db.Column(db.Integer, default=1)
+    status = db.Column(db.String(20), default='pendente')
+    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    validade_dias = db.Column(db.Integer, default=7)
+    observacoes = db.Column(db.Text)
+    recibo_id = db.Column(db.Integer, db.ForeignKey('recibo.id'))
+    recibo = db.relationship('Recibo', backref='orcamento', uselist=False)
 
-# Inicializar arquivos se não existirem
-def init_files():
-    default_custos_fixos = {
-        "prolabore": 3000.00,
-        "agua": 150.00,
-        "luz": 300.00,
-        "aluguel": 1200.00,
-        "internet": 150.00,
-        "telefone": 100.00,
-        "contador": 500.00,
-        "software": 200.00,
-        "marketing": 300.00
-    }
+class Recibo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    numero = db.Column(db.String(20), unique=True)
+    cliente_nome = db.Column(db.String(100))
+    cliente_telefone = db.Column(db.String(20))
+    cliente_email = db.Column(db.String(100))
+    cliente_documento = db.Column(db.String(20))
+    valor = db.Column(db.Float)
+    valor_extenso = db.Column(db.String(200))
+    forma_pagamento = db.Column(db.String(50))
+    parcelas = db.Column(db.Integer, default=1)
+    valor_parcela = db.Column(db.Float)
+    referente = db.Column(db.String(200))
+    data_emissao = db.Column(db.DateTime, default=datetime.utcnow)
+    emitente_nome = db.Column(db.String(100))
+    emitente_documento = db.Column(db.String(20))
 
-    default_tipos_servico = {
-        "instalacao": {
-            "mao_obra": 250.00,
-            "tempo_medio": 4,
-            "custo_km": 1.20
-        },
-        "manutencao": {
-            "mao_obra": 180.00,
-            "tempo_medio": 2,
-            "custo_km": 1.00
-        },
-        "limpeza": {
-            "mao_obra": 120.00,
-            "tempo_medio": 1.5,
-            "custo_km": 0.80
-        }
-    }
-
-    if not os.path.exists(CUSTOS_FIXOS_FILE):
-        with open(CUSTOS_FIXOS_FILE, 'w') as f:
-            json.dump(default_custos_fixos, f, indent=4)
-
-    if not os.path.exists(TIPOS_SERVICO_FILE):
-        with open(TIPOS_SERVICO_FILE, 'w') as f:
-            json.dump(default_tipos_servico, f, indent=4)
-
-init_files()
-
-# Carregar dados dos arquivos
-def load_data(filename):
-    try:
-        with open(filename, 'r') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
-
-CUSTOS_FIXOS = load_data(CUSTOS_FIXOS_FILE)
-TIPOS_SERVICO = load_data(TIPOS_SERVICO_FILE)
-
-# Rotas para gerenciar custos fixos
-@app.route('/api/custos_fixos', methods=['GET', 'POST'])
-def manage_custos_fixos():
-    global CUSTOS_FIXOS
-
-    if request.method == 'GET':
-        return jsonify(CUSTOS_FIXOS)
-
-    elif request.method == 'POST':
-        data = request.json
-        with open(CUSTOS_FIXOS_FILE, 'w') as f:
-            json.dump(data, f, indent=4)
-        CUSTOS_FIXOS = data
-        return jsonify({"status": "success"})
-
-@app.route('/api/tipos_servico', methods=['GET', 'POST'])
-def manage_tipos_servico():
-    global TIPOS_SERVICO
-
-    if request.method == 'GET':
-        return jsonify(TIPOS_SERVICO)
-
-    elif request.method == 'POST':
-        data = request.json
-        with open(TIPOS_SERVICO_FILE, 'w') as f:
-            json.dump(data, f, indent=4)
-        TIPOS_SERVICO = data
-        return jsonify({"status": "success"})
+# Inicializar banco de dados
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect(url_for('lista_orcamentos'))
 
 @app.route('/orcamento', methods=['GET', 'POST'])
 def orcamento():
     if request.method == 'POST':
-        cliente = request.form['cliente']
-        telefone = request.form.get('telefone', '')
-        email = request.form.get('email', '')
-        servico = request.form['servico']
-        valor_base = float(request.form['valor_base'])
-        taxa_cartao = float(request.form.get('taxa_cartao', 0))
-        parcelas = int(request.form.get('parcelas', 1))
-        observacoes = request.form.get('observacoes', '')
-
-        valor_total = valor_base * (1 + taxa_cartao / 100) if taxa_cartao > 0 else valor_base
-
-        novo_orcamento = {
-            'cliente': cliente,
-            'telefone': telefone,
-            'email': email,
-            'servico': servico,
-            'valor_base': valor_base,
-            'taxa_cartao': taxa_cartao,
-            'parcelas': parcelas,
-            'valor_total': valor_total,
-            'observacoes': observacoes,
-            'data': datetime.now().strftime('%d/%m/%Y %H:%M')
-        }
-
         try:
-            with open(ORCAMENTOS_FILE, 'r+') as f:
-                try:
-                    orcamentos = json.load(f)
-                except json.JSONDecodeError:
-                    orcamentos = []
-                orcamentos.append(novo_orcamento)
-                f.seek(0)
-                json.dump(orcamentos, f, indent=4)
-                f.truncate()
-        except FileNotFoundError:
-            with open(ORCAMENTOS_FILE, 'w') as f:
-                json.dump([novo_orcamento], f, indent=4)
+            # Criar um novo número de orçamento no formato Pedido-NNNN-AAAA
+            ano_atual = datetime.now().year
+            # Busca o último orçamento do ano atual
+            ultimo_orcamento = Orcamento.query.filter(
+                Orcamento.numero.like(f'%-{ano_atual}')
+            ).order_by(Orcamento.id.desc()).first()
+            
+            # Se não houver orçamentos este ano, começa com 1, senão incrementa
+            if ultimo_orcamento:
+                # Extrai o número sequencial do último pedido
+                numero_anterior = int(ultimo_orcamento.numero.split('-')[1])
+                numero_sequencial = numero_anterior + 1
+            else:
+                numero_sequencial = 1
+                
+            novo_numero = f"Pedido-{numero_sequencial:04d}-{ano_atual}"
 
-        return redirect(url_for('lista_orcamentos'))
+            # Criar o orçamento
+            novo_orcamento = Orcamento(
+                numero=novo_numero,
+                cliente_nome=request.form.get('cliente'),
+                cliente_telefone=request.form.get('telefone', ''),
+                cliente_email=request.form.get('email', ''),
+                servico=request.form.get('servico'),
+                valor_base=float(request.form.get('valor_base', 0)),
+                desconto=float(request.form.get('desconto', 0)),
+                forma_pagamento=request.form.get('forma_pagamento', 'dinheiro'),
+                taxa_maquina=float(request.form.get('taxa_maquina', 0)),
+                parcelas=int(request.form.get('parcelas', 1)),
+                observacoes=request.form.get('observacoes', ''),
+                status='pendente'
+            )
+
+            # Calcular valor final
+            valor_com_desconto = novo_orcamento.valor_base * (1 - novo_orcamento.desconto / 100)
+            valor_com_taxa = valor_com_desconto + (valor_com_desconto * novo_orcamento.taxa_maquina / 100)
+            novo_orcamento.valor_final = round(valor_com_taxa, 2)
+
+            db.session.add(novo_orcamento)
+            db.session.commit()
+
+            flash(f'Orçamento {novo_numero} criado com sucesso!', 'success')
+            return redirect(url_for('lista_orcamentos'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao criar orçamento: {str(e)}', 'error')
+            return redirect(url_for('orcamento'))
 
     return render_template('orcamento.html')
 
-@app.route('/precificacao', methods=['GET', 'POST'])
-def precificacao():
-    if request.method == 'POST':
-        tipo_servico = request.form['tipo_servico']
-        custo_materiais = float(request.form['custo_materiais'])
-        horas_estimadas = float(request.form['horas_estimadas'])
-        margem_lucro = float(request.form['margem_lucro'])
-
-        custo_fixo_mensal = sum(CUSTOS_FIXOS.values())
-        custo_fixo_diario = custo_fixo_mensal / 22  # Dias úteis médios no mês
-
-        if tipo_servico in TIPOS_SERVICO:
-            servico = TIPOS_SERVICO[tipo_servico]
-            custo_mao_obra = servico['mao_obra'] * horas_estimadas
-            custo_total = custo_materiais + custo_mao_obra + (custo_fixo_diario * (horas_estimadas / 8))
-            preco_venda = custo_total * (1 + margem_lucro / 100)
-
-            return render_template('precificacao.html',
-                                calculado=True,
-                                tipo_servico=tipo_servico,
-                                custo_materiais=custo_materiais,
-                                horas_estimadas=horas_estimadas,
-                                margem_lucro=margem_lucro,
-                                custo_fixo_diario=custo_fixo_diario,
-                                custo_mao_obra=custo_mao_obra,
-                                custo_total=custo_total,
-                                preco_venda=preco_venda,
-                                custos_fixos=CUSTOS_FIXOS,
-                                tipos_servico=TIPOS_SERVICO)
-        else:
-            return render_template('precificacao.html',
-                                calculado=False,
-                                erro_servico="Tipo de serviço inválido.",
-                                custos_fixos=CUSTOS_FIXOS,
-                                tipos_servico=TIPOS_SERVICO)
-
-    return render_template('precificacao.html',
-                         calculado=False,
-                         custos_fixos=CUSTOS_FIXOS,
-                         tipos_servico=TIPOS_SERVICO)
-
 @app.route('/lista_orcamentos')
 def lista_orcamentos():
-    try:
-        with open(ORCAMENTOS_FILE, 'r') as f:
-            orcamentos = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        orcamentos = []
-    
+    orcamentos = Orcamento.query.order_by(Orcamento.data_criacao.desc()).all()
     return render_template('lista_orcamentos.html', orcamentos=orcamentos)
 
-@app.route('/excluir_orcamento/<int:index>', methods=['POST'])
-def excluir_orcamento(index):
+@app.route('/excluir_orcamento/<int:id>', methods=['POST'])
+def excluir_orcamento(id):
     try:
-        with open(ORCAMENTOS_FILE, 'r') as f:
-            orcamentos = json.load(f)
-
-        if 0 <= index < len(orcamentos):
-            orcamentos.pop(index)
-            with open(ORCAMENTOS_FILE, 'w') as f:
-                json.dump(orcamentos, f, indent=4)
-            return jsonify({"status": "success"})
-        else:
-            return jsonify({"status": "error", "message": "Índice inválido"}), 400
+        orcamento = Orcamento.query.get_or_404(id)
+        db.session.delete(orcamento)
+        db.session.commit()
+        return jsonify({"status": "success", "message": "Orçamento excluído com sucesso!"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@app.route('/editar_orcamento/<int:index>', methods=['GET', 'POST'])
-def editar_orcamento(index):
-    try:
-        with open(ORCAMENTOS_FILE, 'r') as f:
-            orcamentos = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return "Orçamento não encontrado", 404
-
-    if index < 0 or index >= len(orcamentos):
-        return "Orçamento não encontrado", 404
-    
-    orcamento = orcamentos[index]
+@app.route('/editar_orcamento/<int:id>', methods=['GET', 'POST'])
+def editar_orcamento(id):
+    orcamento = Orcamento.query.get_or_404(id)
     
     if request.method == 'POST':
-        orcamento['cliente'] = request.form.get('cliente')
-        orcamento['telefone'] = request.form.get('telefone', '')
-        orcamento['email'] = request.form.get('email', '')
-        orcamento['servico'] = request.form.get('servico')
-        orcamento['valor_base'] = float(request.form.get('valor_base'))
-        orcamento['taxa_cartao'] = float(request.form.get('taxa_cartao', 0))
-        orcamento['parcelas'] = int(request.form.get('parcelas', 1))
-        orcamento['valor_total'] = orcamento['valor_base'] * (1 + orcamento['taxa_cartao'] / 100)
-        orcamento['observacoes'] = request.form.get('observacoes', '')
-        orcamento['data'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+        try:
+            orcamento.cliente_nome = request.form.get('cliente')
+            orcamento.cliente_telefone = request.form.get('telefone', '')
+            orcamento.cliente_email = request.form.get('email', '')
+            orcamento.servico = request.form.get('servico')
+            orcamento.valor_base = float(request.form.get('valor_base', 0))
+            orcamento.desconto = float(request.form.get('desconto', 0))
+            orcamento.forma_pagamento = request.form.get('forma_pagamento', 'dinheiro')
+            orcamento.taxa_maquina = float(request.form.get('taxa_maquina', 0))
+            orcamento.parcelas = int(request.form.get('parcelas', 1))
+            orcamento.status = request.form.get('status', 'pendente')
+            orcamento.observacoes = request.form.get('observacoes', '')
+            
+            # Recalcular valor final
+            valor_com_desconto = orcamento.valor_base * (1 - orcamento.desconto / 100)
+            valor_com_taxa = valor_com_desconto + (valor_com_desconto * orcamento.taxa_maquina / 100)
+            orcamento.valor_final = round(valor_com_taxa, 2)
+            
+            db.session.commit()
+            flash('Orçamento atualizado com sucesso!', 'success')
+            return redirect(url_for('lista_orcamentos'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao atualizar orçamento: {str(e)}', 'error')
+            return redirect(url_for('editar_orcamento', id=id))
+    
+    return render_template('editar_orcamento.html', orcamento=orcamento)
 
-        with open(ORCAMENTOS_FILE, 'w') as f:
-            json.dump(orcamentos, f, indent=4)
+# Update your gerar_pdf route
+@app.route('/gerar_pdf/<int:id>', endpoint='gerar_pdf_orcamento')
+def gerar_pdf(id):
+    orcamento = Orcamento.query.get_or_404(id)
+    rendered = render_template('gerar_pdf.html', orcamento=orcamento)
+    
+    # Configure the path to wkhtmltopdf
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Windows example
+    # For Linux/Mac: config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+    
+    options = {
+        'enable-local-file-access': None,
+        'encoding': 'UTF-8'
+    }
 
+    pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
+
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'inline; filename=orcamento_{orcamento.numero}.pdf'
+    return response
+
+@app.route('/precificacao')
+def precificacao():
+    return render_template('precificacao.html')
+
+from flask import render_template
+
+@app.route('/recibo/<int:id>')
+def recibo(id):
+    try:
+        # Buscar o orçamento
+        orcamento = Orcamento.query.get_or_404(id)
+        print(f"Orçamento encontrado: {orcamento.id}")
+        
+        # Função para converter valor para extenso
+        def valor_para_extenso(valor):
+            try:
+                from num2words import num2words
+                return num2words(valor, lang='pt_BR', to='currency')
+            except:
+                # Fallback simples
+                inteiro = int(valor)
+                centavos = int(round((valor - inteiro) * 100))
+                texto = f"{inteiro} reais" if inteiro != 1 else "um real"
+                if centavos > 0:
+                    texto += f" e {centavos} centavos"
+                return texto
+        
+        # Criar dados do recibo baseado no orçamento
+        from datetime import datetime
+        
+        # Gerar número do recibo
+        ano_atual = datetime.now().year
+        try:
+            ultimo_recibo = Recibo.query.order_by(Recibo.id.desc()).first()
+            numero_sequencial = 1 if not ultimo_recibo else int(ultimo_recibo.numero.split('/')[0]) + 1
+        except:
+            numero_sequencial = 1
+        
+        numero_recibo = f"{numero_sequencial:04d}/{ano_atual}"
+        
+        # Criar novo recibo
+        try:
+            novo_recibo = Recibo(
+                numero=numero_recibo,
+                cliente_nome=orcamento.cliente_nome,
+                cliente_telefone=getattr(orcamento, 'cliente_telefone', ''),
+                cliente_email=getattr(orcamento, 'cliente_email', ''),
+                cliente_documento='Não informado',  # Pode ser passado como parâmetro depois
+                valor=orcamento.valor_final,
+                valor_extenso=valor_para_extenso(orcamento.valor_final),
+                forma_pagamento=getattr(orcamento, 'forma_pagamento', 'À vista'),
+                parcelas=getattr(orcamento, 'parcelas', 1),
+                valor_parcela=orcamento.valor_final,
+                referente=f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}",
+                emitente_nome="RGS Climatização",
+                emitente_documento="XX.XXX.XXX/0001-XX",
+                data_emissao=datetime.now()
+            )
+            
+            db.session.add(novo_recibo)
+            db.session.commit()
+            print(f"Recibo criado com ID: {novo_recibo.id}")
+            
+        except Exception as db_error:
+            print(f"Erro ao salvar recibo no banco: {db_error}")
+            # Se falhar ao salvar, criar objeto temporário
+            class ReciboTemp:
+                def __init__(self):
+                    self.numero = numero_recibo
+                    self.cliente_nome = orcamento.cliente_nome
+                    self.cliente_documento = 'Não informado'
+                    self.valor = orcamento.valor_final
+                    self.valor_extenso = valor_para_extenso(orcamento.valor_final)
+                    self.forma_pagamento = getattr(orcamento, 'forma_pagamento', 'À vista')
+                    self.parcelas = getattr(orcamento, 'parcelas', 1)
+                    self.valor_parcela = orcamento.valor_final
+                    self.referente = f"Serviço de {orcamento.servico}"
+                    self.data_emissao = datetime.now()
+                    self.emitente_nome = "RGS Climatização"
+            
+            novo_recibo = ReciboTemp()
+        
+        # Tentar gerar PDF
+        try:
+            import pdfkit
+            import os
+            
+            # Renderizar template
+            rendered = render_template('recibo.html', recibo=novo_recibo)
+            print("Template renderizado com sucesso")
+            
+            # Configurações do PDF
+            options = {
+                'page-size': 'A4',
+                'margin-top': '0.75in',
+                'margin-right': '0.75in',
+                'margin-bottom': '0.75in',
+                'margin-left': '0.75in',
+                'encoding': 'UTF-8',
+                'no-outline': None
+            }
+            
+            # Configurar wkhtmltopdf
+            config = None
+            wkhtmltopdf_paths = [
+                r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
+                r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
+            ]
+            
+            for path in wkhtmltopdf_paths:
+                if os.path.exists(path):
+                    config = pdfkit.configuration(wkhtmltopdf=path)
+                    print(f"wkhtmltopdf encontrado em: {path}")
+                    break
+            
+            # Gerar PDF
+            pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
+            print("PDF gerado com sucesso")
+            
+            # Retornar PDF como resposta
+            response = make_response(pdf)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'inline; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
+            return response
+            
+        except ImportError as import_error:
+            print(f"Biblioteca não encontrada: {import_error}")
+            flash('Para gerar PDF, instale: pip install pdfkit', 'warning')
+            return render_template('recibo.html', recibo=novo_recibo)
+            
+        except Exception as pdf_error:
+            print(f"Erro ao gerar PDF: {pdf_error}")
+            flash(f'PDF não pôde ser gerado: {str(pdf_error)}. Mostrando em HTML.', 'warning')
+            return render_template('recibo.html', recibo=novo_recibo)
+    
+    except Exception as e:
+        print(f"Erro geral na função recibo: {e}")
+        flash(f'Erro ao gerar recibo: {str(e)}', 'error')
         return redirect(url_for('lista_orcamentos'))
     
-    return render_template('editar_orcamento.html', orcamento=orcamento, index=index)
-
-@app.route('/gerar_pdf/<int:index>')
-def gerar_pdf(index):
+@app.route('/atualizar_status/<int:id>', methods=['POST'])
+def atualizar_status(id):
+    orcamento = Orcamento.query.get_or_404(id)
+    novo_status = request.json.get('status')
+    
+    if novo_status not in ['pendente', 'aprovado', 'rejeitado', 'em_andamento', 'concluido', 'cancelado']:
+        return jsonify({'status': 'error', 'message': 'Status inválido'}), 400
+    
     try:
-        # Lê os orçamentos do arquivo JSON
-        with open(ORCAMENTOS_FILE, 'r') as f:
-            orcamentos = json.load(f)
-
-        if index < 0 or index >= len(orcamentos):
-            return "Orçamento não encontrado", 404
-
-        orcamento = orcamentos[index]
-
-        # Geração do PDF
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=A4)
-        width, height = A4
-
-        # Logo aumentada
-        logo_path = os.path.join(app.root_path, 'static', 'imagem', 'logo.png')
-        if os.path.exists(logo_path):
-            p.drawImage(logo_path, 40, height - 120, width=150, height=100, preserveAspectRatio=True, mask='auto')
-        else:
-            print(f"Logo não encontrada no caminho: {logo_path}")
-
-        # Título
-        p.setFont("Helvetica-Bold", 16)
-        p.drawString(200, height - 80, "Orçamento de Serviço")
-
-        # Dados do orçamento
-        p.setFont("Helvetica", 12)
-        y = height - 160
-        espacamento = 20
-
-        for chave, valor in orcamento.items():
-            p.drawString(40, y, f"{chave.capitalize().replace('_', ' ')}: {valor}")
-            y -= espacamento
-
-        p.showPage()
-        p.save()
-
-        buffer.seek(0)
-
-        # Nome do cliente no nome do PDF (ajuste o campo se necessário)
-        nome_cliente = orcamento.get('cliente', f"cliente_{index+1}")  # <-- altere 'cliente' se precisar
-        nome_arquivo = "".join(c for c in nome_cliente if c.isalnum() or c in " ._-").strip() + ".pdf"
-
-        return send_file(buffer, as_attachment=True,
-                         download_name=nome_arquivo,
-                         mimetype='application/pdf')
-
+        orcamento.status = novo_status
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Status atualizado com sucesso'})
     except Exception as e:
-        return f"Erro ao gerar PDF: {str(e)}", 500
-
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

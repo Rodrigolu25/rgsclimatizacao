@@ -1,133 +1,46 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8" />
-    <title>Editar Orçamento</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-        }
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            max-width: 600px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        button {
-            margin-top: 20px;
-            background-color: #007bff;
-            border: none;
-            padding: 10px 15px;
-            color: white;
-            font-size: 16px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        a {
-            display: inline-block;
-            margin-top: 15px;
-            color: #007bff;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        #resultado {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #eef;
-            border: 1px solid #99c;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>Editar Orçamento</h1>
+{% extends "base.html" %}
 
-    <form id="orcamentoForm" action="{{ url_for('editar_orcamento', index=index) }}" method="POST">
-
-        <label for="cliente">Cliente:</label>
-        <input type="text" id="cliente" name="cliente" value="{{ orcamento.cliente }}" required />
-
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" name="descricao" rows="4" required>{{ orcamento.descricao }}</textarea>
-
-        <label for="valor_base">Valor Base (R$):</label>
-        <input type="number" id="valor_base" name="valor_base" step="0.01" value="{{ orcamento.valor_base }}" required />
-
-        <label for="taxa_cartao">Taxa do Cartão (%):</label>
-        <input type="number" id="taxa_cartao" name="taxa_cartao" step="0.01" value="{{ orcamento.taxa_cartao }}" required />
-
-        <label for="parcelas">Número de Parcelas:</label>
-        <select id="parcelas" name="parcelas" required>
-            {% for n in range(1, 13) %}
-                <option value="{{ n }}" {% if orcamento.parcelas == n %}selected{% endif %}>{{ n }}</option>
-            {% endfor %}
-        </select>
-
-        <button type="button" id="btnCalcular">Calcular Valor Final</button>
-        <button type="submit">Salvar Alterações</button>
-        <button type="button" id="btnLimpar">Limpar</button>
-
-    </form>
-
-    <div id="resultado">Resultado aparecerá aqui</div>
-
-    <a href="{{ url_for('orcamento') }}">Voltar para Orçamentos</a>
-
-    <script>
-        const valorBaseInput = document.getElementById('valor_base');
-        const taxaCartaoInput = document.getElementById('taxa_cartao');
-        const parcelasSelect = document.getElementById('parcelas');
-        const resultadoDiv = document.getElementById('resultado');
-        const btnLimpar = document.getElementById('btnLimpar');
-        const btnCalcular = document.getElementById('btnCalcular');
-        const form = document.getElementById('orcamentoForm');
-
-        function calcularValorFinal() {
-            const valorBase = parseFloat(valorBaseInput.value) || 0;
-            const taxaCartao = parseFloat(taxaCartaoInput.value) || 0;
-            const parcelas = parseInt(parcelasSelect.value) || 1;
-
-            // Exemplo simples de cálculo: adiciona taxa e divide pelo número de parcelas
-            const valorComTaxa = valorBase + (valorBase * (taxaCartao / 100));
-            const valorParcela = valorComTaxa / parcelas;
-
-            resultadoDiv.textContent = `Valor com taxa: R$ ${valorComTaxa.toFixed(2)} | Valor por parcela (${parcelas}x): R$ ${valorParcela.toFixed(2)}`;
-        }
-
-        btnCalcular.addEventListener('click', calcularValorFinal);
-
-        btnLimpar.addEventListener('click', () => {
-            valorBaseInput.value = '';
-            taxaCartaoInput.value = '';
-            parcelasSelect.value = '1';
-            resultadoDiv.textContent = 'Resultado aparecerá aqui';
-        });
-    </script>
-</body>
-</html>
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h1><i class="fas fa-edit"></i> Editar Orçamento #{{ orcamento.numero }}</h1>
+        
+        <form method="POST" action="{{ url_for('editar_orcamento', id=orcamento.id) }}">
+            <div class="form-group">
+                <label for="cliente">Cliente:</label>
+                <input type="text" class="form-control" id="cliente" name="cliente" value="{{ orcamento.cliente_nome }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="servico">Serviço:</label>
+                <textarea class="form-control" id="servico" name="servico" rows="3" required>{{ orcamento.servico }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="valor">Valor:</label>
+                <input type="number" step="0.01" class="form-control" id="valor" name="valor" value="{{ orcamento.valor_final }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select class="form-control" id="status" name="status">
+                    <option value="pendente" {% if orcamento.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                    <option value="aprovado" {% if orcamento.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
+                    <option value="rejeitado" {% if orcamento.status == 'rejeitado' %}selected{% endif %}>Rejeitado</option>
+                    <option value="em_andamento" {% if orcamento.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                    <option value="concluido" {% if orcamento.status == 'concluido' %}selected{% endif %}>Concluído</option>
+                    <option value="cancelado" {% if orcamento.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-3">
+                <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+            
+            <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-secondary mt-3">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

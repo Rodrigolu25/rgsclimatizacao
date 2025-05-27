@@ -3,11 +3,50 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Ar Condicionado Pro - {% block title %}{% endblock %}</title>
     <!-- Adicione o Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Estilos responsivos adicionais */
+        @media (max-width: 768px) {
+            header .container h1 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            nav li {
+                width: 100%;
+            }
+            
+            nav a {
+                padding: 0.5rem;
+                justify-content: center;
+            }
+            
+            .alert {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            footer p {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -19,21 +58,27 @@
 
     <nav>
         <div class="container">
-            <ul>
-                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="{{ url_for('orcamento') }}"><i class="fas fa-file-invoice-dollar"></i> Novo Orçamento</a></li>
-                <li><a href="{{ url_for('precificacao') }}"><i class="fas fa-tags"></i> Precificação</a></li>
+            <ul style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 0; list-style: none;">
+                <li style="flex: 1 0 auto;"><a href="{{ url_for('index') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
+                    <i class="fas fa-home"></i> <span>Início</span>
+                </a></li>
+                <li style="flex: 1 0 auto;"><a href="{{ url_for('orcamento') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
+                    <i class="fas fa-file-invoice-dollar"></i> <span>Novo Orçamento</span>
+                </a></li>
+                <li style="flex: 1 0 auto;"><a href="{{ url_for('precificacao') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
+                    <i class="fas fa-tags"></i> <span>Precificação</span>
+                </a></li>
             </ul>
         </div>
     </nav>
 
-    <main class="container">
+    <main class="container" style="padding: 20px 0;">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
+        <div class="alert alert-{{ category }}" style="padding: 1rem; margin-bottom: 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
             <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
-            {{ message }}
+            <span>{{ message }}</span>
         </div>
         {% endfor %}
         {% endif %}
@@ -42,7 +87,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer style="text-align: center; padding: 20px; margin-top: 30px; background-color: var(--dark-color); color: white;">
+    <footer style="text-align: center; padding: 20px; margin-top: 30px; background-color: #333; color: white;">
         <p><i class="far fa-copyright"></i> 2025 Ar Condicionado Pro - Todos os direitos reservados</p>
     </footer>
 

@@ -5,47 +5,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Ar Condicionado Pro - {% block title %}{% endblock %}</title>
-    <!-- Adicione o Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Estilos responsivos adicionais */
-        @media (max-width: 768px) {
-            header .container h1 {
-                font-size: 1.5rem;
-                text-align: center;
+        /* Reset e estilos base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 10px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 0;
+        }
+        
+        header h1 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+        
+        /* Navegação */
+        nav {
+            background-color: #34495e;
+            padding: 10px 0;
+        }
+        
+        nav ul {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            list-style: none;
+        }
+        
+        nav li {
+            width: 100%;
+        }
+        
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            text-decoration: none;
+            color: white;
+            background-color: #2c3e50;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover {
+            background-color: #1a252f;
+        }
+        
+        /* Alertas */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 30px;
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        /* Media Queries */
+        @media (min-width: 576px) {
+            body {
+                font-size: 15px;
             }
             
             nav ul {
-                flex-direction: column;
-                gap: 0.5rem;
+                flex-direction: row;
+                gap: 10px;
             }
             
-            nav li {
-                width: 100%;
-            }
-            
-            nav a {
-                padding: 0.5rem;
-                justify-content: center;
-            }
-            
-            .alert {
-                padding: 0.75rem;
-                font-size: 0.9rem;
+            header h1 {
+                font-size: 1.5rem;
             }
         }
         
-        @media (max-width: 576px) {
-            .container {
-                padding-left: 15px;
-                padding-right: 15px;
+        @media (min-width: 768px) {
+            body {
+                font-size: 16px;
             }
             
-            footer p {
-                font-size: 0.8rem;
+            .container {
+                padding: 0 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            nav a {
+                padding: 10px 15px;
+                justify-content: center;
             }
         }
+        
+        /* Bloco para estilos específicos das páginas */
+        {% block style %}{% endblock %}
     </style>
 </head>
 
@@ -58,16 +160,10 @@
 
     <nav>
         <div class="container">
-            <ul style="display: flex; flex-wrap: wrap; gap: 1rem; padding: 0; list-style: none;">
-                <li style="flex: 1 0 auto;"><a href="{{ url_for('index') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
-                    <i class="fas fa-home"></i> <span>Início</span>
-                </a></li>
-                <li style="flex: 1 0 auto;"><a href="{{ url_for('orcamento') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
-                    <i class="fas fa-file-invoice-dollar"></i> <span>Novo Orçamento</span>
-                </a></li>
-                <li style="flex: 1 0 auto;"><a href="{{ url_for('precificacao') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 1rem; text-decoration: none; color: white; background-color: #333; border-radius: 4px;">
-                    <i class="fas fa-tags"></i> <span>Precificação</span>
-                </a></li>
+            <ul>
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> <span>Início</span></a></li>
+                <li><a href="{{ url_for('orcamento') }}"><i class="fas fa-file-invoice-dollar"></i> <span>Novo Orçamento</span></a></li>
+                <li><a href="{{ url_for('precificacao') }}"><i class="fas fa-tags"></i> <span>Precificação</span></a></li>
             </ul>
         </div>
     </nav>
@@ -76,7 +172,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}" style="padding: 1rem; margin-bottom: 1rem; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
+        <div class="alert alert-{{ category }}">
             <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
             <span>{{ message }}</span>
         </div>
@@ -87,7 +183,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer style="text-align: center; padding: 20px; margin-top: 30px; background-color: #333; color: white;">
+    <footer>
         <p><i class="far fa-copyright"></i> 2025 Ar Condicionado Pro - Todos os direitos reservados</p>
     </footer>
 

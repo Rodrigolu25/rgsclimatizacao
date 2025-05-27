@@ -2,46 +2,36 @@
 
 {% block title %}Início{% endblock %}
 
-{% block head %}
-{{ super() }}
+{% block style %}
 <style>
-    /* Estilos personalizados para a página inicial */
     .hero-container {
         min-height: calc(100vh - 200px);
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 2rem;
-        background-color: #f8f9fa; /* Cor de fundo opcional */
+        padding: 15px;
+        background-color: #f8f9fa;
     }
     
     .logo-image {
-        max-width: 600px;
-        width: 100%;
+        max-width: 100%;
         height: auto;
-        object-fit: contain;
         transition: transform 0.3s ease;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
     .logo-image:hover {
-        transform: scale(1.03); /* Efeito sutil ao passar o mouse */
+        transform: scale(1.03);
     }
     
-    /* Ajustes para dispositivos móveis */
-    @media (max-width: 768px) {
+    @media (min-width: 768px) {
         .hero-container {
-            min-height: calc(100vh - 150px);
-            padding: 1.5rem;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .hero-container {
-            padding: 1rem;
+            padding: 30px;
         }
         
         .logo-image {
-            max-width: 100%;
+            max-width: 600px;
         }
     }
 </style>
@@ -52,14 +42,12 @@
     <img src="{{ url_for('static', filename='imagem/logo.png') }}" 
          alt="Logo da Empresa" 
          class="logo-image"
-         loading="lazy"> <!-- Otimização de carregamento -->
+         loading="lazy">
 </div>
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
 <script>
-    // Scripts adicionais podem ser incluídos aqui
     console.log("Página inicial carregada com sucesso!");
 </script>
 {% endblock %}

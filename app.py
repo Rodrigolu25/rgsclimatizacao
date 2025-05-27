@@ -151,24 +151,63 @@ def editar_orcamento(id):
 # Update your gerar_pdf route
 @app.route('/gerar_pdf/<int:id>', endpoint='gerar_pdf_orcamento')
 def gerar_pdf(id):
-    orcamento = Orcamento.query.get_or_404(id)
-    rendered = render_template('gerar_pdf.html', orcamento=orcamento)
-    
-    # Configure the path to wkhtmltopdf
-    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')  # Windows example
-    # For Linux/Mac: config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
-    
-    options = {
-        'enable-local-file-access': None,
-        'encoding': 'UTF-8'
-    }
+    try:
+        # Buscar o orçamento
+        orcamento = Orcamento.query.get_or_404(id)
+        print(f"Orçamento encontrado: {orcamento.id}")
+        
+        # Renderizar template
+        rendered = render_template('gerar_pdf.html', orcamento=orcamento)
+        print("Template de orçamento renderizado com sucesso")
 
-    pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
+        # Configurações do PDF
+        import pdfkit
+        import os
 
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'inline; filename=orcamento_{orcamento.numero}.pdf'
-    return response
+        options = {
+            'page-size': 'A4',
+            'margin-top': '0.75in',
+            'margin-right': '0.75in',
+            'margin-bottom': '0.75in',
+            'margin-left': '0.75in',
+            'encoding': 'UTF-8',
+            'no-outline': None,
+            'enable-local-file-access': None,
+        }
+
+        # Configurar wkhtmltopdf
+        config = None
+        wkhtmltopdf_paths = [
+            r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
+            r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
+        ]
+
+        for path in wkhtmltopdf_paths:
+            if os.path.exists(path):
+                config = pdfkit.configuration(wkhtmltopdf=path)
+                print(f"wkhtmltopdf encontrado em: {path}")
+                break
+
+        # Gerar PDF
+        pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
+        print("PDF do orçamento gerado com sucesso")
+
+        # Retornar PDF como resposta
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'inline; filename=orcamento_{orcamento.numero}.pdf'
+        return response
+
+    except ImportError as import_error:
+        print(f"Biblioteca não encontrada: {import_error}")
+        flash('Para gerar PDF, instale: pip install pdfkit', 'warning')
+        return render_template('gerar_pdf.html', orcamento=orcamento)
+
+    except Exception as pdf_error:
+        print(f"Erro ao gerar PDF do orçamento: {pdf_error}")
+        flash(f'PDF não pôde ser gerado: {str(pdf_error)}. Mostrando em HTML.', 'warning')
+        return render_template('gerar_pdf.html', orcamento=orcamento)
+
 
 @app.route('/precificacao')
 def precificacao():

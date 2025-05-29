@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -6,11 +7,16 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from flask import make_response
 import pdfkit
+
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///orcamentos.db'
+
+# Conexão com o banco de dados PostgreSQL da Render
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://rgsclimatizacao_db_user:BTWRNA8eH6nh6M3aG33J8UZlcJFWdcLe@dpg-d0s5nu49c44c73cqcpq0-a.oregon-postgres.render.com/rgsclimatizacao_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'
+
 db = SQLAlchemy(app)
+
 
 class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)

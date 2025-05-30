@@ -5,104 +5,202 @@
     <title>Recibo de Pagamento</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            padding: 40px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 40px auto;
+            max-width: 800px;
             color: #333;
+            background-color: #f9f9f9;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .nome-empresa {
+
+        .empresa {
             font-size: 24px;
             font-weight: bold;
             color: #0066cc;
             margin-bottom: 5px;
+            letter-spacing: 0.5px;
         }
-        .titulo-documento {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 20px 0;
+
+        .contato {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .cabecalho {
+            text-align: left;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 15px;
+        }
+
+        .titulo {
             text-align: center;
-            text-decoration: underline;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #0066cc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 10px;
         }
+
+        .titulo:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #0066cc, transparent);
+        }
+
         .dados {
-            margin-top: 30px;
-            font-size: 16px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
+
+        .dados p {
+            font-size: 15px;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+
         .dados strong {
             display: inline-block;
-            width: 200px;
+            width: 180px;
+            color: #555;
+            font-weight: 600;
         }
+
         .valor-extenso {
-            margin: 20px 0;
-            padding: 10px;
-            border-top: 1px dashed #333;
-            border-bottom: 1px dashed #333;
+            margin: 30px 0;
+            padding: 15px;
+            border: 1px dashed #aaa;
+            border-radius: 4px;
             font-style: italic;
-        }
-        .assinaturas {
-            margin-top: 60px;
-            display: flex;
-            justify-content: space-around;
-        }
-        .assinatura {
+            font-size: 15px;
+            background-color: #f5f5f5;
             text-align: center;
-            width: 40%;
-            border-top: 1px solid #333;
-            padding-top: 5px;
         }
+
+        .assinaturas {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            gap: 40px;
+        }
+
+        .assinatura-bloco {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .assinatura-linha {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #000, transparent);
+            margin: 15px 0 5px;
+            position: relative;
+        }
+
+        .assinatura-linha:before,
+        .assinatura-linha:after {
+            content: "✖";
+            position: absolute;
+            top: -8px;
+            color: #0066cc;
+            font-size: 16px;
+        }
+
+        .assinatura-linha:before {
+            left: 10px;
+        }
+
+        .assinatura-linha:after {
+            right: 10px;
+        }
+
+        .assinatura-nome {
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .assinatura-cargo {
+            color: #666;
+            font-size: 13px;
+        }
+
         .footer {
-            position: fixed;
-            bottom: 40px;
-            width: 100%;
+            margin-top: 60px;
             text-align: center;
             font-size: 12px;
             color: #888;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        @media print {
+            body {
+                box-shadow: none;
+                padding: 0;
+                background-color: white;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nome-empresa">RGS CLIMATIZAÇÃO</div>
-        <div>CNPJ: XX.XXX.XXX/0001-XX</div>
-        <div>Endereço: Rua Carijós, 52 - Teofilo Otoni/MG</div>
+    <div class="cabecalho">
+        <div class="empresa">RGS CLIMATIZAÇÃO</div>
+        <div class="contato">
+            CNPJ: 61.038.796/0001-66<br>
+            Endereço: Rua Carijós, 52 - Teófilo Otoni/MG<br>
+            Email: rgs.climatizacao.to@gmail.com | Tel: (33) 98827-3510
+        </div>
     </div>
 
-    <div class="titulo-documento">RECIBO DE PAGAMENTO</div>
+    <div class="titulo">Recibo de Pagamento</div>
 
     <div class="dados">
-        <p><strong>Número do Recibo:</strong> {{ recibo.numero }}</p>
-        <p><strong>Cliente:</strong> {{ recibo.cliente_nome }}</p>
-        <p><strong>CPF/CNPJ:</strong> {{ recibo.cliente_documento }}</p>
-        <p><strong>Referente a:</strong> {{ recibo.referente }}</p>
-        <p><strong>Valor Recebido:</strong> R$ {{ '%.2f'|format(recibo.valor) }}</p>
-        <p><strong>Forma de Pagamento:</strong> {{ recibo.forma_pagamento }}</p>
+        <p><strong>Nº do Recibo:</strong> <span>{{ recibo.numero }}</span></p>
+        <p><strong>Cliente:</strong> <span>{{ recibo.cliente_nome }}</span></p>
+        <p><strong>CPF/CNPJ:</strong> <span>{{ recibo.cliente_documento or 'Não informado' }}</span></p>
+        <p><strong>Referente a:</strong> <span>{{ recibo.referente }}</span></p>
+        <p><strong>Valor Recebido:</strong> <span>R$ {{ '%.2f'|format(recibo.valor) }}</span></p>
+        <p><strong>Forma de Pagamento:</strong> <span>{{ recibo.forma_pagamento }}</span></p>
         {% if recibo.parcelas > 1 %}
-        <p><strong>Parcelas:</strong> {{ recibo.parcelas }}x de R$ {{ '%.2f'|format(recibo.valor_parcela) }}</p>
+        <p><strong>Parcelas:</strong> <span>{{ recibo.parcelas }}x de R$ {{ '%.2f'|format(recibo.valor_parcela) }}</span></p>
         {% endif %}
-        <p><strong>Data do Recebimento:</strong> {{ recibo.data_emissao.strftime('%d/%m/%Y') }}</p>
-        
+        <p><strong>Data do Recebimento:</strong> <span>{{ recibo.data_emissao.strftime('%d/%m/%Y') }}</span></p>
+
         <div class="valor-extenso">
             Valor por extenso: {{ recibo.valor_extenso }}
         </div>
     </div>
 
     <div class="assinaturas">
-        <div class="assinatura">
-            _________________________________<br>
-            {{ recibo.cliente_nome }}<br>
-            Cliente
+        <div class="assinatura-bloco">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-nome">{{ recibo.cliente_nome }}</div>
+            <div class="assinatura-cargo">Cliente</div>
         </div>
-        <div class="assinatura">
-            _________________________________<br>
-            {{ recibo.emitente_nome }}<br>
-            RGS Climatização
+        <div class="assinatura-bloco">
+            <div class="assinatura-linha"></div>
+            <div class="assinatura-nome">{{ recibo.emitente_nome }}</div>
+            <div class="assinatura-cargo">RGS Climatização</div>
         </div>
     </div>
 
     <div class="footer">
-        Este documento não substitui uma nota fiscal. Em caso de dúvidas, entre em contato: (XX) XXXX-XXXX
+        Este documento não substitui uma nota fiscal. Em caso de dúvidas, entre em contato.
     </div>
 </body>
 </html>

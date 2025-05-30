@@ -116,7 +116,7 @@
 <div class="container mt-2">
     <div class="card p-3">
         <h1 class="h4"><i class="fas fa-calculator"></i> Sistema de Orçamentos</h1>
-        
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -127,7 +127,7 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
+
         <h2 class="h5 mt-3"><i class="fas fa-plus-circle"></i> Novo Orçamento</h2>
         <form method="POST" action="{{ url_for('orcamento') }}" id="formOrcamento">
             <div class="row">
@@ -140,7 +140,7 @@
                     <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" placeholder="Digite o telefone">
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="form-group col-12 col-md-6">
                     <label for="email">E-mail</label>
@@ -151,7 +151,7 @@
                     <input type="date" id="data_servico" name="data_servico" class="form-control form-control-sm">
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="servico">Tipo de Serviço</label>
                 <select id="servico" name="servico" class="form-control form-control-sm" required>
@@ -166,7 +166,7 @@
                     <option value="Outro">Outro</option>
                 </select>
             </div>
-            
+
             <div class="row">
                 <div class="form-group col-12 col-md-6">
                     <label for="valor_base">Valor Base (R$)</label>
@@ -177,7 +177,7 @@
                     <input type="number" id="desconto" name="desconto" class="form-control form-control-sm" step="0.01" min="0" max="100" value="0">
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="forma_pagamento">Forma de Pagamento</label>
                 <select id="forma_pagamento" name="forma_pagamento" class="form-control form-control-sm" onchange="toggleParcelamento()">
@@ -188,12 +188,12 @@
                     <option value="transferencia">Transferência Bancária</option>
                 </select>
             </div>
-            
+
             <div id="parcelamento_container" style="display:none;">
                 <div class="row">
                     <div class="form-group col-12 col-md-4">
                         <label for="parcelas">Número de Parcelas</label>
-                        <select id="parcelas" name="parcelas" class="form-control form-control-sm">
+                        <select id="parcelas" name="parcelas" class="form-control form-control-sm" onchange="calcularValorFinal()">
                             {% for i in range(1, 13) %}
                                 <option value="{{ i }}">{{ i }}x</option>
                             {% endfor %}
@@ -201,7 +201,7 @@
                     </div>
                     <div class="form-group col-12 col-md-4">
                         <label for="taxa_maquina">Taxa da Máquina (%)</label>
-                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control form-control-sm" step="0.01" min="0" value="0">
+                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control form-control-sm" step="0.01" min="0" value="0" oninput="calcularValorFinal()">
                     </div>
                     <div class="form-group col-12 col-md-4">
                         <label for="valor_final">Valor Final (R$)</label>
@@ -209,7 +209,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <input type="hidden" id="valor_final_hidden" name="valor_final_hidden" value="">
 
             <div class="form-actions">
@@ -255,29 +255,10 @@ function calcularValorFinal() {
     document.getElementById("valor_final_hidden").value = valorComTaxa.toFixed(2);
 }
 
-// Adiciona listeners para os campos relevantes
-document.getElementById("valor_base").addEventListener("input", function() {
-    if(document.getElementById("forma_pagamento").value === "credito") calcularValorFinal();
-});
-document.getElementById("desconto").addEventListener("input", function() {
-    if(document.getElementById("forma_pagamento").value === "credito") calcularValorFinal();
-});
-document.getElementById("taxa_maquina").addEventListener("input", calcularValorFinal);
-document.getElementById("parcelas").addEventListener("change", calcularValorFinal);
-
 function resetCampos() {
     document.getElementById("parcelamento_container").style.display = "none";
     document.getElementById("valor_final").value = "";
     document.getElementById("valor_final_hidden").value = "";
 }
-
-// Inicializa o formulário
-window.onload = function() {
-    toggleParcelamento();
-    
-    // Define a data mínima como hoje
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById("data_servico").min = today;
-};
 </script>
 {% endblock %}

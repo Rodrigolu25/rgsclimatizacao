@@ -2,79 +2,269 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-    <title>Orçamento</title>
+    <title>Orçamento - RGS Climatização</title>
     <style>
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #4a90e2;
+            --accent-color: #e3f2fd;
+            --text-color: #333;
+            --light-text: #666;
+            --border-color: #e0e0e0;
+        }
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0 auto;
             padding: 40px;
-            color: #333;
+            color: var(--text-color);
+            max-width: 800px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+            border-radius: 10px;
         }
-        .header {
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 30px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
         }
-        .nome-empresa {
-            font-size: 22px;
-            font-weight: bold;
-            color: #0066cc;
+        .empresa-info {
+            flex: 1;
+        }
+        .empresa {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
             margin-bottom: 5px;
+            letter-spacing: 0.5px;
         }
-        .contato-empresa {
-            font-size: 12px;
-            color: #555;
+        .contato {
+            font-size: 13px;
+            color: var(--light-text);
+            line-height: 1.5;
+        }
+        .document-header {
+            text-align: right;
+            background-color: var(--accent-color);
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .document-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .document-date {
+            font-size: 14px;
+            color: var(--light-text);
         }
         h2 {
-            text-align: center;
+            font-size: 18px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            margin: 30px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        h2:after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        .dados-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .dados-label {
+            font-weight: 600;
+            color: var(--light-text);
+        }
+        .servicos-container {
+            margin: 30px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        tr:hover {
+            background-color: var(--accent-color);
+        }
+        .total-container {
+            display: flex;
+            justify-content: flex-end;
             margin-top: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
         }
-        .dados {
-            margin-top: 30px;
-            font-size: 16px;
+        .total-box {
+            background-color: #000000;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        .dados strong {
-            display: inline-block;
-            width: 150px;
+        .pagamento-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .parcelamento-info {
+            background-color: #f0f8ff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 3px solid var(--primary-color);
+        }
+        .observacoes {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 4px 4px 0;
+            margin: 20px 0;
         }
         .footer {
-            position: fixed;
-            bottom: 40px;
-            width: 100%;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
             text-align: center;
-            font-size: 12px;
-            color: #888;
+            font-size: 13px;
+            color: var(--light-text);
+            line-height: 1.6;
+        }
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        @media print {
+            body {
+                box-shadow: none;
+                padding: 0;
+                background-color: white;
+            }
+            .total-box, .parcelamento-info {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="nome-empresa">RGS CLIMATIZAÇÃO</div>
-        <div class="contato-empresa">
-            Telefone: (33)98827-3510 | Email: rgs.climatizacao.to@gmail.com
+    <div class="header-container">
+        <div class="empresa-info">
+            <div class="empresa">RGS CLIMATIZAÇÃO</div>
+            <div class="contato">
+                CNPJ: 61.038.796/0001-66<br>
+                Endereço: Rua Carijós, 52 - Teófilo Otoni/MG<br>
+                Telefone: (33) 98827-3510 | Email: rgs.climatizacao.to@gmail.com
+            </div>
+        </div>
+        <div class="document-header">
+            <div class="document-title">ORÇAMENTO Nº {{ orcamento.numero }}</div>
+            <div class="document-date">Data: {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</div>
         </div>
     </div>
 
-    <h2>Orçamento Nº {{ orcamento.numero }}</h2>
-
-    <div class="dados">
-        <p><strong>Cliente:</strong> {{ orcamento.cliente_nome or 'Nome do cliente não informado' }}</p>
-        <p><strong>Telefone:</strong> {{ orcamento.cliente_telefone }}</p>
-        <p><strong>Email:</strong> {{ orcamento.cliente_email }}</p>
-        <p><strong>Serviço:</strong> {{ orcamento.servico }}</p>
-        <p><strong>Valor Base:</strong> R$ {{ '%.2f'|format(orcamento.valor_base) }}</p>
-        <p><strong>Desconto:</strong> {{ '%.2f'|format(orcamento.desconto) }}%</p>
-        <p><strong>Forma de Pagamento:</strong> {{ orcamento.forma_pagamento }}</p>
-        <p><strong>Valor Final:</strong> R$ {{ '%.2f'|format(orcamento.valor_final) }}</p>
-        <p><strong>Data:</strong> {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</p>
-        {% if orcamento.observacoes %}
-        <p><strong>Observações:</strong> {{ orcamento.observacoes }}</p>
-        {% endif %}
+    <h2>Dados do Cliente</h2>
+    <div class="dados-grid">
+        <div class="dados-label">Nome:</div>
+        <div>{{ orcamento.cliente_nome or 'Não informado' }}</div>
+        <div class="dados-label">Telefone:</div>
+        <div>{{ orcamento.cliente_telefone }}</div>
+        <div class="dados-label">Email:</div>
+        <div>{{ orcamento.cliente_email }}</div>
+        <div class="dados-label">Endereço:</div>
+        <div>{{ orcamento.cliente_endereco or 'Não informado' }}</div>
     </div>
 
+    <h2>Serviços Propostos</h2>
+    <div class="servicos-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Unidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Quantidade</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ orcamento.servico }}</td>
+                    <td>1</td>
+                    <td>R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
+                    <td>1</td>
+                    <td>R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="total-container">
+            <div class="total-box">
+                Total: R$ {{ '%.2f'|format(orcamento.valor_final) }}
+            </div>
+        </div>
+    </div>
+
+    <h2>Condições de Pagamento</h2>
+    <div class="pagamento-grid">
+        <div class="dados-label">Forma de Pagamento:</div>
+        <div>
+            {{ orcamento.forma_pagamento|capitalize }}
+            {% if orcamento.forma_pagamento.lower() == 'credito' and orcamento.parcelas %}
+                <div class="parcelamento-info">
+                    <strong>Parcelamento:</strong> {{ orcamento.parcelas }}x de R$ {{ '%.2f'|format(orcamento.valor_final / orcamento.parcelas) }}<br>
+                    <strong>Total Parcelado:</strong> R$ {{ '%.2f'|format(orcamento.valor_final) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="dados-label">Desconto:</div>
+        <div>{{ '%.2f'|format(orcamento.desconto) }}%</div>
+    </div>
+
+    {% if orcamento.observacoes %}
+        <h2>Observações</h2>
+        <div class="observacoes">
+            {{ orcamento.observacoes }}
+        </div>
+    {% endif %}
+
     <div class="footer">
-        Obrigado por confiar no nosso serviço. Entre em contato para dúvidas ou agendamentos.
+        <span class="highlight">Obrigado por confiar em nossos serviços!</span><br>
+        Este orçamento tem validade de 30 dias a partir da data de emissão.<br>
+        Para dúvidas ou agendamentos, entre em contato pelos nossos canais de atendimento.
     </div>
 </body>
 </html>

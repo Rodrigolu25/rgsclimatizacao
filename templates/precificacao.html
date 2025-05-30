@@ -1,259 +1,659 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h1>📊 Planilha de Precificação - Serviços de Ar Condicionado</h1>
+<div class="container pricing-container">
+    <h1 class="main-title">📊 Planilha de Precificação - Serviços de Ar Condicionado</h1>
 
     <!-- Seção de Custos Fixos -->
-    <div class="card">
-        <h2 class="section-title">💼 Custos Fixos Mensais</h2>
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-building"></i> Custos Fixos Mensais</h2>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="prolabore"><i class="fas fa-user-tie"></i> Pró-labore (seu salário):</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="prolabore" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="prolabore">Pró-labore (seu salário):</label>
-            <input type="number" id="prolabore" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="aluguel"><i class="fas fa-home"></i> Aluguel do espaço:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="aluguel" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="aluguel">Aluguel do espaço:</label>
-            <input type="number" id="aluguel" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="agua"><i class="fas fa-tint"></i> Água:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="agua" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="agua">Água:</label>
-            <input type="number" id="agua" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="luz"><i class="fas fa-bolt"></i> Energia Elétrica:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="luz" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="luz">Energia Elétrica:</label>
-            <input type="number" id="luz" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="internet"><i class="fas fa-wifi"></i> Internet/Telefone:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="internet" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="internet">Internet/Telefone:</label>
-            <input type="number" id="internet" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="contador"><i class="fas fa-file-invoice-dollar"></i> Contador/Impostos:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="contador" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="contador">Contador/Impostos:</label>
-            <input type="number" id="contador" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="marketing"><i class="fas fa-bullhorn"></i> Marketing:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="marketing" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="marketing">Marketing:</label>
-            <input type="number" id="marketing" step="0.01" min="0" value="0">
-        </div>
+            <div class="form-group">
+                <label for="outros_fixos"><i class="fas fa-ellipsis-h"></i> Outros custos fixos:</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="outros_fixos" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="outros_fixos">Outros custos fixos:</label>
-            <input type="number" id="outros_fixos" step="0.01" min="0" value="0">
-        </div>
-
-        <div class="form-group">
-            <label for="horas_trabalhadas">Horas trabalhadas por mês:</label>
-            <input type="number" id="horas_trabalhadas" min="1" value="176">
-            <small>(22 dias × 8 horas)</small>
+            <div class="form-group">
+                <label for="horas_trabalhadas"><i class="fas fa-clock"></i> Horas trabalhadas por mês:</label>
+                <input type="number" id="horas_trabalhadas" min="1" value="176" class="modern-input">
+                <small class="input-hint">(22 dias × 8 horas)</small>
+            </div>
         </div>
     </div>
 
     <!-- Seção de Tipo de Serviço -->
-    <div class="card">
-        <h2 class="section-title">🔧 Tipo de Serviço</h2>
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-tools"></i> Tipo de Serviço</h2>
 
         <div class="form-group">
-            <label for="tipo_servico">Selecione o tipo de serviço:</label>
-            <select id="tipo_servico" class="form-control">
-                <option value="instalacao">Instalação</option>
-                <option value="manutencao">Manutenção</option>
-                <option value="limpeza">Limpeza</option>
-            </select>
+            <label for="tipo_servico"><i class="fas fa-list"></i> Selecione o tipo de serviço:</label>
+            <div class="select-wrapper">
+                <select id="tipo_servico" class="modern-select">
+                    <option value="instalacao">Instalação</option>
+                    <option value="manutencao">Manutenção</option>
+                    <option value="limpeza">Limpeza</option>
+                </select>
+            </div>
         </div>
 
         <!-- Conteúdo para Instalação -->
         <div id="instalacao" class="service-type">
-            <div class="form-group">
-                <label for="mao_obra_instalacao">Mão de obra (R$/hora):</label>
-                <input type="number" id="mao_obra_instalacao" step="0.01" min="0" value="0">
-            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="mao_obra_instalacao"><i class="fas fa-hammer"></i> Mão de obra (R$/hora):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="mao_obra_instalacao" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="tempo_instalacao">Tempo médio (horas):</label>
-                <input type="number" id="tempo_instalacao" step="0.5" min="0.5" value="0">
-            </div>
+                <div class="form-group">
+                    <label for="tempo_instalacao"><i class="fas fa-stopwatch"></i> Tempo médio (horas):</label>
+                    <input type="number" id="tempo_instalacao" step="0.5" min="0.5" value="0" class="modern-input">
+                </div>
 
-            <div class="form-group">
-                <label for="materiais_instalacao">Materiais (R$):</label>
-                <input type="number" id="materiais_instalacao" step="0.01" min="0" value="0">
+                <div class="form-group">
+                    <label for="materiais_instalacao"><i class="fas fa-box-open"></i> Materiais (R$):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="materiais_instalacao" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Conteúdo para Manutenção -->
         <div id="manutencao" class="service-type" style="display: none;">
-            <div class="form-group">
-                <label for="mao_obra_manutencao">Mão de obra (R$/hora):</label>
-                <input type="number" id="mao_obra_manutencao" step="0.01" min="0" value="0">
-            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="mao_obra_manutencao"><i class="fas fa-hammer"></i> Mão de obra (R$/hora):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="mao_obra_manutencao" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="tempo_manutencao">Tempo médio (horas):</label>
-                <input type="number" id="tempo_manutencao" step="0.5" min="0.5" value="0">
-            </div>
+                <div class="form-group">
+                    <label for="tempo_manutencao"><i class="fas fa-stopwatch"></i> Tempo médio (horas):</label>
+                    <input type="number" id="tempo_manutencao" step="0.5" min="0.5" value="0" class="modern-input">
+                </div>
 
-            <div class="form-group">
-                <label for="materiais_manutencao">Materiais (R$):</label>
-                <input type="number" id="materiais_manutencao" step="0.01" min="0" value="0">
+                <div class="form-group">
+                    <label for="materiais_manutencao"><i class="fas fa-box-open"></i> Materiais (R$):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="materiais_manutencao" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Conteúdo para Limpeza -->
         <div id="limpeza" class="service-type" style="display: none;">
-            <div class="form-group">
-                <label for="mao_obra_limpeza">Mão de obra (R$/hora):</label>
-                <input type="number" id="mao_obra_limpeza" step="0.01" min="0" value="0">
-            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="mao_obra_limpeza"><i class="fas fa-hammer"></i> Mão de obra (R$/hora):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="mao_obra_limpeza" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="tempo_limpeza">Tempo médio (horas):</label>
-                <input type="number" id="tempo_limpeza" step="0.5" min="0.5" value="0">
-            </div>
+                <div class="form-group">
+                    <label for="tempo_limpeza"><i class="fas fa-stopwatch"></i> Tempo médio (horas):</label>
+                    <input type="number" id="tempo_limpeza" step="0.5" min="0.5" value="0" class="modern-input">
+                </div>
 
-            <div class="form-group">
-                <label for="materiais_limpeza">Materiais (R$):</label>
-                <input type="number" id="materiais_limpeza" step="0.01" min="0" value="0">
+                <div class="form-group">
+                    <label for="materiais_limpeza"><i class="fas fa-box-open"></i> Materiais (R$):</label>
+                    <div class="input-with-icon">
+                        <span class="input-prefix">R$</span>
+                        <input type="number" id="materiais_limpeza" step="0.01" min="0" value="0" class="modern-input">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Seção de Custos Variáveis -->
-    <div class="card">
-        <h2 class="section-title">🚗 Custos Variáveis</h2>
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-car"></i> Custos Variáveis</h2>
 
-        <div class="form-group">
-            <label for="deslocamento_km">Distância do deslocamento (km):</label>
-            <input type="number" id="deslocamento_km" step="0.1" min="0" value="0">
-        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="deslocamento_km"><i class="fas fa-route"></i> Distância do deslocamento (km):</label>
+                <input type="number" id="deslocamento_km" step="0.1" min="0" value="0" class="modern-input">
+            </div>
 
-        <div class="form-group">
-            <label for="custo_km">Custo por km (R$):</label>
-            <input type="number" id="custo_km" step="0.01" min="0" value="0.50">
-        </div>
+            <div class="form-group">
+                <label for="custo_km"><i class="fas fa-gas-pump"></i> Custo por km (R$):</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="custo_km" step="0.01" min="0" value="0.50" class="modern-input">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="outros_variaveis">Outros custos variáveis (R$):</label>
-            <input type="number" id="outros_variaveis" step="0.01" min="0" value="0">
+            <div class="form-group">
+                <label for="outros_variaveis"><i class="fas fa-random"></i> Outros custos variáveis (R$):</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="outros_variaveis" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Seção de Margem de Lucro -->
-    <div class="card">
-        <h2 class="section-title">💰 Margem de Lucro</h2>
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-chart-line"></i> Margem de Lucro</h2>
 
-        <div class="form-group">
-            <label for="margem_lucro">Margem de lucro desejada (%):</label>
-            <input type="number" id="margem_lucro" step="0.5" min="0" value="30">
-        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="margem_lucro"><i class="fas fa-hand-holding-usd"></i> Margem de lucro desejada (%):</label>
+                <div class="input-with-icon">
+                    <input type="number" id="margem_lucro" step="0.5" min="0" value="30" class="modern-input">
+                    <span class="input-suffix">%</span>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="impostos">Impostos (%):</label>
-            <input type="number" id="impostos" step="0.5" min="0" value="15">
-        </div>
+            <div class="form-group">
+                <label for="impostos"><i class="fas fa-receipt"></i> Impostos (%):</label>
+                <div class="input-with-icon">
+                    <input type="number" id="impostos" step="0.5" min="0" value="15" class="modern-input">
+                    <span class="input-suffix">%</span>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="reserva_imprevistos">Reserva para imprevistos (%):</label>
-            <input type="number" id="reserva_imprevistos" step="0.5" min="0" value="5">
+            <div class="form-group">
+                <label for="reserva_imprevistos"><i class="fas fa-exclamation-triangle"></i> Reserva para imprevistos (%):</label>
+                <div class="input-with-icon">
+                    <input type="number" id="reserva_imprevistos" step="0.5" min="0" value="5" class="modern-input">
+                    <span class="input-suffix">%</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Botões -->
-    <div class="botoes">
-        <button id="calcular">Calcular Preço Final</button>
-        <button id="salvar-servico" style="display: none;">Salvar Serviço Realizado</button>
-        <button id="limpar" class="btn-danger">Limpar Informações</button>
+    <div class="button-group">
+        <button id="calcular" class="btn-primary"><i class="fas fa-calculator"></i> Calcular Preço Final</button>
+        <button id="salvar-servico" class="btn-secondary" style="display: none;"><i class="fas fa-save"></i> Salvar Serviço Realizado</button>
+        <button id="limpar" class="btn-danger"><i class="fas fa-broom"></i> Limpar Informações</button>
     </div>
 
     <!-- Resultados -->
-    <div id="resultados" class="card result-card" style="display: none;">
-        <h2 class="section-title">📝 Resultado da Precificação</h2>
+    <div id="resultados" class="card glass-card result-card" style="display: none;">
+        <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Resultado da Precificação</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Valor (R$)</th>
-                </tr>
-            </thead>
-            <tbody id="resultados-body">
-                <!-- Preenchido pelo JavaScript -->
-            </tbody>
-        </table>
-
-        <div style="margin-top: 20px; text-align: right;">
-            <p class="total-value">Preço Final Sugerido: R$ <span id="preco-final">0,00</span></p>
-        </div>
-    </div>
-
-    <!-- Histórico de Serviços -->
-    <div class="card">
-        <h2 class="section-title">📅 Histórico de Serviços Realizados</h2>
-        
-        <div class="form-group">
-            <label for="data-servico">Data do Serviço:</label>
-            <input type="date" id="data-servico">
-        </div>
-        
-        <div class="form-group">
-            <label for="valor-cobrado">Valor Cobrado (R$):</label>
-            <input type="number" id="valor-cobrado" step="0.01" min="0" value="0">
-        </div>
-        
-        <button id="adicionar-servico">Adicionar Serviço ao Histórico</button>
-        
-        <div style="margin-top: 20px;">
-            <h3>Serviços Realizados</h3>
-            <table id="tabela-servicos" style="width: 100%; margin-top: 10px;">
+        <div class="result-table-container">
+            <table class="modern-table">
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Tipo</th>
+                        <th>Item</th>
                         <th>Valor (R$)</th>
-                        <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody id="lista-servicos">
+                <tbody id="resultados-body">
                     <!-- Preenchido pelo JavaScript -->
                 </tbody>
             </table>
         </div>
+
+        <div class="total-price-box">
+            <p class="total-label">Preço Final Sugerido:</p>
+            <p class="total-value">R$ <span id="preco-final">0,00</span></p>
+        </div>
+    </div>
+
+    <!-- Histórico de Serviços -->
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-history"></i> Histórico de Serviços Realizados</h2>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="data-servico"><i class="fas fa-calendar-day"></i> Data do Serviço:</label>
+                <input type="date" id="data-servico" class="modern-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="valor-cobrado"><i class="fas fa-money-bill-wave"></i> Valor Cobrado (R$):</label>
+                <div class="input-with-icon">
+                    <span class="input-prefix">R$</span>
+                    <input type="number" id="valor-cobrado" step="0.01" min="0" value="0" class="modern-input">
+                </div>
+            </div>
+        </div>
+        
+        <button id="adicionar-servico" class="btn-secondary"><i class="fas fa-plus-circle"></i> Adicionar Serviço ao Histórico</button>
+        
+        <div class="history-container">
+            <h3><i class="fas fa-clipboard-list"></i> Serviços Realizados</h3>
+            <div class="table-responsive">
+                <table id="tabela-servicos" class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-servicos">
+                        <!-- Preenchido pelo JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Relatório Financeiro -->
-    <div class="card">
-        <h2 class="section-title">📊 Relatório Financeiro</h2>
+    <div class="card glass-card">
+        <h2 class="section-title"><i class="fas fa-chart-pie"></i> Relatório Financeiro</h2>
         
-        <button id="gerar-relatorio">Gerar Relatório</button>
+        <button id="gerar-relatorio" class="btn-primary"><i class="fas fa-file-alt"></i> Gerar Relatório</button>
         
-        <div id="relatorio-resultado" style="margin-top: 20px; display: none;">
-            <h3>Resumo Financeiro</h3>
-            <table style="width: 100%;">
-                <tr>
-                    <td>Total Recebido em Serviços:</td>
-                    <td id="total-recebido">R$ 0,00</td>
-                </tr>
-                <tr>
-                    <td>Total de Custos Fixos:</td>
-                    <td id="total-custos-fixos">R$ 0,00</td>
-                </tr>
-                <tr>
-                    <td>Saldo Final:</td>
-                    <td id="saldo-final" style="font-weight: bold;">R$ 0,00</td>
-                </tr>
-            </table>
+        <div id="relatorio-resultado" class="report-container" style="display: none;">
+            <h3><i class="fas fa-chart-bar"></i> Resumo Financeiro</h3>
+            <div class="report-summary">
+                <div class="report-item">
+                    <span class="report-label">Total Recebido em Serviços:</span>
+                    <span class="report-value" id="total-recebido">R$ 0,00</span>
+                </div>
+                <div class="report-item">
+                    <span class="report-label">Total de Custos Fixos:</span>
+                    <span class="report-value" id="total-custos-fixos">R$ 0,00</span>
+                </div>
+                <div class="report-item total">
+                    <span class="report-label">Saldo Final:</span>
+                    <span class="report-value" id="saldo-final">R$ 0,00</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Adicione isso no seu head ou em um arquivo CSS separado -->
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --accent-color: #4895ef;
+        --danger-color: #f72585;
+        --success-color: #4cc9f0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        --border-radius: 12px;
+        --transition: all 0.3s ease;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--dark-color);
+        line-height: 1.6;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .pricing-container {
+        display: grid;
+        grid-gap: 20px;
+    }
+    
+    .main-title {
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+    
+    .card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .section-title {
+        color: var(--secondary-color);
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+    
+    .modern-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: var(--transition);
+        background-color: white;
+    }
+    
+    .modern-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        outline: none;
+    }
+    
+    .input-with-icon {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .input-prefix {
+        position: absolute;
+        left: 12px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .input-with-icon .modern-input {
+        padding-left: 35px;
+    }
+    
+    .input-suffix {
+        position: absolute;
+        right: 12px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .input-with-icon .modern-input.suffix {
+        padding-right: 35px;
+    }
+    
+    .input-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.85rem;
+        color: #666;
+    }
+    
+    .select-wrapper {
+        position: relative;
+    }
+    
+    .modern-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        appearance: none;
+        background-color: white;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+    }
+    
+    button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background-color: var(--accent-color);
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #3a86ff;
+        transform: translateY(-2px);
+    }
+    
+    .btn-danger {
+        background-color: var(--danger-color);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background-color: #d81159;
+        transform: translateY(-2px);
+    }
+    
+    .result-card {
+        margin-top: 20px;
+    }
+    
+    .result-table-container {
+        overflow-x: auto;
+        margin-bottom: 20px;
+    }
+    
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    
+    .modern-table th {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 12px 15px;
+        text-align: left;
+    }
+    
+    .modern-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .modern-table tr:hover td {
+        background-color: #f5f5f5;
+    }
+    
+    .total-price-box {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: right;
+        margin-top: 20px;
+    }
+    
+    .total-label {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 5px;
+    }
+    
+    .total-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .history-container {
+        margin-top: 30px;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .report-container {
+        margin-top: 20px;
+    }
+    
+    .report-summary {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .report-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .report-item.total {
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-bottom: none;
+    }
+    
+    .report-label {
+        color: #666;
+    }
+    
+    .report-value {
+        font-weight: 600;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        button {
+            width: 100%;
+        }
+    }
+</style>
+
 <script>
     // Armazenamento dos serviços realizados
     let servicosRealizados = JSON.parse(localStorage.getItem('servicosRealizados')) || [];
+    
+    // Função para formatar moeda
+    function formatCurrency(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
     
     // Função para atualizar a lista de serviços
     function atualizarListaServicos() {
@@ -263,10 +663,10 @@
         servicosRealizados.forEach((servico, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${new Date(servico.data).toLocaleDateString()}</td>
+                <td>${new Date(servico.data).toLocaleDateString('pt-BR')}</td>
                 <td>${servico.tipo}</td>
-                <td>R$ ${servico.valor.toFixed(2)}</td>
-                <td><button class="btn-remover" data-index="${index}">Remover</button></td>
+                <td>${formatCurrency(servico.valor)}</td>
+                <td><button class="btn-remover" data-index="${index}"><i class="fas fa-trash"></i> Remover</button></td>
             `;
             lista.appendChild(tr);
         });
@@ -278,8 +678,28 @@
                 servicosRealizados.splice(index, 1);
                 localStorage.setItem('servicosRealizados', JSON.stringify(servicosRealizados));
                 atualizarListaServicos();
+                showToast('Serviço removido com sucesso!', 'success');
             });
         });
+    }
+    
+    // Função para mostrar notificação
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
     }
     
     // Inicializa a lista de serviços
@@ -358,79 +778,82 @@
         const resultadosBody = document.getElementById('resultados-body');
         resultadosBody.innerHTML = `
             <tr>
-                <td>Custo de Mão de Obra (${tempo_medio}h × R$${mao_obra.toFixed(2)}/h)</td>
-                <td>R$ ${custo_mao_obra.toFixed(2)}</td>
+                <td>Custo de Mão de Obra (${tempo_medio}h × ${formatCurrency(mao_obra)}/h)</td>
+                <td>${formatCurrency(custo_mao_obra)}</td>
             </tr>
             <tr>
                 <td>Materiais</td>
-                <td>R$ ${materiais.toFixed(2)}</td>
+                <td>${formatCurrency(materiais)}</td>
             </tr>
             <tr>
                 <td>Custos Fixos Proporcionais (${tempo_medio}h)</td>
-                <td>R$ ${custo_fixo_proporcional.toFixed(2)}</td>
+                <td>${formatCurrency(custo_fixo_proporcional)}</td>
             </tr>
             <tr>
-                <td>Custo de Deslocamento (${deslocamento_km}km × R$${custo_km.toFixed(2)}/km)</td>
-                <td>R$ ${custo_deslocamento.toFixed(2)}</td>
+                <td>Custo de Deslocamento (${deslocamento_km}km × ${formatCurrency(custo_km)}/km)</td>
+                <td>${formatCurrency(custo_deslocamento)}</td>
             </tr>
             <tr>
                 <td>Outros Custos Variáveis</td>
-                <td>R$ ${outros_variaveis.toFixed(2)}</td>
+                <td>${formatCurrency(outros_variaveis)}</td>
             </tr>
             <tr>
                 <td><strong>Subtotal</strong></td>
-                <td><strong>R$ ${custo_total.toFixed(2)}</strong></td>
+                <td><strong>${formatCurrency(custo_total)}</strong></td>
             </tr>
             <tr>
                 <td>Reserva para Imprevistos (${reserva_imprevistos}%)</td>
-                <td>R$ ${valor_imprevistos.toFixed(2)}</td>
+                <td>${formatCurrency(valor_imprevistos)}</td>
             </tr>
             <tr>
                 <td>Margem de Lucro (${margem_lucro}%)</td>
-                <td>R$ ${valor_lucro.toFixed(2)}</td>
+                <td>${formatCurrency(valor_lucro)}</td>
             </tr>
             <tr>
                 <td>Impostos (${impostos}%)</td>
-                <td>R$ ${valor_impostos.toFixed(2)}</td>
+                <td>${formatCurrency(valor_impostos)}</td>
             </tr>
         `;
 
-        document.getElementById('preco-final').textContent = preco_final.toFixed(2);
+        document.getElementById('preco-final').textContent = preco_final.toFixed(2).replace('.', ',');
         document.getElementById('resultados').style.display = 'block';
         document.getElementById('salvar-servico').style.display = 'inline-block';
         
         // Rolagem suave para os resultados
         document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+        
+        showToast('Cálculo realizado com sucesso!', 'success');
     });
 
     // Botão para salvar serviço realizado
     document.getElementById('salvar-servico').addEventListener('click', () => {
         const tipoServico = document.getElementById('tipo_servico').value;
         const tipoServicoTexto = document.getElementById('tipo_servico').options[document.getElementById('tipo_servico').selectedIndex].text;
-        const valor = parseFloat(document.getElementById('preco-final').textContent);
+        const valor = parseFloat(document.getElementById('preco-final').textContent.replace(',', '.'));
         
         // Define a data atual como padrão
         const hoje = new Date().toISOString().split('T')[0];
         document.getElementById('data-servico').value = hoje;
-        document.getElementById('valor-cobrado').value = valor.toFixed(2);
+        document.getElementById('valor-cobrado').value = valor.toFixed(2).replace('.', ',');
         
-        alert(`Serviço de ${tipoServicoTexto} no valor de R$ ${valor.toFixed(2)} pronto para ser adicionado ao histórico. Preencha a data se necessário e clique em "Adicionar Serviço ao Histórico".`);
+        showToast(`Serviço de ${tipoServicoTexto} no valor de ${formatCurrency(valor)} pronto para ser adicionado ao histórico.`, 'info');
     });
 
     // Botão para adicionar serviço ao histórico
     document.getElementById('adicionar-servico').addEventListener('click', () => {
         const dataServico = document.getElementById('data-servico').value;
-        const valorCobrado = parseFloat(document.getElementById('valor-cobrado').value) || 0;
+        let valorCobrado = document.getElementById('valor-cobrado').value;
+        valorCobrado = parseFloat(valorCobrado.replace(',', '.')) || 0;
         const tipoServico = document.getElementById('tipo_servico').value;
         const tipoServicoTexto = document.getElementById('tipo_servico').options[document.getElementById('tipo_servico').selectedIndex].text;
         
         if (!dataServico) {
-            alert('Por favor, informe a data do serviço.');
+            showToast('Por favor, informe a data do serviço.', 'error');
             return;
         }
         
         if (valorCobrado <= 0) {
-            alert('Por favor, informe um valor válido para o serviço.');
+            showToast('Por favor, informe um valor válido para o serviço.', 'error');
             return;
         }
         
@@ -444,7 +867,9 @@
         atualizarListaServicos();
         
         // Limpa os campos
-        document.getElementById('valor-cobrado').value = '0';
+        document.getElementById('valor-cobrado').value = '0,00';
+        
+        showToast('Serviço adicionado ao histórico com sucesso!', 'success');
     });
 
     // Botão para gerar relatório financeiro
@@ -466,15 +891,17 @@
         const saldoFinal = totalRecebido - custosFixos;
         
         // Atualiza o relatório
-        document.getElementById('total-recebido').textContent = `R$ ${totalRecebido.toFixed(2)}`;
-        document.getElementById('total-custos-fixos').textContent = `R$ ${custosFixos.toFixed(2)}`;
-        document.getElementById('saldo-final').textContent = `R$ ${saldoFinal.toFixed(2)}`;
+        document.getElementById('total-recebido').textContent = formatCurrency(totalRecebido);
+        document.getElementById('total-custos-fixos').textContent = formatCurrency(custosFixos);
+        document.getElementById('saldo-final').textContent = formatCurrency(saldoFinal);
         
         // Colore o saldo de verde ou vermelho
         const saldoElement = document.getElementById('saldo-final');
-        saldoElement.style.color = saldoFinal >= 0 ? 'green' : 'red';
+        saldoElement.style.color = saldoFinal >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
         
         document.getElementById('relatorio-resultado').style.display = 'block';
+        
+        showToast('Relatório gerado com sucesso!', 'success');
     });
 
     // Botão limpar: restaura os valores iniciais e esconde resultado
@@ -525,6 +952,11 @@
         // Esconder resultado
         document.getElementById('resultados').style.display = "none";
         document.getElementById('salvar-servico').style.display = "none";
+        
+        showToast('Formulário limpo com sucesso!', 'info');
     });
 </script>
+
+<!-- Adicione Font Awesome para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}

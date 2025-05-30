@@ -1,6 +1,387 @@
-{% extends "base.html" %}
-
-{% block content %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilha de Precificação - Serviços de Ar Condicionado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --danger-color: #f72585;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .main-title {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 15px 0 25px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .card {
+            background: var(--glass-bg);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            color: var(--secondary-color);
+            margin: 0 0 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #444;
+        }
+        
+        .modern-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .modern-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-prefix {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-suffix {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-with-icon input {
+            padding-left: 30px;
+        }
+        
+        .input-with-icon .suffix {
+            padding-right: 30px;
+        }
+        
+        .input-hint {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        .modern-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            appearance: none;
+            background-color: white;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #3a86ff;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d81159;
+            transform: translateY(-2px);
+        }
+        
+        .result-card {
+            margin-top: 20px;
+        }
+        
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .modern-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .modern-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modern-table tr:hover td {
+            background-color: #f5f5f5;
+        }
+        
+        .total-price-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: right;
+            margin-top: 15px;
+        }
+        
+        .total-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .total-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .history-container {
+            margin-top: 20px;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .report-container {
+            margin-top: 20px;
+        }
+        
+        .report-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .report-item.total {
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-bottom: none;
+        }
+        
+        .report-label {
+            color: #666;
+        }
+        
+        .report-value {
+            font-weight: 600;
+        }
+        
+        .service-type {
+            margin-top: 15px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast-success {
+            background-color: var(--success-color);
+        }
+        
+        .toast-error {
+            background-color: var(--danger-color);
+        }
+        
+        .toast-info {
+            background-color: var(--accent-color);
+        }
+        
+        /* Media Queries para tablets */
+        @media (min-width: 600px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-group {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            button {
+                flex: 1;
+            }
+            
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* Media Queries para desktops */
+        @media (min-width: 900px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .modern-input, .modern-select {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+            
+            label {
+                font-size: 1rem;
+            }
+            
+            .modern-table {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
 <div class="container pricing-container">
     <h1 class="main-title">📊 Planilha de Precificação - Serviços de Ar Condicionado</h1>
 
@@ -211,7 +592,7 @@
             <div class="form-group">
                 <label for="margem_lucro"><i class="fas fa-hand-holding-usd"></i> Margem de lucro desejada (%):</label>
                 <div class="input-with-icon">
-                    <input type="number" id="margem_lucro" step="0.5" min="0" value="30" class="modern-input">
+                    <input type="number" id="margem_lucro" step="0.5" min="0" value="30" class="modern-input suffix">
                     <span class="input-suffix">%</span>
                 </div>
             </div>
@@ -219,7 +600,7 @@
             <div class="form-group">
                 <label for="impostos"><i class="fas fa-receipt"></i> Impostos (%):</label>
                 <div class="input-with-icon">
-                    <input type="number" id="impostos" step="0.5" min="0" value="15" class="modern-input">
+                    <input type="number" id="impostos" step="0.5" min="0" value="15" class="modern-input suffix">
                     <span class="input-suffix">%</span>
                 </div>
             </div>
@@ -227,7 +608,7 @@
             <div class="form-group">
                 <label for="reserva_imprevistos"><i class="fas fa-exclamation-triangle"></i> Reserva para imprevistos (%):</label>
                 <div class="input-with-icon">
-                    <input type="number" id="reserva_imprevistos" step="0.5" min="0" value="5" class="modern-input">
+                    <input type="number" id="reserva_imprevistos" step="0.5" min="0" value="5" class="modern-input suffix">
                     <span class="input-suffix">%</span>
                 </div>
             </div>
@@ -331,320 +712,6 @@
         </div>
     </div>
 </div>
-
-<!-- Adicione isso no seu head ou em um arquivo CSS separado -->
-<style>
-    :root {
-        --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --accent-color: #4895ef;
-        --danger-color: #f72585;
-        --success-color: #4cc9f0;
-        --light-color: #f8f9fa;
-        --dark-color: #212529;
-        --glass-bg: rgba(255, 255, 255, 0.85);
-        --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        --border-radius: 12px;
-        --transition: all 0.3s ease;
-    }
-    
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        color: var(--dark-color);
-        line-height: 1.6;
-    }
-    
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    .pricing-container {
-        display: grid;
-        grid-gap: 20px;
-    }
-    
-    .main-title {
-        text-align: center;
-        color: var(--primary-color);
-        margin-bottom: 30px;
-        font-size: 2.2rem;
-        font-weight: 700;
-    }
-    
-    .card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border-radius: var(--border-radius);
-        padding: 25px;
-        box-shadow: var(--shadow);
-        transition: var(--transition);
-    }
-    
-    .glass-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .section-title {
-        color: var(--secondary-color);
-        margin-top: 0;
-        margin-bottom: 20px;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-    }
-    
-    .form-group {
-        margin-bottom: 15px;
-    }
-    
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: var(--dark-color);
-    }
-    
-    .modern-input {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: var(--transition);
-        background-color: white;
-    }
-    
-    .modern-input:focus {
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
-        outline: none;
-    }
-    
-    .input-with-icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-    
-    .input-prefix {
-        position: absolute;
-        left: 12px;
-        color: #666;
-        font-weight: 500;
-    }
-    
-    .input-with-icon .modern-input {
-        padding-left: 35px;
-    }
-    
-    .input-suffix {
-        position: absolute;
-        right: 12px;
-        color: #666;
-        font-weight: 500;
-    }
-    
-    .input-with-icon .modern-input.suffix {
-        padding-right: 35px;
-    }
-    
-    .input-hint {
-        display: block;
-        margin-top: 5px;
-        font-size: 0.85rem;
-        color: #666;
-    }
-    
-    .select-wrapper {
-        position: relative;
-    }
-    
-    .modern-select {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        appearance: none;
-        background-color: white;
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 1em;
-    }
-    
-    .button-group {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        margin: 20px 0;
-    }
-    
-    button {
-        padding: 12px 20px;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .btn-primary {
-        background-color: var(--primary-color);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background-color: var(--secondary-color);
-        transform: translateY(-2px);
-    }
-    
-    .btn-secondary {
-        background-color: var(--accent-color);
-        color: white;
-    }
-    
-    .btn-secondary:hover {
-        background-color: #3a86ff;
-        transform: translateY(-2px);
-    }
-    
-    .btn-danger {
-        background-color: var(--danger-color);
-        color: white;
-    }
-    
-    .btn-danger:hover {
-        background-color: #d81159;
-        transform: translateY(-2px);
-    }
-    
-    .result-card {
-        margin-top: 20px;
-    }
-    
-    .result-table-container {
-        overflow-x: auto;
-        margin-bottom: 20px;
-    }
-    
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-    }
-    
-    .modern-table th {
-        background-color: var(--primary-color);
-        color: white;
-        padding: 12px 15px;
-        text-align: left;
-    }
-    
-    .modern-table td {
-        padding: 12px 15px;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .modern-table tr:hover td {
-        background-color: #f5f5f5;
-    }
-    
-    .total-price-box {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: right;
-        margin-top: 20px;
-    }
-    
-    .total-label {
-        font-size: 1.1rem;
-        color: #666;
-        margin-bottom: 5px;
-    }
-    
-    .total-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-    
-    .history-container {
-        margin-top: 30px;
-    }
-    
-    .table-responsive {
-        overflow-x: auto;
-    }
-    
-    .report-container {
-        margin-top: 20px;
-    }
-    
-    .report-summary {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-    }
-    
-    .report-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .report-item.total {
-        font-weight: 700;
-        font-size: 1.1rem;
-        border-bottom: none;
-    }
-    
-    .report-label {
-        color: #666;
-    }
-    
-    .report-value {
-        font-weight: 600;
-    }
-    
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .button-group {
-            flex-direction: column;
-        }
-        
-        button {
-            width: 100%;
-        }
-    }
-</style>
 
 <script>
     // Armazenamento dos serviços realizados
@@ -956,7 +1023,5 @@
         showToast('Formulário limpo com sucesso!', 'info');
     });
 </script>
-
-<!-- Adicione Font Awesome para ícones -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-{% endblock %}
+</body>
+</html>

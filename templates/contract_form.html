@@ -1,0 +1,514 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Prestação de Serviços - RGS Climatização</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        #pdfTemplate {
+            position: absolute;
+            left: -9999px;
+            width: 210mm;
+            padding: 15mm;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            background: white;
+        }
+        .payment-details {
+            margin-left: 20px;
+            display: none;
+        }
+        .payment-details.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Contrato de Prestação de Serviços - RGS Climatização</h1>
+        
+        <!-- Formulário principal -->
+        <form id="contractForm">
+            <!-- Seção 1: Dados das Partes -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2>Dados das Partes</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>Contratante</h3>
+                            <div class="form-group">
+                                <label for="client_name">Nome:</label>
+                                <input type="text" class="form-control" id="client_name" name="client_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="client_cpf_cnpj">CPF/CNPJ:</label>
+                                <input type="text" class="form-control" id="client_cpf_cnpj" name="client_cpf_cnpj" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="client_address">Endereço:</label>
+                                <input type="text" class="form-control" id="client_address" name="client_address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="client_phone">Telefone:</label>
+                                <input type="text" class="form-control" id="client_phone" name="client_phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="client_email">E-mail:</label>
+                                <input type="email" class="form-control" id="client_email" name="client_email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Contratado</h3>
+                            <p><strong>Nome Empresarial:</strong> RGS Climatização</p>
+                            <p><strong>Titular:</strong> Rodrigo Gonçalves de Souza</p>
+                            <p><strong>CNPJ:</strong> 61.038.796/0001-66</p>
+                            <p><strong>Endereço:</strong> Rua Carijós, 52, Filadélfia – Teófilo Otoni/MG</p>
+                            <p><strong>Telefone:</strong> (33) 98827-3510</p>
+                            <p><strong>E-mail:</strong> rgs.climatizacao.to@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 2: Objeto do Contrato -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2>Cláusula 1 - Do Objeto</h2>
+                </div>
+                <div class="card-body">
+                    <p>O presente contrato tem por objeto a prestação dos seguintes serviços relacionados a aparelhos de ar-condicionado:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="service_installation" name="services" value="Instalação">
+                        <label class="form-check-label" for="service_installation">Instalação</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="service_preventive" name="services" value="Manutenção preventiva">
+                        <label class="form-check-label" for="service_preventive">Manutenção preventiva</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="service_corrective" name="services" value="Manutenção corretiva">
+                        <label class="form-check-label" for="service_corrective">Manutenção corretiva</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="service_cleaning" name="services" value="Limpeza técnica/higienização">
+                        <label class="form-check-label" for="service_cleaning">Limpeza técnica/higienização</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="service_other" name="services" value="Outros">
+                        <label class="form-check-label" for="service_other">Outros:</label>
+                        <input type="text" class="form-control mt-2" id="other_service" name="other_service">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 3: Local e Prazo -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2>Cláusula 2 - Do Local e Prazo</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="service_location">Local de prestação dos serviços:</label>
+                        <input type="text" class="form-control" id="service_location" name="service_location" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="start_date">Data de início:</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="end_date">Data de término prevista:</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 4: Valor e Pagamento -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2>Cláusula 3 - Do Valor e Forma de Pagamento</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="service_value">Valor total do serviço (R$):</label>
+                        <input type="number" step="0.01" class="form-control" id="service_value" name="service_value" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Forma de pagamento:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_cash" value="À vista" required>
+                            <label class="form-check-label" for="payment_cash">À vista</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_installment" value="Parcelado">
+                            <label class="form-check-label" for="payment_installment">Parcelado</label>
+                            <div class="payment-details" id="installment_details">
+                                <label>em <input type="number" class="form-control-sm" id="installments" name="installments" min="2" max="12" style="width: 60px;"> vezes de R$ <input type="number" step="0.01" class="form-control-sm" id="installment_value" name="installment_value" style="width: 80px;"></label>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_downpayment" value="Sinal">
+                            <label class="form-check-label" for="payment_downpayment">Sinal</label>
+                            <div class="payment-details" id="downpayment_details">
+                                <label>de R$ <input type="number" step="0.01" class="form-control-sm" id="downpayment" name="downpayment" style="width: 80px;"> na assinatura e o restante após conclusão</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>Método de pagamento:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_pix" value="Pix" required>
+                            <label class="form-check-label" for="payment_pix">Pix</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_money" value="Dinheiro">
+                            <label class="form-check-label" for="payment_money">Dinheiro</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_transfer" value="Transferência bancária">
+                            <label class="form-check-label" for="payment_transfer">Transferência bancária</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_other_type" value="Outros">
+                            <label class="form-check-label" for="payment_other_type">Outros:</label>
+                            <input type="text" class="form-control-sm ml-2" id="other_payment" name="other_payment" style="width: 150px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 5: Termos e Condições -->
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2>Termos e Condições</h2>
+                </div>
+                <div class="card-body">
+                    <p>As cláusulas 4 (Responsabilidades), 5 (Rescisão) e 6 (Condições Finais) estão definidas conforme o modelo padrão do contrato e serão incluídas no documento final.</p>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="agree_terms" name="agree_terms" required>
+                        <label class="form-check-label" for="agree_terms">Concordo com os termos e condições deste contrato</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão para gerar PDF -->
+            <div class="mt-4 mb-4">
+                <button type="button" id="generatePdfBtn" class="btn btn-success btn-lg">Gerar Contrato em PDF</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Controle dos campos de pagamento
+            const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+            const installmentDetails = document.getElementById('installment_details');
+            const downpaymentDetails = document.getElementById('downpayment_details');
+
+            paymentMethods.forEach(method => {
+                method.addEventListener('change', function() {
+                    // Hide all details
+                    installmentDetails.classList.remove('active');
+                    downpaymentDetails.classList.remove('active');
+
+                    // Show relevant details
+                    if (this.value === 'Parcelado') {
+                        installmentDetails.classList.add('active');
+                    } else if (this.value === 'Sinal') {
+                        downpaymentDetails.classList.add('active');
+                    }
+                });
+            });
+
+            // Gerar PDF
+            document.getElementById('generatePdfBtn').addEventListener('click', function() {
+                const form = document.getElementById('contractForm');
+                
+                if (!form.checkValidity()) {
+                    alert('Por favor, preencha todos os campos obrigatórios.');
+                    return;
+                }
+
+                generatePDF();
+            });
+
+            function generatePDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                
+                // Configurações
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 15;
+                const maxWidth = pageWidth - (margin * 2);
+                let currentY = margin;
+
+                // Função para adicionar texto com quebra de linha
+                function addText(text, x, y, fontSize = 10, style = 'normal', maxWidth = null, align = 'left') {
+                    doc.setFontSize(fontSize);
+                    doc.setFont('helvetica', style);
+                    
+                    if (maxWidth) {
+                        const lines = doc.splitTextToSize(text, maxWidth);
+                        if (align === 'center') {
+                            lines.forEach((line, index) => {
+                                const lineWidth = doc.getTextWidth(line);
+                                doc.text(line, x - (lineWidth / 2), y + (index * fontSize * 0.35));
+                            });
+                        } else {
+                            doc.text(lines, x, y);
+                        }
+                        return y + (lines.length * (fontSize * 0.35));
+                    } else {
+                        if (align === 'center') {
+                            const textWidth = doc.getTextWidth(text);
+                            doc.text(text, x - (textWidth / 2), y);
+                        } else {
+                            doc.text(text, x, y);
+                        }
+                        return y + (fontSize * 0.35);
+                    }
+                }
+
+                // Função para verificar se precisa de nova página
+                function checkNewPage(nextHeight) {
+                    if (currentY + nextHeight > pageHeight - margin) {
+                        doc.addPage();
+                        currentY = margin;
+                    }
+                }
+
+                // Cabeçalho
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                const title = 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS';
+                const titleWidth = doc.getTextWidth(title);
+                doc.text(title, (pageWidth - titleWidth) / 2, currentY + 10);
+                currentY += 15;
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                const subtitle = 'RGS CLIMATIZAÇÃO';
+                const subtitleWidth = doc.getTextWidth(subtitle);
+                doc.text(subtitle, (pageWidth - subtitleWidth) / 2, currentY);
+                currentY += 5;
+                
+                // Linha horizontal
+                doc.line(margin, currentY + 3, pageWidth - margin, currentY + 3);
+                currentY += 12;
+
+                // Coleta de dados do formulário
+                const formData = new FormData(document.getElementById('contractForm'));
+                const data = Object.fromEntries(formData.entries());
+
+                // Função para formatar data
+                function formatDate(dateStr) {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr + 'T00:00:00');
+                    return date.toLocaleDateString('pt-BR');
+                }
+
+                // Função para obter serviços selecionados
+                function getSelectedServices() {
+                    const services = [];
+                    document.querySelectorAll('input[name="services"]:checked').forEach(checkbox => {
+                        if (checkbox.value === "Outros" && data.other_service) {
+                            services.push(`Outros: ${data.other_service}`);
+                        } else if (checkbox.value !== "Outros") {
+                            services.push(checkbox.value);
+                        }
+                    });
+                    return services;
+                }
+
+                // Função para obter texto do método de pagamento
+                function getPaymentMethodText() {
+                    const method = data.payment_method;
+                    const type = data.payment_type === 'Outros' ? data.other_payment : data.payment_type;
+                    
+                    let paymentText = `${method} via ${type}`;
+                    
+                    if (method === 'Parcelado' && data.installments && data.installment_value) {
+                        paymentText += ` em ${data.installments}x de R$ ${parseFloat(data.installment_value).toFixed(2).replace('.', ',')}`;
+                    } else if (method === 'Sinal' && data.downpayment) {
+                        const remaining = parseFloat(data.service_value) - parseFloat(data.downpayment);
+                        paymentText += ` de R$ ${parseFloat(data.downpayment).toFixed(2).replace('.', ',')} + R$ ${remaining.toFixed(2).replace('.', ',')} na conclusão`;
+                    }
+                    
+                    return paymentText;
+                }
+
+                // DADOS DAS PARTES
+                checkNewPage(55);
+                currentY = addText('DADOS DAS PARTES', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                // Contratante
+                currentY = addText('CONTRATANTE', margin, currentY, 11, 'bold');
+                currentY += 5;
+                currentY = addText(`Nome: ${data.client_name}`, margin, currentY, 10);
+                currentY += 4;
+                currentY = addText(`CPF/CNPJ: ${data.client_cpf_cnpj}`, margin, currentY, 10);
+                currentY += 4;
+                currentY = addText(`Endereço: ${data.client_address}`, margin, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText(`Telefone: ${data.client_phone}`, margin, currentY, 10);
+                currentY += 4;
+                if (data.client_email) {
+                    currentY = addText(`E-mail: ${data.client_email}`, margin, currentY, 10);
+                    currentY += 4;
+                }
+
+                // Contratado
+                currentY += 3;
+                currentY = addText('CONTRATADO', margin, currentY, 11, 'bold');
+                currentY += 5;
+                currentY = addText('Nome Empresarial: RGS Climatização', margin, currentY, 10);
+                currentY += 4;
+                currentY = addText('Titular: Rodrigo Gonçalves de Souza', margin, currentY, 10);
+                currentY += 4;
+                currentY = addText('CNPJ: 61.038.796/0001-66', margin, currentY, 10);
+                currentY += 4;
+                currentY = addText('Endereço: Rua Carijós, 52, Filadélfia – Teófilo Otoni/MG', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText('Telefone: (33) 98827-3510', margin, currentY, 10);
+                currentY += 4;
+                currentY = addText('E-mail: rgs.climatizacao.to@gmail.com', margin, currentY, 10);
+                currentY += 10;
+
+                // CLÁUSULA 1 - DO OBJETO
+                checkNewPage(35);
+                currentY = addText('CLÁUSULA 1 - DO OBJETO', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText('O presente contrato tem por objeto a prestação dos seguintes serviços relacionados a sistemas de climatização:', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 8;
+
+                const services = getSelectedServices();
+                services.forEach(service => {
+                    currentY = addText(`• ${service}`, margin + 5, currentY, 10);
+                    currentY += 4;
+                });
+                currentY += 5;
+
+                // CLÁUSULA 2 - DO LOCAL E PRAZO
+                checkNewPage(30);
+                currentY = addText('CLÁUSULA 2 - DO LOCAL E PRAZO', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText(`Local de execução: ${data.service_location}`, margin, currentY, 10, 'normal', maxWidth);
+                currentY += 5;
+                currentY = addText(`Período de execução: De ${formatDate(data.start_date)} até ${formatDate(data.end_date)}`, margin, currentY, 10, 'normal', maxWidth);
+                currentY += 10;
+
+                // CLÁUSULA 3 - DO VALOR E FORMA DE PAGAMENTO
+                checkNewPage(30);
+                currentY = addText('CLÁUSULA 3 - DO VALOR E FORMA DE PAGAMENTO', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText(`Valor total do serviço: R$ ${parseFloat(data.service_value).toFixed(2).replace('.', ',')}`, margin, currentY, 10);
+                currentY += 5;
+                currentY = addText(`Forma de pagamento: ${getPaymentMethodText()}`, margin, currentY, 10, 'normal', maxWidth);
+                currentY += 10;
+
+                // CLÁUSULA 4 - DAS RESPONSABILIDADES
+                checkNewPage(60);
+                currentY = addText('CLÁUSULA 4 - DAS RESPONSABILIDADES', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText('Do Contratado:', margin, currentY, 10, 'bold');
+                currentY += 5;
+                currentY = addText('• Executar os serviços com perfeição e qualidade', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText('• Utilizar materiais adequados e de boa procedência', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText('• Garantir os serviços por 90 dias contra defeitos de execução', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 7;
+
+                currentY = addText('Do Contratante:', margin, currentY, 10, 'bold');
+                currentY += 5;
+                currentY = addText('• Disponibilizar o local em condições adequadas para a execução dos serviços', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText('• Efetuar o pagamento nos prazos acordados', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 4;
+                currentY = addText('• Comunicar qualquer problema ou irregularidade imediatamente', margin + 5, currentY, 10, 'normal', maxWidth);
+                currentY += 10;
+
+                // CLÁUSULA 5 - DA RESCISÃO
+                checkNewPage(25);
+                currentY = addText('CLÁUSULA 5 - DA RESCISÃO', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText('Qualquer das partes poderá rescindir o presente contrato mediante aviso prévio de 3 (três) dias úteis, ficando obrigada a pagar os valores correspondentes aos serviços já executados até a data da rescisão.', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 10;
+
+                // CLÁUSULA 6 - DAS CONDIÇÕES FINAIS
+                checkNewPage(40);
+                currentY = addText('CLÁUSULA 6 - DAS CONDIÇÕES FINAIS', margin, currentY, 12, 'bold');
+                doc.line(margin, currentY + 1, pageWidth - margin, currentY + 1);
+                currentY += 10;
+
+                currentY = addText('• O presente contrato é regido pelas leis brasileiras, em especial pelo Código Civil e pelo Código de Defesa do Consumidor.', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 6;
+                currentY = addText('• Fica eleito o foro da Comarca de Teófilo Otoni/MG para dirimir quaisquer dúvidas decorrentes deste contrato.', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 6;
+                currentY = addText('• Este contrato é firmado em 2 (duas) vias de igual teor e forma, devendo cada parte ficar com uma via.', margin, currentY, 10, 'normal', maxWidth);
+                currentY += 15;
+
+                // ASSINATURAS
+                checkNewPage(45);
+                const today = new Date().toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                currentY = addText(`Teófilo Otoni/MG, ${today}`, margin, currentY, 10);
+                currentY += 25;
+
+                // Configurações das assinaturas
+                const signatureWidth = 80;
+                const signatureY = currentY;
+                const leftSignatureCenter = (pageWidth / 4);
+                const rightSignatureCenter = (pageWidth * 3 / 4);
+
+                // Assinatura esquerda
+                doc.line(leftSignatureCenter - (signatureWidth/2), signatureY, leftSignatureCenter + (signatureWidth/2), signatureY);
+                currentY = addText(data.client_name, leftSignatureCenter, signatureY + 6, 10, 'normal', null, 'center');
+                currentY = addText('Contratante', leftSignatureCenter, signatureY + 12, 9, 'normal', null, 'center');
+
+                // Assinatura direita
+                doc.line(rightSignatureCenter - (signatureWidth/2), signatureY, rightSignatureCenter + (signatureWidth/2), signatureY);
+                addText('Rodrigo Gonçalves de Souza', rightSignatureCenter, signatureY + 6, 10, 'normal', null, 'center');
+                addText('RGS Climatização', rightSignatureCenter, signatureY + 12, 9, 'normal', null, 'center');
+
+                // Salvar PDF
+                const fileName = `Contrato_${data.client_name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -10,6 +10,13 @@ import os
 from sqlalchemy import text, inspect
 from pytz import timezone
 import time
+from fpdf import FPDF
+from datetime import datetime
+from flask import make_response
+from flask import Flask, render_template, request, make_response, flash, redirect, url_for
+from fpdf import FPDF
+from datetime import datetime
+import locale
 
 # Configurar o fuso horário padrão (removido time.tzset() para compatibilidade com Windows)
 os.environ['TZ'] = 'America/Sao_Paulo'
@@ -17,6 +24,14 @@ try:
     time.tzset()  # Isso só funcionará em Unix
 except AttributeError:
     pass  # Ignora em Windows, usaremos pytz para timezone
+
+
+# Configurar locale para português (para nomes de meses em português)
+try:
+    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+except:
+    locale.setlocale(locale.LC_TIME, 'Portuguese_Brazil')
+
 
 app = Flask(__name__)
 
@@ -71,6 +86,8 @@ class Recibo(db.Model):
     data_emissao = db.Column(db.DateTime, default=lambda: datetime.now(tz))
     emitente_nome = db.Column(db.String(100))
     emitente_documento = db.Column(db.String(20))
+
+
 
 def initialize_database():
     with app.app_context():
@@ -406,6 +423,11 @@ def atualizar_status(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+@app.route('/contratos')
+def contract_form():
+    """Rota para exibir o formulário de contrato"""
+    return render_template('contract_form.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

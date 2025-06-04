@@ -48,3 +48,5 @@ Werkzeug==2.2.3
 WTForms==3.1.2
 zipp==3.20.2
 zopfli==0.2.3.post1
+Flask==2.0.1
+fpdf2==2.5.5

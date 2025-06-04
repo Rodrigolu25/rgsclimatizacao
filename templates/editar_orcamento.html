@@ -1,56 +1,220 @@
 {% extends "base.html" %}
 
+{% block title %}Editar Orçamento{% endblock %}
+
+{% block style %}
+<style>
+    .card {
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .btn i {
+        margin-right: 5px;
+    }
+    
+    @media (min-width: 768px) {
+        .card {
+            margin-top: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="card">
-        <h1><i class="fas fa-edit"></i> Editar Orçamento #{{ orcamento.numero }}</h1>
+        <div class="card-header">
+            <h1 class="h5 mb-0"><i class="fas fa-edit"></i> Editar Orçamento #{{ orcamento.numero }}</h1>
+        </div>
         
-        <form method="POST" action="{{ url_for('editar_orcamento', id=orcamento.id) }}">
-            <!-- Adicione este campo oculto para o método PUT se sua rota usar -->
-            <input type="hidden" name="_method" value="PUT">
-            
-            <div class="form-group">
-                <label for="cliente">Cliente:</label>
-                <input type="text" class="form-control" id="cliente" name="cliente" 
-                       value="{{ orcamento.cliente_nome or '' }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="servico">Serviço:</label>
-                <textarea class="form-control" id="servico" name="servico" rows="3" required>{{ orcamento.servico or '' }}</textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="valor">Valor:</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">R$</span>
-                    </div>
-                    <input type="number" step="0.01" class="form-control" id="valor" name="valor" 
-                           value="{{ orcamento.valor_final or '0.00' }}" required>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('editar_orcamento', id=orcamento.id) }}">
+                <input type="hidden" name="_method" value="PUT">
+                
+                <div class="form-group">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" class="form-control" id="cliente" name="cliente" 
+                           value="{{ orcamento.cliente_nome or '' }}" required>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="status">Status:</label>
-                <select class="form-control" id="status" name="status" required>
-                    <option value="pendente" {% if orcamento.status == 'pendente' %}selected{% endif %}>Pendente</option>
-                    <option value="aprovado" {% if orcamento.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
-                    <option value="rejeitado" {% if orcamento.status == 'rejeitado' %}selected{% endif %}>Rejeitado</option>
-                    <option value="em_andamento" {% if orcamento.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
-                    <option value="concluido" {% if orcamento.status == 'concluido' %}selected{% endif %}>Concluído</option>
-                    <option value="cancelado" {% if orcamento.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
-                </select>
-            </div>
-            
-            <button type="submit" class="btn btn-primary mt-3">
-                <i class="fas fa-save"></i> Salvar Alterações
-            </button>
-            
-            <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-secondary mt-3">
-                <i class="fas fa-times"></i> Cancelar
-            </a>
-        </form>
+                
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" class="form-control" id="telefone" name="telefone" 
+                           value="{{ orcamento.cliente_telefone or '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" 
+                           value="{{ orcamento.cliente_email or '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="servico">Serviço:</label>
+                    <textarea class="form-control" id="servico" name="servico" rows="3" required>{{ orcamento.servico or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="valor_base">Valor Base:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">R$</span>
+                        </div>
+                        <input type="number" step="0.01" class="form-control" id="valor_base" name="valor_base" 
+                               value="{{ orcamento.valor_base or '0.00' }}" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="desconto">Desconto (%):</label>
+                    <input type="number" step="0.01" class="form-control" id="desconto" name="desconto" 
+                           value="{{ orcamento.desconto or '0' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="valor_final">Valor Final:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">R$</span>
+                        </div>
+                        <input type="number" step="0.01" class="form-control" id="valor_final" name="valor_final" 
+                               value="{{ orcamento.valor_final or '0.00' }}" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="forma_pagamento">Forma de Pagamento:</label>
+                    <select class="form-control" id="forma_pagamento" name="forma_pagamento">
+                        <option value="dinheiro" {% if orcamento.forma_pagamento == 'dinheiro' %}selected{% endif %}>Dinheiro</option>
+                        <option value="cartao" {% if orcamento.forma_pagamento == 'cartao' %}selected{% endif %}>Cartão</option>
+                        <option value="pix" {% if orcamento.forma_pagamento == 'pix' %}selected{% endif %}>PIX</option>
+                        <option value="transferencia" {% if orcamento.forma_pagamento == 'transferencia' %}selected{% endif %}>Transferência</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="data_servico">Data do Serviço:</label>
+                    <input type="date" class="form-control" id="data_servico" name="data_servico" 
+                           value="{{ data_servico or '' }}">
+                    <small class="form-text text-muted">Data em que o serviço foi/será realizado</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select class="form-control" id="status" name="status" required>
+                        <option value="pendente" {% if orcamento.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                        <option value="aprovado" {% if orcamento.status == 'aprovado' %}selected{% endif %}>Aprovado</option>
+                        <option value="rejeitado" {% if orcamento.status == 'rejeitado' %}selected{% endif %}>Rejeitado</option>
+                        <option value="em_andamento" {% if orcamento.status == 'em_andamento' %}selected{% endif %}>Em Andamento</option>
+                        <option value="concluido" {% if orcamento.status == 'concluido' %}selected{% endif %}>Concluído</option>
+                        <option value="cancelado" {% if orcamento.status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="proxima_visita">Próxima Visita:</label>
+                    <input type="date" class="form-control" id="proxima_visita" name="proxima_visita" 
+                           value="{{ proxima_visita or '' }}">
+                    <small class="form-text text-muted">Será preenchida automaticamente com 6 meses após a data do serviço quando marcar como Concluído</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="observacoes">Observações:</label>
+                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ orcamento.observacoes or '' }}</textarea>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salvar Alterações
+                    </button>
+                    
+                    <a href="{{ url_for('lista_orcamentos') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('status');
+    const proximaVisitaInput = document.getElementById('proxima_visita');
+    const dataServicoInput = document.getElementById('data_servico');
+    const valorBaseInput = document.getElementById('valor_base');
+    const descontoInput = document.getElementById('desconto');
+    const valorFinalInput = document.getElementById('valor_final');
+    
+    // Função para calcular o valor final com desconto
+    function calcularValorFinal() {
+        const valorBase = parseFloat(valorBaseInput.value) || 0;
+        const desconto = parseFloat(descontoInput.value) || 0;
+        const valorComDesconto = valorBase * (1 - (desconto / 100));
+        valorFinalInput.value = valorComDesconto.toFixed(2);
+    }
+    
+    // Função para calcular a data de 6 meses após a data de serviço
+    function calcularProximaVisita() {
+        if (!dataServicoInput.value) {
+            alert('Por favor, informe a data do serviço antes de calcular a próxima visita');
+            return '';
+        }
+        
+        const dataServico = new Date(dataServicoInput.value);
+        if (isNaN(dataServico.getTime())) return '';
+        
+        const futureDate = new Date(dataServico);
+        futureDate.setMonth(futureDate.getMonth() + 3);
+        return futureDate.toISOString().split('T')[0];
+    }
+    
+    // Atualizar próxima visita quando a data de serviço ou status mudar
+    function atualizarProximaVisita() {
+        if (statusSelect.value === 'concluido' && !proximaVisitaInput.value && dataServicoInput.value) {
+            proximaVisitaInput.value = calcularProximaVisita();
+        }
+    }
+    
+    // Event listeners
+    statusSelect.addEventListener('change', atualizarProximaVisita);
+    dataServicoInput.addEventListener('change', atualizarProximaVisita);
+    valorBaseInput.addEventListener('input', calcularValorFinal);
+    descontoInput.addEventListener('input', calcularValorFinal);
+    
+    // Verificar ao carregar a página
+    if (statusSelect.value === 'concluido' && !proximaVisitaInput.value && dataServicoInput.value) {
+        proximaVisitaInput.value = calcularProximaVisita();
+    }
+    
+    // Calcular valor final inicial
+    calcularValorFinal();
+});
+</script>
 {% endblock %}

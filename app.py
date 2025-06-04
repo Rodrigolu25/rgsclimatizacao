@@ -1,25 +1,36 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_file, flash, make_response
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import relativedelta
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from flask import make_response
 import pdfkit
 import os
+from sqlalchemy import text, inspect
+from pytz import timezone
+import time
+
+# Configurar o fuso horário padrão (removido time.tzset() para compatibilidade com Windows)
+os.environ['TZ'] = 'America/Sao_Paulo'
+try:
+    time.tzset()  # Isso só funcionará em Unix
+except AttributeError:
+    pass  # Ignora em Windows, usaremos pytz para timezone
 
 app = Flask(__name__)
 
 # Set a secret key for session management
-app.secret_key = os.environ.get('FLASK_SECRET_KEY') or 'dev-secret-key'  # Important for sessions
+app.secret_key = os.environ.get('FLASK_SECRET_KEY') or 'dev-secret-key'
 
-# Conexão com o banco de dados PostgreSQL da Render
+# Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://rgsclimatizacao_db_user:BTWRNA8eH6nh6M3aG33J8UZlcJFWdcLe@dpg-d0s5nu49c44c73cqcpq0-a.oregon-postgres.render.com/rgsclimatizacao_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 db = SQLAlchemy(app)
 
+# Definir o fuso horário para o Brasil
+tz = timezone('America/Sao_Paulo')
 
 class Orcamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,9 +47,11 @@ class Orcamento(db.Model):
     taxa_maquina = db.Column(db.Float, default=0.0)
     parcelas = db.Column(db.Integer, default=1)
     status = db.Column(db.String(20), default='pendente')
-    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    data_criacao = db.Column(db.DateTime, default=lambda: datetime.now(tz))
     validade_dias = db.Column(db.Integer, default=7)
     observacoes = db.Column(db.Text)
+    proxima_visita = db.Column(db.Date)
+    data_servico = db.Column(db.Date)
     recibo_id = db.Column(db.Integer, db.ForeignKey('recibo.id'))
     recibo = db.relationship('Recibo', backref='orcamento', uselist=False)
 
@@ -55,13 +68,37 @@ class Recibo(db.Model):
     parcelas = db.Column(db.Integer, default=1)
     valor_parcela = db.Column(db.Float)
     referente = db.Column(db.String(200))
-    data_emissao = db.Column(db.DateTime, default=datetime.utcnow)
+    data_emissao = db.Column(db.DateTime, default=lambda: datetime.now(tz))
     emitente_nome = db.Column(db.String(100))
     emitente_documento = db.Column(db.String(20))
 
-# Inicializar banco de dados
-with app.app_context():
-    db.create_all()
+def initialize_database():
+    with app.app_context():
+        # Verificar e adicionar colunas ausentes
+        inspector = inspect(db.engine)
+        columns = [column['name'] for column in inspector.get_columns('orcamento')]
+        
+        if 'data_servico' not in columns:
+            try:
+                db.session.execute(text('ALTER TABLE orcamento ADD COLUMN data_servico DATE'))
+                db.session.commit()
+                print("✅ Coluna 'data_servico' adicionada com sucesso!")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Erro ao adicionar coluna data_servico: {e}")
+        
+        if 'proxima_visita' not in columns:
+            try:
+                db.session.execute(text('ALTER TABLE orcamento ADD COLUMN proxima_visita DATE'))
+                db.session.commit()
+                print("✅ Coluna 'proxima_visita' adicionada com sucesso!")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Erro ao adicionar coluna proxima_visita: {e}")
+        
+        db.create_all()
+
+initialize_database()
 
 @app.route('/')
 def index():
@@ -71,40 +108,45 @@ def index():
 def orcamento():
     if request.method == 'POST':
         try:
-            # Criar um novo número de orçamento no formato Pedido-NNNN-AAAA
-            ano_atual = datetime.now().year
-            # Busca o último orçamento do ano atual
+            ano_atual = datetime.now(tz).year
             ultimo_orcamento = Orcamento.query.filter(
                 Orcamento.numero.like(f'%-{ano_atual}')
             ).order_by(Orcamento.id.desc()).first()
             
-            # Se não houver orçamentos este ano, começa com 1, senão incrementa
-            if ultimo_orcamento:
-                # Extrai o número sequencial do último pedido
-                numero_anterior = int(ultimo_orcamento.numero.split('-')[1])
-                numero_sequencial = numero_anterior + 1
-            else:
-                numero_sequencial = 1
-                
+            numero_sequencial = 1 if not ultimo_orcamento else int(ultimo_orcamento.numero.split('-')[1]) + 1
             novo_numero = f"Pedido-{numero_sequencial:04d}-{ano_atual}"
 
-            # Criar o orçamento
+            data_servico_str = request.form.get('data_servico', '').strip()
+            data_servico = None
+            
+            if data_servico_str:
+                try:
+                    data_servico = datetime.strptime(data_servico_str, '%d/%m/%Y').date()
+                except ValueError:
+                    flash('Data inválida. Use o formato DD/MM/AAAA (ex: 20/05/2025).', 'error')
+                    return redirect(url_for('orcamento'))
+
+            if not data_servico:
+                data_servico = date.today()
+                flash(f'Data não informada. Usando data atual: {data_servico.strftime("%d/%m/%Y")}', 'info')
+
             novo_orcamento = Orcamento(
                 numero=novo_numero,
                 cliente_nome=request.form.get('cliente'),
                 cliente_telefone=request.form.get('telefone', ''),
                 cliente_email=request.form.get('email', ''),
                 servico=request.form.get('servico'),
-                valor_base=float(request.form.get('valor_base', 0)),
+                valor_base=float(request.form.get('valor_base', 0).replace(',', '.')),
                 desconto=float(request.form.get('desconto', 0)),
                 forma_pagamento=request.form.get('forma_pagamento', 'dinheiro'),
                 taxa_maquina=float(request.form.get('taxa_maquina', 0)),
                 parcelas=int(request.form.get('parcelas', 1)),
                 observacoes=request.form.get('observacoes', ''),
-                status='pendente'
+                status='pendente',
+                data_servico=data_servico,
+                data_criacao=datetime.now(tz)
             )
 
-            # Calcular valor final
             valor_com_desconto = novo_orcamento.valor_base * (1 - novo_orcamento.desconto / 100)
             valor_com_taxa = valor_com_desconto + (valor_com_desconto * novo_orcamento.taxa_maquina / 100)
             novo_orcamento.valor_final = round(valor_com_taxa, 2)
@@ -112,7 +154,7 @@ def orcamento():
             db.session.add(novo_orcamento)
             db.session.commit()
 
-            flash(f'Orçamento {novo_numero} criado com sucesso!', 'success')
+            flash(f'Orçamento {novo_numero} criado com sucesso! Data do serviço: {data_servico.strftime("%d/%m/%Y")}', 'success')
             return redirect(url_for('lista_orcamentos'))
 
         except Exception as e:
@@ -120,12 +162,17 @@ def orcamento():
             flash(f'Erro ao criar orçamento: {str(e)}', 'error')
             return redirect(url_for('orcamento'))
 
-    return render_template('orcamento.html')
+    hoje = date.today().strftime('%d/%m/%Y')
+    return render_template('orcamento.html', data_hoje=hoje)
 
 @app.route('/lista_orcamentos')
 def lista_orcamentos():
-    orcamentos = Orcamento.query.order_by(Orcamento.data_criacao.desc()).all()
-    return render_template('lista_orcamentos.html', orcamentos=orcamentos)
+    try:
+        orcamentos = Orcamento.query.order_by(Orcamento.data_criacao.desc()).all()
+        return render_template('lista_orcamentos.html', orcamentos=orcamentos)
+    except Exception as e:
+        flash(f'Erro ao carregar orçamentos: {str(e)}', 'error')
+        return render_template('lista_orcamentos.html', orcamentos=[])
 
 @app.route('/excluir_orcamento/<int:id>', methods=['POST'])
 def excluir_orcamento(id):
@@ -144,22 +191,61 @@ def editar_orcamento(id):
     if request.method in ['POST', 'PUT']:
         try:
             orcamento.cliente_nome = request.form['cliente']
+            orcamento.cliente_telefone = request.form.get('telefone', '')
+            orcamento.cliente_email = request.form.get('email', '')
             orcamento.servico = request.form['servico']
-            orcamento.valor_final = float(request.form['valor'])
-            orcamento.status = request.form['status']
-            
+            orcamento.valor_base = float(request.form.get('valor_base', 0))
+            orcamento.desconto = float(request.form.get('desconto', 0))
+            orcamento.forma_pagamento = request.form.get('forma_pagamento', 'dinheiro')
+            orcamento.taxa_maquina = float(request.form.get('taxa_maquina', 0))
+            orcamento.parcelas = int(request.form.get('parcelas', 1))
+            orcamento.observacoes = request.form.get('observacoes', '')
+            orcamento.status = request.form.get('status', 'pendente')
+
+            valor_com_desconto = orcamento.valor_base * (1 - orcamento.desconto / 100)
+            valor_com_taxa = valor_com_desconto + (valor_com_desconto * orcamento.taxa_maquina / 100)
+            orcamento.valor_final = round(valor_com_taxa, 2)
+
+            data_servico_str = request.form.get('data_servico')
+            data_servico_anterior = orcamento.data_servico
+            if data_servico_str:
+                try:
+                    nova_data_servico = datetime.strptime(data_servico_str, '%Y-%m-%d').date()
+                    orcamento.data_servico = nova_data_servico
+                    
+                    if orcamento.status == 'concluido' and (data_servico_anterior != nova_data_servico or not orcamento.proxima_visita):
+                        orcamento.proxima_visita = nova_data_servico + relativedelta(months=3)
+                except ValueError:
+                    flash('Data do serviço inválida. Mantida a data anterior.', 'warning')
+
+            proxima_visita_str = request.form.get('proxima_visita')
+            if proxima_visita_str:
+                try:
+                    orcamento.proxima_visita = datetime.strptime(proxima_visita_str, '%Y-%m-%d').date()
+                except ValueError:
+                    flash('Data de próxima visita inválida.', 'warning')
+            elif orcamento.status == 'concluido' and not orcamento.proxima_visita and orcamento.data_servico:
+                orcamento.proxima_visita = orcamento.data_servico + relativedelta(months=3)
+
             db.session.commit()
             flash('Orçamento atualizado com sucesso!', 'success')
             return redirect(url_for('lista_orcamentos'))
+            
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao atualizar orçamento: {str(e)}', 'danger')
-    
-    return render_template('editar_orcamento.html', orcamento=orcamento)
+            return redirect(url_for('editar_orcamento', id=id))
 
-# Update your gerar_pdf route
-@app.route('/gerar_pdf/<int:id>', endpoint='gerar_pdf_orcamento')
-def gerar_pdf(id):
+    data_servico = orcamento.data_servico.strftime('%Y-%m-%d') if orcamento.data_servico else ''
+    proxima_visita = orcamento.proxima_visita.strftime('%Y-%m-%d') if orcamento.proxima_visita else ''
+    
+    return render_template('editar_orcamento.html', 
+                         orcamento=orcamento,
+                         data_servico=data_servico,
+                         proxima_visita=proxima_visita)
+
+@app.route('/gerar_pdf/<int:id>')
+def gerar_pdf_orcamento(id):
     try:
         orcamento = Orcamento.query.get_or_404(id)
         rendered = render_template('gerar_pdf.html', orcamento=orcamento)
@@ -175,7 +261,6 @@ def gerar_pdf(id):
             'enable-local-file-access': None,
         }
 
-        import os
         config = None
         wkhtmltopdf_paths = [
             r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
@@ -184,48 +269,35 @@ def gerar_pdf(id):
         for path in wkhtmltopdf_paths:
             if os.path.exists(path):
                 config = pdfkit.configuration(wkhtmltopdf=path)
-                print(f"wkhtmltopdf encontrado em: {path}")
                 break
         
-        if not config:
-            print("wkhtmltopdf não encontrado! Verifique o caminho.")
-
         pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
         response = make_response(pdf)
         response.headers['Content-Type'] = 'application/pdf'
-
-        # Aqui alterei para usar o nome do cliente no nome do arquivo:
         safe_name = orcamento.cliente_nome.replace(" ", "_")
         response.headers['Content-Disposition'] = f'inline; filename={safe_name}.pdf'
 
         return response
 
     except Exception as e:
-        print(f"Erro na geração do PDF do orçamento: {e}")
-        flash(f'Erro ao gerar PDF do orçamento: {str(e)}', 'error')
+        print(f"Erro na geração do PDF: {e}")
+        flash(f'Erro ao gerar PDF: {str(e)}', 'error')
         return render_template('gerar_pdf.html', orcamento=orcamento)
-
 
 @app.route('/precificacao')
 def precificacao():
     return render_template('precificacao.html')
 
-from flask import render_template
-
 @app.route('/recibo/<int:id>')
 def recibo(id):
     try:
-        # Buscar o orçamento
         orcamento = Orcamento.query.get_or_404(id)
-        print(f"Orçamento encontrado: {orcamento.id}")
         
-        # Função para converter valor para extenso
         def valor_para_extenso(valor):
             try:
                 from num2words import num2words
                 return num2words(valor, lang='pt_BR', to='currency')
             except:
-                # Fallback simples
                 inteiro = int(valor)
                 centavos = int(round((valor - inteiro) * 100))
                 texto = f"{inteiro} reais" if inteiro != 1 else "um real"
@@ -233,27 +305,18 @@ def recibo(id):
                     texto += f" e {centavos} centavos"
                 return texto
         
-        # Criar dados do recibo baseado no orçamento
-        from datetime import datetime
-        
-        # Gerar número do recibo
-        ano_atual = datetime.now().year
-        try:
-            ultimo_recibo = Recibo.query.order_by(Recibo.id.desc()).first()
-            numero_sequencial = 1 if not ultimo_recibo else int(ultimo_recibo.numero.split('/')[0]) + 1
-        except:
-            numero_sequencial = 1
-        
+        ano_atual = datetime.now(tz).year
+        ultimo_recibo = Recibo.query.order_by(Recibo.id.desc()).first()
+        numero_sequencial = 1 if not ultimo_recibo else int(ultimo_recibo.numero.split('/')[0]) + 1
         numero_recibo = f"{numero_sequencial:04d}/{ano_atual}"
         
-        # Criar novo recibo
         try:
             novo_recibo = Recibo(
                 numero=numero_recibo,
                 cliente_nome=orcamento.cliente_nome,
                 cliente_telefone=getattr(orcamento, 'cliente_telefone', ''),
                 cliente_email=getattr(orcamento, 'cliente_email', ''),
-                cliente_documento='Não informado',  # Pode ser passado como parâmetro depois
+                cliente_documento='Não informado',
                 valor=orcamento.valor_final,
                 valor_extenso=valor_para_extenso(orcamento.valor_final),
                 forma_pagamento=getattr(orcamento, 'forma_pagamento', 'À vista'),
@@ -262,16 +325,14 @@ def recibo(id):
                 referente=f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}",
                 emitente_nome="RGS Climatização",
                 emitente_documento="XX.XXX.XXX/0001-XX",
-                data_emissao=datetime.now()
+                data_emissao=datetime.now(tz)
             )
             
             db.session.add(novo_recibo)
             db.session.commit()
-            print(f"Recibo criado com ID: {novo_recibo.id}")
             
         except Exception as db_error:
-            print(f"Erro ao salvar recibo no banco: {db_error}")
-            # Se falhar ao salvar, criar objeto temporário
+            print(f"Erro ao salvar recibo: {db_error}")
             class ReciboTemp:
                 def __init__(self):
                     self.numero = numero_recibo
@@ -283,21 +344,14 @@ def recibo(id):
                     self.parcelas = getattr(orcamento, 'parcelas', 1)
                     self.valor_parcela = orcamento.valor_final
                     self.referente = f"Serviço de {orcamento.servico}"
-                    self.data_emissao = datetime.now()
+                    self.data_emissao = datetime.now(tz)
                     self.emitente_nome = "RGS Climatização"
             
             novo_recibo = ReciboTemp()
         
-        # Tentar gerar PDF
         try:
-            import pdfkit
-            import os
-            
-            # Renderizar template
             rendered = render_template('recibo.html', recibo=novo_recibo)
-            print("Template renderizado com sucesso")
             
-            # Configurações do PDF
             options = {
                 'page-size': 'A4',
                 'margin-top': '0.75in',
@@ -308,7 +362,6 @@ def recibo(id):
                 'no-outline': None
             }
             
-            # Configurar wkhtmltopdf
             config = None
             wkhtmltopdf_paths = [
                 r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
@@ -318,34 +371,22 @@ def recibo(id):
             for path in wkhtmltopdf_paths:
                 if os.path.exists(path):
                     config = pdfkit.configuration(wkhtmltopdf=path)
-                    print(f"wkhtmltopdf encontrado em: {path}")
                     break
             
-            # Gerar PDF
             pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
-            print("PDF gerado com sucesso")
-            
-            # Retornar PDF como resposta
             response = make_response(pdf)
             response.headers['Content-Type'] = 'application/pdf'
             response.headers['Content-Disposition'] = f'inline; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
             return response
             
-        except ImportError as import_error:
-            print(f"Biblioteca não encontrada: {import_error}")
-            flash('Para gerar PDF, instale: pip install pdfkit', 'warning')
-            return render_template('recibo.html', recibo=novo_recibo)
-            
         except Exception as pdf_error:
             print(f"Erro ao gerar PDF: {pdf_error}")
-            flash(f'PDF não pôde ser gerado: {str(pdf_error)}. Mostrando em HTML.', 'warning')
             return render_template('recibo.html', recibo=novo_recibo)
     
     except Exception as e:
-        print(f"Erro geral na função recibo: {e}")
         flash(f'Erro ao gerar recibo: {str(e)}', 'error')
         return redirect(url_for('lista_orcamentos'))
-    
+
 @app.route('/atualizar_status/<int:id>', methods=['POST'])
 def atualizar_status(id):
     orcamento = Orcamento.query.get_or_404(id)
@@ -356,6 +397,10 @@ def atualizar_status(id):
     
     try:
         orcamento.status = novo_status
+        
+        if novo_status == 'concluido' and not orcamento.proxima_visita:
+            orcamento.proxima_visita = date.today() + relativedelta(months=3)
+        
         db.session.commit()
         return jsonify({'status': 'success', 'message': 'Status atualizado com sucesso'})
     except Exception as e:

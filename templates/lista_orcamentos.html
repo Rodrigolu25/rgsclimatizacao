@@ -190,6 +190,12 @@
             margin-left: 3px;
         }
     }
+
+    /* Estilo para data de próxima visita */
+    .proxima-visita {
+        color: #28a745;
+        font-weight: bold;
+    }
 </style>
 {% endblock %}
 
@@ -221,7 +227,9 @@
                             <th class="d-none d-md-table-cell">Serviço</th>
                             <th>Valor</th>
                             <th>Status</th>
-                            <th class="d-none d-sm-table-cell">Data</th>
+                            <th class="d-none d-sm-table-cell">Data Criação</th>
+                            <th class="d-none d-sm-table-cell">Data Serviço</th>
+                            <th class="d-none d-sm-table-cell">Próxima Visita</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -248,7 +256,23 @@
                                     <span class="d-none d-sm-inline">{{ orcamento.status|capitalize }}</span>
                                 </span>
                             </td>
-                            <td class="d-none d-sm-table-cell" data-label="Data">{{ orcamento.data_criacao.strftime('%d/%m/%y') }}</td>
+                            <td class="d-none d-sm-table-cell" data-label="Data Criação">
+                                {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}
+                            </td>
+                            <td class="d-none d-sm-table-cell" data-label="Data Serviço">
+                                {% if orcamento.data_servico %}
+                                    {{ orcamento.data_servico.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="d-none d-sm-table-cell" data-label="Próxima Visita">
+                                {% if orcamento.proxima_visita %}
+                                    <span class="proxima-visita">{{ orcamento.proxima_visita.strftime('%d/%m/%Y') }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td data-label="Ações">
                                 <div class="btn-group" role="group">
                                     <a href="{{ url_for('editar_orcamento', id=orcamento.id) }}" class="btn btn-primary" title="Editar">

@@ -109,6 +109,51 @@
             height: 38px;
         }
     }
+
+    /* Novos estilos adicionados */
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.8rem;
+    }
+    
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    
+    .date-warning {
+        color: #ffc107;
+        font-size: 0.8rem;
+        display: none;
+    }
+    
+    .client-suggestions {
+        position: absolute;
+        z-index: 1000;
+        width: calc(100% - 30px);
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ced4da;
+        border-radius: 0 0 4px 4px;
+        display: none;
+    }
+    
+    .client-suggestion {
+        padding: 8px 10px;
+        cursor: pointer;
+    }
+    
+    .client-suggestion:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .payment-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
 </style>
 {% endblock %}
 
@@ -129,15 +174,17 @@
         {% endwith %}
 
         <h2 class="h5 mt-3"><i class="fas fa-plus-circle"></i> Novo Orçamento</h2>
-        <form method="POST" action="{{ url_for('orcamento') }}" id="formOrcamento">
+        <form method="POST" action="{{ url_for('orcamento') }}" id="formOrcamento" novalidate>
             <div class="row">
                 <div class="form-group col-12 col-md-6">
                     <label for="cliente">Nome do Cliente</label>
                     <input type="text" id="cliente" name="cliente" class="form-control form-control-sm" required>
+                    <div class="invalid-feedback">Por favor, informe o nome do cliente.</div>
+                    <div class="client-suggestions" id="clientSuggestions"></div>
                 </div>
                 <div class="form-group col-12 col-md-6">
                     <label for="telefone">Telefone</label>
-                    <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" placeholder="Digite o telefone">
+                    <input type="tel" id="telefone" name="telefone" class="form-control form-control-sm" placeholder="(00) 00000-0000" oninput="formatarTelefone(this)">
                 </div>
             </div>
 
@@ -145,10 +192,21 @@
                 <div class="form-group col-12 col-md-6">
                     <label for="email">E-mail</label>
                     <input type="email" id="email" name="email" class="form-control form-control-sm" placeholder="email@exemplo.com">
+                    <div class="invalid-feedback">Por favor, informe um e-mail válido.</div>
                 </div>
                 <div class="form-group col-12 col-md-6">
                     <label for="data_servico">Data do Serviço</label>
-                    <input type="date" id="data_servico" name="data_servico" class="form-control form-control-sm">
+                    <input type="text" 
+                           id="data_servico" 
+                           name="data_servico" 
+                           class="form-control form-control-sm"
+                           placeholder="DD/MM/AAAA"
+                           value="{{ data_hoje }}"
+                           pattern="\d{2}/\d{2}/\d{4}"
+                           title="Digite a data no formato DD/MM/AAAA"
+                           oninput="formatarData(this); validarData(this)">
+                    <div class="invalid-feedback">Por favor, informe uma data válida no formato DD/MM/AAAA.</div>
+                    <div class="date-warning" id="dateWarning">A data informada é anterior à data atual.</div>
                 </div>
             </div>
 
@@ -165,56 +223,102 @@
                     <option value="Diagnóstico">Diagnóstico</option>
                     <option value="Outro">Outro</option>
                 </select>
+                <div class="invalid-feedback">Por favor, selecione um tipo de serviço.</div>
             </div>
 
             <div class="row">
                 <div class="form-group col-12 col-md-6">
                     <label for="valor_base">Valor Base (R$)</label>
-                    <input type="number" id="valor_base" name="valor_base" class="form-control form-control-sm" step="0.01" min="0" required>
+                    <input type="text" 
+                           id="valor_base" 
+                           name="valor_base" 
+                           class="form-control form-control-sm" 
+                           required
+                           oninput="formatarMoeda(this); calcularValorFinal()">
+                    <div class="invalid-feedback">Por favor, informe um valor válido.</div>
                 </div>
                 <div class="form-group col-12 col-md-6">
                     <label for="desconto">Desconto (%)</label>
-                    <input type="number" id="desconto" name="desconto" class="form-control form-control-sm" step="0.01" min="0" max="100" value="0">
+                    <input type="number" 
+                           id="desconto" 
+                           name="desconto" 
+                           class="form-control form-control-sm" 
+                           step="0.01" 
+                           min="0" 
+                           max="100" 
+                           value="0"
+                           onchange="calcularValorFinal()">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="forma_pagamento">Forma de Pagamento</label>
-                <select id="forma_pagamento" name="forma_pagamento" class="form-control form-control-sm" onchange="toggleParcelamento()">
-                    <option value="dinheiro">Dinheiro</option>
-                    <option value="pix">PIX</option>
-                    <option value="debito">Cartão de Débito</option>
-                    <option value="credito">Cartão de Crédito</option>
-                    <option value="transferencia">Transferência Bancária</option>
-                </select>
-            </div>
+            <div class="payment-section">
+                <h3 class="h6"><i class="fas fa-credit-card"></i> Forma de Pagamento</h3>
+                
+                <div class="form-group">
+                    <label for="forma_pagamento">Método de Pagamento</label>
+                    <select id="forma_pagamento" 
+                            name="forma_pagamento" 
+                            class="form-control form-control-sm" 
+                            onchange="toggleParcelamento()">
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="pix">PIX</option>
+                        <option value="debito">Cartão de Débito</option>
+                        <option value="credito">Cartão de Crédito</option>
+                        <option value="transferencia">Transferência Bancária</option>
+                    </select>
+                </div>
 
-            <div id="parcelamento_container" style="display:none;">
-                <div class="row">
-                    <div class="form-group col-12 col-md-4">
-                        <label for="parcelas">Número de Parcelas</label>
-                        <select id="parcelas" name="parcelas" class="form-control form-control-sm" onchange="calcularValorFinal()">
-                            {% for i in range(1, 13) %}
-                                <option value="{{ i }}">{{ i }}x</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group col-12 col-md-4">
-                        <label for="taxa_maquina">Taxa da Máquina (%)</label>
-                        <input type="number" id="taxa_maquina" name="taxa_maquina" class="form-control form-control-sm" step="0.01" min="0" value="0" oninput="calcularValorFinal()">
-                    </div>
-                    <div class="form-group col-12 col-md-4">
-                        <label for="valor_final">Valor Final (R$)</label>
-                        <input type="text" id="valor_final" class="form-control form-control-sm" readonly>
+                <div id="parcelamento_container" style="display:none;">
+                    <div class="row">
+                        <div class="form-group col-12 col-md-4">
+                            <label for="parcelas">Número de Parcelas</label>
+                            <select id="parcelas" 
+                                    name="parcelas" 
+                                    class="form-control form-control-sm" 
+                                    onchange="calcularValorFinal()">
+                                {% for i in range(1, 13) %}
+                                    <option value="{{ i }}">{{ i }}x</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-12 col-md-4">
+                            <label for="taxa_maquina">Taxa da Máquina (%)</label>
+                            <input type="number" 
+                                   id="taxa_maquina" 
+                                   name="taxa_maquina" 
+                                   class="form-control form-control-sm" 
+                                   step="0.01" 
+                                   min="0" 
+                                   value="0" 
+                                   oninput="calcularValorFinal()">
+                        </div>
+                        <div class="form-group col-12 col-md-4">
+                            <label for="valor_final">Valor Final (R$)</label>
+                            <input type="text" 
+                                   id="valor_final" 
+                                   class="form-control form-control-sm" 
+                                   readonly>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <input type="hidden" id="valor_final_hidden" name="valor_final_hidden" value="">
 
+            <div class="form-group">
+                <label for="observacoes">Observações</label>
+                <textarea id="observacoes" 
+                          name="observacoes" 
+                          class="form-control form-control-sm" 
+                          rows="3"></textarea>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Salvar
+                </button>
+                <button type="button" class="btn btn-warning" id="btnRascunho">
+                    <i class="fas fa-file-alt"></i> Salvar Rascunho
                 </button>
                 <button type="reset" class="btn btn-secondary" onclick="resetCampos()">
                     <i class="fas fa-eraser"></i> Limpar
@@ -228,30 +332,111 @@
 </div>
 
 <script>
-function toggleParcelamento() {
-    var formaPagamento = document.getElementById("forma_pagamento").value;
-    var container = document.getElementById("parcelamento_container");
-    if (formaPagamento === "credito") {
-        container.style.display = "block";
-        calcularValorFinal();
+// Função para formatar telefone
+function formatarTelefone(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.substring(0, 11);
+    
+    if (value.length > 0) {
+        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+    }
+    if (value.length > 10) {
+        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+    }
+    input.value = value;
+}
+
+// Função para formatar data
+function formatarData(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 8) value = value.substring(0, 8);
+    
+    if (value.length > 4) {
+        value = value.replace(/^(\d{2})(\d{2})(\d{0,4})/, '$1/$2/$3');
+    } else if (value.length > 2) {
+        value = value.replace(/^(\d{2})(\d{0,2})/, '$1/$2');
+    }
+    input.value = value;
+}
+
+// Função para validar data
+function validarData(input) {
+    const dateWarning = document.getElementById('dateWarning');
+    const regexData = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    
+    if (!regexData.test(input.value)) {
+        dateWarning.style.display = 'none';
+        return;
+    }
+    
+    const [_, dia, mes, ano] = input.value.match(regexData);
+    const dataServico = new Date(ano, mes - 1, dia);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    if (dataServico < hoje) {
+        dateWarning.style.display = 'block';
     } else {
-        container.style.display = "none";
-        document.getElementById("valor_final").value = "";
-        document.getElementById("valor_final_hidden").value = "";
+        dateWarning.style.display = 'none';
     }
 }
 
+// Função para formatar moeda
+function formatarMoeda(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = (value/100).toFixed(2) + '';
+    value = value.replace(".", ",");
+    value = value.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+    value = value.replace(/(\d)(\d{3}),/g, "$1.$2,");
+    input.value = 'R$ ' + value;
+}
+
+function toggleParcelamento() {
+    var formaPagamento = document.getElementById("forma_pagamento").value;
+    var container = document.getElementById("parcelamento_container");
+    
+    if (formaPagamento === "credito") {
+        container.style.display = "block";
+    } else {
+        container.style.display = "none";
+        // Resetar valores quando não é crédito
+        document.getElementById("parcelas").value = 1;
+        document.getElementById("taxa_maquina").value = 0;
+    }
+    calcularValorFinal();
+}
+
 function calcularValorFinal() {
-    var valorBase = parseFloat(document.getElementById("valor_base").value) || 0;
-    var desconto = parseFloat(document.getElementById("desconto").value) || 0;
-    var taxaMaquina = parseFloat(document.getElementById("taxa_maquina").value) || 0;
-    var parcelas = parseInt(document.getElementById("parcelas").value) || 1;
+    // Obter valor base formatado
+    let valorBaseStr = document.getElementById("valor_base").value;
+    let valorBase = parseFloat(valorBaseStr.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    
+    let desconto = parseFloat(document.getElementById("desconto").value) || 0;
+    let taxaMaquina = parseFloat(document.getElementById("taxa_maquina").value) || 0;
+    let parcelas = parseInt(document.getElementById("parcelas").value) || 1;
+    let formaPagamento = document.getElementById("forma_pagamento").value;
 
-    var valorComDesconto = valorBase * (1 - desconto / 100);
-    var valorComTaxa = valorComDesconto + (valorComDesconto * (taxaMaquina / 100));
-    var valorParcelado = valorComTaxa / parcelas;
+    // Aplicar desconto
+    let valorComDesconto = valorBase * (1 - desconto / 100);
+    
+    // Aplicar taxa apenas para cartão de crédito
+    let valorComTaxa = valorComDesconto;
+    if (formaPagamento === "credito") {
+        valorComTaxa = valorComDesconto + (valorComDesconto * (taxaMaquina / 100));
+    }
+    
+    let valorParcelado = valorComTaxa / parcelas;
 
-    document.getElementById("valor_final").value = "R$ " + valorComTaxa.toFixed(2) + " (" + parcelas + "x de R$ " + valorParcelado.toFixed(2) + ")";
+    // Formatar para exibição
+    let valorFinalFormatado = valorComTaxa.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+    let valorParceladoFormatado = valorParcelado.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+
+    if (formaPagamento === "credito") {
+        document.getElementById("valor_final").value = `${valorFinalFormatado} (${parcelas}x de ${valorParceladoFormatado})`;
+    } else {
+        document.getElementById("valor_final").value = valorFinalFormatado;
+    }
+    
     document.getElementById("valor_final_hidden").value = valorComTaxa.toFixed(2);
 }
 
@@ -260,5 +445,103 @@ function resetCampos() {
     document.getElementById("valor_final").value = "";
     document.getElementById("valor_final_hidden").value = "";
 }
+
+// Auto-complete para clientes
+document.getElementById('cliente').addEventListener('input', async function(e) {
+    const query = e.target.value.trim();
+    const suggestions = document.getElementById('clientSuggestions');
+    
+    if (query.length < 2) {
+        suggestions.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/buscar_clientes?q=${encodeURIComponent(query)}`);
+        const clientes = await response.json();
+        
+        suggestions.innerHTML = '';
+        if (clientes.length > 0) {
+            clientes.forEach(cliente => {
+                const div = document.createElement('div');
+                div.className = 'client-suggestion';
+                div.textContent = `${cliente.nome} (${cliente.telefone || 'sem telefone'})`;
+                div.onclick = () => {
+                    document.getElementById('cliente').value = cliente.nome;
+                    if (cliente.telefone) document.getElementById('telefone').value = cliente.telefone;
+                    if (cliente.email) document.getElementById('email').value = cliente.email;
+                    suggestions.style.display = 'none';
+                };
+                suggestions.appendChild(div);
+            });
+            suggestions.style.display = 'block';
+        } else {
+            suggestions.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Erro ao buscar clientes:', error);
+    }
+});
+
+// Fechar sugestões ao clicar fora
+document.addEventListener('click', function(e) {
+    if (e.target.id !== 'cliente') {
+        document.getElementById('clientSuggestions').style.display = 'none';
+    }
+});
+
+// Validação do formulário
+document.getElementById('formOrcamento').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validar campos obrigatórios
+    ['cliente', 'servico', 'valor_base'].forEach(id => {
+        const field = document.getElementById(id);
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+    
+    // Validar email se preenchido
+    const email = document.getElementById('email');
+    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+        email.classList.add('is-invalid');
+        isValid = false;
+    } else {
+        email.classList.remove('is-invalid');
+    }
+    
+    // Validar data
+    const dataInput = document.getElementById('data_servico');
+    if (dataInput.value && !/^(\d{2})\/(\d{2})\/(\d{4})$/.test(dataInput.value)) {
+        dataInput.classList.add('is-invalid');
+        isValid = false;
+    } else {
+        dataInput.classList.remove('is-invalid');
+    }
+    
+    if (!isValid) {
+        e.preventDefault();
+        // Rolar para o primeiro erro
+        const firstInvalid = document.querySelector('.is-invalid');
+        if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    
+    // Converter valor base para formato numérico antes de enviar
+    const valorBaseInput = document.getElementById('valor_base');
+    const valorNumerico = parseFloat(valorBaseInput.value.replace(/[^\d,]/g, '').replace(',', '.'));
+    valorBaseInput.value = valorNumerico.toFixed(2);
+    
+    return isValid;
+});
+
+// Salvar rascunho
+document.getElementById('btnRascunho').addEventListener('click', function() {
+    // Implementar lógica para salvar rascunho
+    alert('Funcionalidade de rascunho será implementada em breve!');
+});
 </script>
 {% endblock %}

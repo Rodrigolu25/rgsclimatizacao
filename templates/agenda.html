@@ -4,161 +4,194 @@
 
 {% block style %}
 <style>
-    /* Layout principal */
     .agenda-container {
-        max-width: 100%;
-        margin: 0;
-        padding: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-    /* Cabeçalho */
     .calendar-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
-        padding: 0 5px;
+        margin-bottom: 20px;
     }
     
-    /* Navegação do mês */
     #calendar-navigation {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 15px 0;
-        padding: 0 5px;
+        margin: 20px 0;
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
     }
     
     #calendar-navigation button {
         background: #2c3e50;
         color: white;
         border: none;
-        padding: 8px 12px;
+        padding: 8px 15px;
         border-radius: 4px;
+        cursor: pointer;
         font-size: 0.9rem;
     }
     
     #current-month {
-        margin: 0 10px;
-        font-size: 1.1rem;
-        text-align: center;
-        flex-grow: 1;
+        margin: 0 15px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2c3e50;
     }
     
-    /* Cards de eventos */
     .event-card {
         border: 1px solid #e0e0e0;
         border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
-        background-color: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #ffffff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     .event-info {
-        margin-bottom: 8px;
+        flex: 1;
     }
     
     .event-actions {
         display: flex;
-        justify-content: flex-end;
+        gap: 10px;
     }
     
     .btn-delete {
         color: #dc3545;
         background: none;
         border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
         padding: 5px;
-        font-size: 1.1rem;
     }
     
-    /* Formulário */
     .add-event-form {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f0f8ff;
+        margin-top: 30px;
+        padding: 25px;
+        background-color: #f8f9fa;
         border-radius: 8px;
+        border: 1px solid #e0e0e0;
     }
     
     .form-group {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         position: relative;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
     }
     
     .form-control {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
         border-radius: 6px;
         font-size: 1rem;
         box-sizing: border-box;
+        transition: border-color 0.3s;
     }
     
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
+    .form-control:focus {
+        border-color: #4a90e2;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
     }
     
     .btn-success {
-        width: 100%;
         background-color: #28a745;
         color: white;
         border: none;
-        padding: 12px;
+        padding: 12px 20px;
         border-radius: 6px;
+        cursor: pointer;
         font-size: 1rem;
-        margin-top: 10px;
+        font-weight: 600;
+        width: 100%;
+        transition: background-color 0.3s;
     }
     
-    /* Placeholders personalizados */
-    .date-placeholder,
-    .time-placeholder {
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    
+    /* Estilos específicos para os campos de data e hora */
+    .date-time-group {
+        position: relative;
+    }
+    
+    .date-time-group::after {
+        content: "";
         position: absolute;
-        left: 12px;
+        right: 15px;
         top: 38px;
-        color: #999;
+        color: #6c757d;
         pointer-events: none;
-        font-size: 1rem;
     }
     
-    /* Esconde placeholders quando há valor */
-    input[type="date"]:valid + .date-placeholder,
-    input[type="time"]:valid + .time-placeholder {
+    #event-date-container::after {
+        content: "📅";
+    }
+    
+    #event-time-container::after {
+        content: "🕒";
+    }
+    
+    /* Placeholders customizados */
+    .custom-placeholder {
+        position: absolute;
+        left: 15px;
+        top: 38px;
+        color: #6c757d;
+        pointer-events: none;
+        background-color: white;
+        padding: 0 5px;
+    }
+    
+    /* Remove controles nativos dos inputs */
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
         display: none;
-    }
-    
-    /* Ajustes para inputs de data/hora */
-    input[type="date"],
-    input[type="time"] {
-        appearance: none;
         -webkit-appearance: none;
-        height: 40px;
     }
     
-    /* Melhorias para dispositivos pequenos */
-    @media (max-width: 400px) {
-        #calendar-navigation button {
-            padding: 6px 8px;
-            font-size: 0.8rem;
-        }
-        
-        #current-month {
-            font-size: 1rem;
+    /* Ajustes para mobile */
+    @media (max-width: 768px) {
+        .agenda-container {
+            padding: 15px;
         }
         
         .event-card {
-            padding: 10px;
+            flex-direction: column;
+            align-items: flex-start;
         }
-    }
-    
-    /* Efeitos de toque para mobile */
-    button, .btn-delete {
-        transition: opacity 0.2s;
-    }
-    
-    button:active, .btn-delete:active {
-        opacity: 0.7;
+        
+        .event-actions {
+            margin-top: 10px;
+            align-self: flex-end;
+        }
+        
+        #calendar-navigation {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #calendar-navigation button {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -166,14 +199,14 @@
 {% block content %}
 <div class="agenda-container">
     <div class="calendar-header">
-        <h2 style="font-size:1.3rem;">Agenda de Clientes</h2>
-        <button id="today-btn" class="btn btn-primary" style="padding:8px 12px;font-size:0.9rem;">Hoje</button>
+        <h2>Agenda de Clientes</h2>
+        <button id="today-btn" class="btn btn-primary">Hoje</button>
     </div>
     
     <div id="calendar-navigation">
-        <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+        <button id="prev-month"><i class="fas fa-chevron-left"></i> Anterior</button>
         <h3 id="current-month">Junho 2025</h3>
-        <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+        <button id="next-month">Próximo <i class="fas fa-chevron-right"></i></button>
     </div>
     
     <div id="events-container">
@@ -181,28 +214,28 @@
     </div>
     
     <div class="add-event-form">
-        <h3 style="margin-top:0;font-size:1.2rem;">Adicionar Agendamento</h3>
+        <h3>Adicionar Novo Agendamento</h3>
         <form id="event-form">
             <div class="form-group">
                 <label for="client-name">Nome do Cliente</label>
-                <input type="text" id="client-name" class="form-control" required>
+                <input type="text" id="client-name" class="form-control" required placeholder="Digite o nome do cliente">
             </div>
             
-            <div class="form-group">
+            <div class="form-group date-time-group" id="event-date-container">
                 <label for="event-date">Data</label>
                 <input type="date" id="event-date" class="form-control" required>
-                <span class="date-placeholder" id="date-placeholder">dd/mm/aaaa</span>
+                <span class="custom-placeholder" id="date-placeholder">dd/mm/aaaa</span>
             </div>
             
-            <div class="form-group">
+            <div class="form-group date-time-group" id="event-time-container">
                 <label for="event-time">Hora</label>
                 <input type="time" id="event-time" class="form-control" required>
-                <span class="time-placeholder" id="time-placeholder">--:--</span>
+                <span class="custom-placeholder" id="time-placeholder">--:--</span>
             </div>
             
             <div class="form-group">
                 <label for="event-service">Serviço</label>
-                <input type="text" id="event-service" class="form-control" placeholder="Ex: Limpeza do ar condicionado">
+                <input type="text" id="event-service" class="form-control" placeholder="Descreva o serviço a ser realizado">
             </div>
             
             <button type="submit" class="btn btn-success">
@@ -219,7 +252,14 @@
 let events = JSON.parse(localStorage.getItem('clientEvents')) || [];
 let currentDate = new Date();
 
-// Formata data para o padrão brasileiro
+// Função para corrigir o fuso horário
+function adjustForTimezone(dateString) {
+    const date = new Date(dateString);
+    // Ajusta para o timezone local sem alterar a data visual
+    return new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
+}
+
+// Formata a data para o padrão brasileiro
 function formatBrazilianDate(date) {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -234,7 +274,7 @@ function renderEvents() {
     
     // Filtra eventos do mês/ano atual
     const filteredEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
+        const eventDate = adjustForTimezone(event.date);
         return eventDate.getMonth() === currentDate.getMonth() && 
                eventDate.getFullYear() === currentDate.getFullYear();
     });
@@ -253,7 +293,7 @@ function renderEvents() {
     
     // Exibe cada evento
     filteredEvents.forEach(event => {
-        const eventDate = new Date(event.date);
+        const eventDate = adjustForTimezone(event.date);
         const eventElement = document.createElement('div');
         eventElement.className = 'event-card';
         eventElement.innerHTML = `
@@ -263,12 +303,19 @@ function renderEvents() {
                 <p><em>${event.service || 'Serviço não especificado'}</em></p>
             </div>
             <div class="event-actions">
-                <button class="btn-delete" onclick="deleteEvent(${event.id})" title="Excluir">
+                <button class="btn-delete" data-id="${event.id}" title="Excluir">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         `;
         eventsContainer.appendChild(eventElement);
+    });
+    
+    // Adiciona event listeners para os botões de deletar
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            deleteEvent(parseInt(this.getAttribute('data-id')));
+        });
     });
 }
 
@@ -285,17 +332,24 @@ function deleteEvent(eventId) {
 document.getElementById('event-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // Corrige fuso horário
     const dateInput = document.getElementById('event-date').value;
+    const timeInput = document.getElementById('event-time').value;
+    
+    if (!dateInput || !timeInput) {
+        alert('Por favor, preencha data e hora corretamente!');
+        return;
+    }
+    
+    // Cria a data sem problemas de timezone
     const [year, month, day] = dateInput.split('-');
-    const correctedDate = new Date(year, month - 1, day);
+    const eventDate = new Date(year, month - 1, day);
     
     const newEvent = {
         id: Date.now(),
-        client: document.getElementById('client-name').value,
-        date: correctedDate.toISOString().split('T')[0],
-        time: document.getElementById('event-time').value,
-        service: document.getElementById('event-service').value
+        client: document.getElementById('client-name').value.trim(),
+        date: eventDate.toISOString().split('T')[0],
+        time: timeInput,
+        service: document.getElementById('event-service').value.trim()
     };
     
     events.push(newEvent);
@@ -307,12 +361,6 @@ document.getElementById('event-form').addEventListener('submit', function(e) {
     document.getElementById('time-placeholder').style.display = 'block';
     
     renderEvents();
-    
-    // Feedback tátil para mobile
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    submitBtn.style.opacity = '0.7';
-    setTimeout(() => { submitBtn.style.opacity = '1'; }, 200);
-    
     alert('Agendamento salvo com sucesso!');
 });
 
@@ -355,12 +403,5 @@ function updateMonthDisplay() {
 // Inicialização
 updateMonthDisplay();
 renderEvents();
-
-// Melhoria para mobile: fecha o teclado virtual após submit
-document.getElementById('event-form').addEventListener('submit', function() {
-    setTimeout(() => {
-        document.activeElement.blur();
-    }, 100);
-});
 </script>
 {% endblock %}

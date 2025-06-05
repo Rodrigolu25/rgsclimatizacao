@@ -25,13 +25,19 @@ try:
 except AttributeError:
     pass  # Ignora em Windows, usaremos pytz para timezone
 
-
 # Configurar locale para português (para nomes de meses em português)
 try:
     locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-except:
-    locale.setlocale(locale.LC_TIME, 'Portuguese_Brazil')
-
+except locale.Error:
+    try:
+        locale.setlocale(locale.LC_TIME, 'pt_BR')
+    except locale.Error:
+        try:
+            locale.setlocale(locale.LC_TIME, 'Portuguese_Brazil')
+        except locale.Error:
+            # Fall back to the system's default locale if Portuguese isn't available
+            locale.setlocale(locale.LC_TIME, '')
+            print("Warning: Portuguese locale not available, using system default")
 
 app = Flask(__name__)
 

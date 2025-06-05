@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda de Clientes{% endblock %}
+
+{% block style %}
+<style>
+    .agenda-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    #calendar-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+    }
+    
+    #calendar-navigation button {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    #current-month {
+        margin: 0 15px;
+        font-size: 1.2rem;
+    }
+    
+    .event-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+    }
+    
+    .event-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-delete {
+        color: #dc3545;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    
+    .add-event-form {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f0f8ff;
+        border-radius: 8px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    /* Custom date/time inputs */
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-inner-spin-button,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+    
+    .date-placeholder,
+    .time-placeholder {
+        position: absolute;
+        left: 10px;
+        top: 35px;
+        color: #999;
+        pointer-events: none;
+    }
+    
+    input[type="date"]:valid + .date-placeholder,
+    input[type="time"]:valid + .time-placeholder {
+        display: none;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        #calendar-navigation {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .event-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .event-actions {
+            margin-top: 10px;
+            align-self: flex-end;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="agenda-container">
+    <div class="calendar-header">
+        <h2>Agenda de Clientes</h2>
+        <button id="today-btn" class="btn btn-primary">Hoje</button>
+    </div>
+    
+    <div id="calendar-navigation">
+        <button id="prev-month"><i class="fas fa-chevron-left"></i> Anterior</button>
+        <h3 id="current-month">Junho 2025</h3>
+        <button id="next-month">Próximo <i class="fas fa-chevron-right"></i></button>
+    </div>
+    
+    <div id="events-container">
+        <!-- Events will be loaded here by JavaScript -->
+        <p>Nenhum agendamento para este mês.</p>
+    </div>
+    
+    <div class="add-event-form">
+        <h3>Adicionar Novo Agendamento</h3>
+        <form id="event-form">
+            <div class="form-group">
+                <label for="client-name">Nome do Cliente</label>
+                <input type="text" id="client-name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-date">Data</label>
+                <input type="date" id="event-date" class="form-control" required>
+                <span class="date-placeholder" id="date-placeholder">dd/mm/aaaa</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-time">Hora</label>
+                <input type="time" id="event-time" class="form-control" required>
+                <span class="time-placeholder" id="time-placeholder">--:--</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-service">Serviço</label>
+                <input type="text" id="event-service" class="form-control" placeholder="Descrição do serviço">
+            </div>
+            
+            <button type="submit" class="btn btn-success">Salvar Agendamento</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Armazenamento local
+let events = JSON.parse(localStorage.getItem('clientEvents')) || [];
+let currentDate = new Date();
+
+// Formata a data para o padrão brasileiro
+function formatBrazilianDate(date) {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+// Renderiza os eventos na tela
+function renderEvents() {
+    const eventsContainer = document.getElementById('events-container');
+    eventsContainer.innerHTML = '';
+    
+    // Filtra eventos do mês/ano atual
+    const filteredEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate.getMonth() === currentDate.getMonth() && 
+               eventDate.getFullYear() === currentDate.getFullYear();
+    });
+    
+    if (filteredEvents.length === 0) {
+        eventsContainer.innerHTML = '<p>Nenhum agendamento para este mês.</p>';
+        return;
+    }
+    
+    // Ordena por data e hora
+    filteredEvents.sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`);
+        const dateB = new Date(`${b.date}T${b.time}`);
+        return dateA - dateB;
+    });
+    
+    // Exibe cada evento
+    filteredEvents.forEach(event => {
+        const eventDate = new Date(event.date);
+        const eventElement = document.createElement('div');
+        eventElement.className = 'event-card';
+        eventElement.innerHTML = `
+            <div>
+                <strong>${event.client}</strong>
+                <p>${formatBrazilianDate(eventDate)} às ${event.time}</p>
+                <p>${event.service || 'Serviço não especificado'}</p>
+            </div>
+            <div class="event-actions">
+                <button class="btn-delete" onclick="deleteEvent(${event.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        eventsContainer.appendChild(eventElement);
+    });
+}
+
+// Remove um evento
+function deleteEvent(eventId) {
+    if (confirm('Tem certeza que deseja excluir este agendamento?')) {
+        events = events.filter(event => event.id !== eventId);
+        localStorage.setItem('clientEvents', JSON.stringify(events));
+        renderEvents();
+    }
+}
+
+// Adiciona um novo evento
+document.getElementById('event-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Corrige o problema do fuso horário
+    const dateInput = document.getElementById('event-date').value;
+    const [year, month, day] = dateInput.split('-');
+    const correctedDate = new Date(year, month - 1, parseInt(day));
+    
+    const newEvent = {
+        id: Date.now(), // ID único
+        client: document.getElementById('client-name').value,
+        date: correctedDate.toISOString().split('T')[0], // Data corrigida
+        time: document.getElementById('event-time').value,
+        service: document.getElementById('event-service').value
+    };
+    
+    events.push(newEvent);
+    localStorage.setItem('clientEvents', JSON.stringify(events));
+    
+    // Limpa o formulário
+    this.reset();
+    document.getElementById('date-placeholder').style.display = 'block';
+    document.getElementById('time-placeholder').style.display = 'block';
+    
+    renderEvents();
+    alert('Agendamento salvo com sucesso!');
+});
+
+// Controle dos placeholders
+document.getElementById('event-date').addEventListener('input', function() {
+    document.getElementById('date-placeholder').style.display = 
+        this.value ? 'none' : 'block';
+});
+
+document.getElementById('event-time').addEventListener('input', function() {
+    document.getElementById('time-placeholder').style.display = 
+        this.value ? 'none' : 'block';
+});
+
+// Navegação do calendário
+document.getElementById('prev-month').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    updateMonthDisplay();
+    renderEvents();
+});
+
+document.getElementById('next-month').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    updateMonthDisplay();
+    renderEvents();
+});
+
+document.getElementById('today-btn').addEventListener('click', function() {
+    currentDate = new Date();
+    updateMonthDisplay();
+    renderEvents();
+});
+
+// Atualiza o display do mês/ano
+function updateMonthDisplay() {
+    const options = { month: 'long', year: 'numeric' };
+    document.getElementById('current-month').textContent = 
+        currentDate.toLocaleDateString('pt-BR', options).replace(' de ', ' ');
+}
+
+// Inicialização
+updateMonthDisplay();
+renderEvents();
+</script>
+{% endblock %}

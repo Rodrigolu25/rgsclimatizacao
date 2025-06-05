@@ -60,9 +60,9 @@ class Orcamento(db.Model):
     cliente_telefone = db.Column(db.String(20))
     cliente_email = db.Column(db.String(100))
     servico = db.Column(db.String(100))
-    valor_base = db.Column(db.Float)
-    desconto = db.Column(db.Float)
-    valor_final = db.Column(db.Float)
+    valor_base = db.Column(db.Float, default=0.0)
+    desconto = db.Column(db.Float, default=0.0)
+    valor_final = db.Column(db.Float, default=0.0)
     forma_pagamento = db.Column(db.String(50))
     taxa_cartao = db.Column(db.Float, default=0.0)
     taxa_maquina = db.Column(db.Float, default=0.0)
@@ -192,6 +192,13 @@ def orcamento():
 def lista_orcamentos():
     try:
         orcamentos = Orcamento.query.order_by(Orcamento.data_criacao.desc()).all()
+        
+        # Garantir que valores numéricos não sejam None
+        for orc in orcamentos:
+            if orc.valor_final is None:
+                orc.valor_final = 0.0
+                # Você pode querer recalcular o valor_final aqui se necessário
+        
         return render_template('lista_orcamentos.html', orcamentos=orcamentos)
     except Exception as e:
         flash(f'Erro ao carregar orçamentos: {str(e)}', 'error')
@@ -434,6 +441,11 @@ def atualizar_status(id):
 def contract_form():
     """Rota para exibir o formulário de contrato"""
     return render_template('contract_form.html')
+
+@app.route('/agenda')
+def agenda():
+    """Rota simples que apenas renderiza o template da agenda"""
+    return render_template('agenda.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

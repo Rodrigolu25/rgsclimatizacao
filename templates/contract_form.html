@@ -3,6 +3,7 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,33 +14,40 @@
         .form-group {
             margin-bottom: 1rem;
         }
+
         .payment-details {
             margin-left: 20px;
             display: none;
         }
+
         .payment-details.active {
             display: block;
         }
+
         .legal-highlight {
             background-color: #e8f5e8;
             border-left: 4px solid #28a745;
             padding: 10px;
             margin: 10px 0;
         }
+
         .card-header {
             position: relative;
         }
+
         .legal-badge {
             position: absolute;
             top: 10px;
             right: 15px;
             font-size: 0.8em;
         }
+
         .signature-line {
             border-top: 1px solid #000;
             width: 200px;
             margin-top: 50px;
         }
+
         .section-title {
             background-color: #f8f9fa;
             padding: 8px;
@@ -48,15 +56,17 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="alert alert-success" role="alert">
             <h4 class="alert-heading">✅ Contrato Juridicamente Aprimorado</h4>
-            <p>Este contrato foi atualizado com as melhorias previstas na legislação brasileira para maior segurança jurídica.</p>
+            <p>Este contrato foi atualizado com as melhorias previstas na legislação brasileira para maior segurança
+                jurídica.</p>
         </div>
-        
+
         <h1 class="mt-4">Contrato de Prestação de Serviços - RGS Climatização</h1>
-        
+
         <!-- Formulário principal -->
         <form id="contractForm">
             <!-- Seção 1: Dados das Partes -->
@@ -75,11 +85,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="client_cpf_cnpj">CPF/CNPJ:</label>
-                                <input type="text" class="form-control" id="client_cpf_cnpj" name="client_cpf_cnpj" required>
+                                <input type="text" class="form-control" id="client_cpf_cnpj" name="client_cpf_cnpj"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label for="client_address">Endereço:</label>
-                                <input type="text" class="form-control" id="client_address" name="client_address" required>
+                                <input type="text" class="form-control" id="client_address" name="client_address"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label for="client_phone">Telefone:</label>
@@ -110,25 +122,31 @@
                     <span class="badge bg-light text-dark legal-badge">Art. 593 CC</span>
                 </div>
                 <div class="card-body">
-                    <p>O presente contrato tem por objeto a prestação dos seguintes serviços relacionados a aparelhos de ar-condicionado:</p>
+                    <p>O presente contrato tem por objeto a prestação dos seguintes serviços relacionados a aparelhos de
+                        ar-condicionado:</p>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="service_installation" name="services" value="Instalação">
+                        <input class="form-check-input" type="checkbox" id="service_installation" name="services"
+                            value="Instalação">
                         <label class="form-check-label" for="service_installation">Instalação</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="service_preventive" name="services" value="Manutenção preventiva">
+                        <input class="form-check-input" type="checkbox" id="service_preventive" name="services"
+                            value="Manutenção preventiva">
                         <label class="form-check-label" for="service_preventive">Manutenção preventiva</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="service_corrective" name="services" value="Manutenção corretiva">
+                        <input class="form-check-input" type="checkbox" id="service_corrective" name="services"
+                            value="Manutenção corretiva">
                         <label class="form-check-label" for="service_corrective">Manutenção corretiva</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="service_cleaning" name="services" value="Limpeza técnica/higienização">
+                        <input class="form-check-input" type="checkbox" id="service_cleaning" name="services"
+                            value="Limpeza técnica/higienização">
                         <label class="form-check-label" for="service_cleaning">Limpeza técnica/higienização</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="service_other" name="services" value="Outros">
+                        <input class="form-check-input" type="checkbox" id="service_other" name="services"
+                            value="Outros">
                         <label class="form-check-label" for="service_other">Outros:</label>
                         <input type="text" class="form-control mt-2" id="other_service" name="other_service">
                     </div>
@@ -172,50 +190,64 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label for="service_value">Valor total do serviço (R$):</label>
-                        <input type="number" step="0.01" class="form-control" id="service_value" name="service_value" required>
+                        <input type="number" step="0.01" class="form-control" id="service_value" name="service_value"
+                            required>
                     </div>
                     <div class="form-group">
                         <label>Forma de pagamento:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" id="payment_cash" value="À vista" required>
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_cash"
+                                value="À vista" required>
                             <label class="form-check-label" for="payment_cash">À vista</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" id="payment_installment" value="Parcelado">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_installment"
+                                value="Parcelado">
                             <label class="form-check-label" for="payment_installment">Parcelado</label>
                             <div class="payment-details" id="installment_details">
-                                <label>em <input type="number" class="form-control-sm" id="installments" name="installments" min="2" max="12" style="width: 60px;"> vezes de R$ <input type="number" step="0.01" class="form-control-sm" id="installment_value" name="installment_value" style="width: 80px;"></label>
+                                <label>em <input type="number" class="form-control-sm" id="installments"
+                                        name="installments" min="2" max="12" style="width: 60px;"> vezes de R$ <input
+                                        type="number" step="0.01" class="form-control-sm" id="installment_value"
+                                        name="installment_value" style="width: 80px;"></label>
                             </div>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_method" id="payment_downpayment" value="Sinal">
+                            <input class="form-check-input" type="radio" name="payment_method" id="payment_downpayment"
+                                value="Sinal">
                             <label class="form-check-label" for="payment_downpayment">Sinal</label>
                             <div class="payment-details" id="downpayment_details">
-                                <label>de R$ <input type="number" step="0.01" class="form-control-sm" id="downpayment" name="downpayment" style="width: 80px;"> na assinatura e o restante após conclusão</label>
+                                <label>de R$ <input type="number" step="0.01" class="form-control-sm" id="downpayment"
+                                        name="downpayment" style="width: 80px;"> na assinatura e o restante após
+                                    conclusão</label>
                             </div>
                         </div>
                     </div>
                     <div class="form-group mt-3">
                         <label>Método de pagamento:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_type" id="payment_pix" value="Pix" required>
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_pix"
+                                value="Pix" required>
                             <label class="form-check-label" for="payment_pix">Pix</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_type" id="payment_money" value="Dinheiro">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_money"
+                                value="Dinheiro">
                             <label class="form-check-label" for="payment_money">Dinheiro</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_type" id="payment_transfer" value="Transferência bancária">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_transfer"
+                                value="Transferência bancária">
                             <label class="form-check-label" for="payment_transfer">Transferência bancária</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="payment_type" id="payment_other_type" value="Outros">
+                            <input class="form-check-input" type="radio" name="payment_type" id="payment_other_type"
+                                value="Outros">
                             <label class="form-check-label" for="payment_other_type">Outros:</label>
-                            <input type="text" class="form-control-sm ml-2" id="other_payment" name="other_payment" style="width: 150px;">
+                            <input type="text" class="form-control-sm ml-2" id="other_payment" name="other_payment"
+                                style="width: 150px;">
                         </div>
                     </div>
-                    
+
                     <div class="legal-highlight mt-3">
                         <strong>📅 Prazo para Reclamação:</strong> Conforme CDC Art. 26
                         <div class="form-group mt-2">
@@ -281,31 +313,39 @@
                     <div class="form-group">
                         <label>O que está coberto pela garantia:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="warranty_execution" name="warranty_coverage" value="Defeitos de execução" checked>
+                            <input class="form-check-input" type="checkbox" id="warranty_execution"
+                                name="warranty_coverage" value="Defeitos de execução" checked>
                             <label class="form-check-label" for="warranty_execution">Defeitos de execução</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="warranty_materials" name="warranty_coverage" value="Materiais defeituosos">
+                            <input class="form-check-input" type="checkbox" id="warranty_materials"
+                                name="warranty_coverage" value="Materiais defeituosos">
                             <label class="form-check-label" for="warranty_materials">Materiais defeituosos</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="warranty_installation" name="warranty_coverage" value="Problemas de instalação">
+                            <input class="form-check-input" type="checkbox" id="warranty_installation"
+                                name="warranty_coverage" value="Problemas de instalação">
                             <label class="form-check-label" for="warranty_installation">Problemas de instalação</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>O que NÃO está coberto:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="exclusion_misuse" name="warranty_exclusions" value="Mau uso" checked>
+                            <input class="form-check-input" type="checkbox" id="exclusion_misuse"
+                                name="warranty_exclusions" value="Mau uso" checked>
                             <label class="form-check-label" for="exclusion_misuse">Mau uso pelo cliente</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="exclusion_third_party" name="warranty_exclusions" value="Interferência de terceiros" checked>
-                            <label class="form-check-label" for="exclusion_third_party">Interferência de terceiros</label>
+                            <input class="form-check-input" type="checkbox" id="exclusion_third_party"
+                                name="warranty_exclusions" value="Interferência de terceiros" checked>
+                            <label class="form-check-label" for="exclusion_third_party">Interferência de
+                                terceiros</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="exclusion_electrical" name="warranty_exclusions" value="Problemas elétricos">
-                            <label class="form-check-label" for="exclusion_electrical">Problemas elétricos externos</label>
+                            <input class="form-check-input" type="checkbox" id="exclusion_electrical"
+                                name="warranty_exclusions" value="Problemas elétricos">
+                            <label class="form-check-label" for="exclusion_electrical">Problemas elétricos
+                                externos</label>
                         </div>
                     </div>
                 </div>
@@ -325,19 +365,26 @@
                     <div class="form-group">
                         <label>A contratada NÃO se responsabiliza por:</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="limit_electrical" name="liability_limitations" value="Falhas elétricas" checked>
-                            <label class="form-check-label" for="limit_electrical">Falhas elétricas da rede local</label>
+                            <input class="form-check-input" type="checkbox" id="limit_electrical"
+                                name="liability_limitations" value="Falhas elétricas" checked>
+                            <label class="form-check-label" for="limit_electrical">Falhas elétricas da rede
+                                local</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="limit_structural" name="liability_limitations" value="Problemas estruturais" checked>
-                            <label class="form-check-label" for="limit_structural">Problemas estruturais do imóvel</label>
+                            <input class="form-check-input" type="checkbox" id="limit_structural"
+                                name="liability_limitations" value="Problemas estruturais" checked>
+                            <label class="form-check-label" for="limit_structural">Problemas estruturais do
+                                imóvel</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="limit_indirect" name="liability_limitations" value="Danos indiretos" checked>
-                            <label class="form-check-label" for="limit_indirect">Danos indiretos ou lucros cessantes</label>
+                            <input class="form-check-input" type="checkbox" id="limit_indirect"
+                                name="liability_limitations" value="Danos indiretos" checked>
+                            <label class="form-check-label" for="limit_indirect">Danos indiretos ou lucros
+                                cessantes</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="limit_acts" name="liability_limitations" value="Atos de terceiros" checked>
+                            <input class="form-check-input" type="checkbox" id="limit_acts" name="liability_limitations"
+                                value="Atos de terceiros" checked>
                             <label class="form-check-label" for="limit_acts">Atos de terceiros não autorizados</label>
                         </div>
                     </div>
@@ -352,10 +399,12 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="confidentiality_clause" name="confidentiality_clause" value="true">
+                        <input class="form-check-input" type="checkbox" id="confidentiality_clause"
+                            name="confidentiality_clause" value="true">
                         <label class="form-check-label" for="confidentiality_clause">
                             <strong>Incluir cláusula de confidencialidade</strong><br>
-                            <small class="text-muted">Proteção de dados e informações sensíveis de ambas as partes</small>
+                            <small class="text-muted">Proteção de dados e informações sensíveis de ambas as
+                                partes</small>
                         </label>
                     </div>
                 </div>
@@ -369,10 +418,12 @@
                 </div>
                 <div class="card-body">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="adjustment_clause" name="adjustment_clause" value="true">
+                        <input class="form-check-input" type="checkbox" id="adjustment_clause" name="adjustment_clause"
+                            value="true">
                         <label class="form-check-label" for="adjustment_clause">
                             <strong>Incluir cláusula de reajuste anual</strong><br>
-                            <small class="text-muted">Aplicável apenas para contratos com duração superior a 12 meses</small>
+                            <small class="text-muted">Aplicável apenas para contratos com duração superior a 12
+                                meses</small>
                         </label>
                     </div>
                     <div class="form-group mt-2" id="adjustment_details" style="display: none;">
@@ -398,7 +449,8 @@
                         <p>Contrato com duas testemunhas permite execução mais rápida (CPC Art. 784, III)</p>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="include_witnesses" name="include_witnesses" value="true" checked>
+                        <input class="form-check-input" type="checkbox" id="include_witnesses" name="include_witnesses"
+                            value="true" checked>
                         <label class="form-check-label" for="include_witnesses">
                             <strong>Incluir campo para assinatura de testemunhas</strong><br>
                             <small class="text-muted">Facilita execução judicial em caso de descumprimento</small>
@@ -439,11 +491,13 @@
                     <h2>Termos e Condições</h2>
                 </div>
                 <div class="card-body">
-                    <p>As demais cláusulas (Responsabilidades, Rescisão e Condições Finais) estão definidas conforme a legislação brasileira vigente e serão incluídas no documento final.</p>
+                    <p>As demais cláusulas (Responsabilidades, Rescisão e Condições Finais) estão definidas conforme a
+                        legislação brasileira vigente e serão incluídas no documento final.</p>
                     <div class="form-group form-check">
                         <input type="checkbox" class="form-check-input" id="agree_terms" name="agree_terms" required>
                         <label class="form-check-label" for="agree_terms">
-                            <strong>Concordo com todos os termos e condições deste contrato juridicamente aprimorado</strong>
+                            <strong>Concordo com todos os termos e condições deste contrato juridicamente
+                                aprimorado</strong>
                         </label>
                     </div>
                 </div>
@@ -459,14 +513,14 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Controle dos campos de pagamento
             const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
             const installmentDetails = document.getElementById('installment_details');
             const downpaymentDetails = document.getElementById('downpayment_details');
 
             paymentMethods.forEach(method => {
-                method.addEventListener('change', function() {
+                method.addEventListener('change', function () {
                     installmentDetails.classList.remove('active');
                     downpaymentDetails.classList.remove('active');
 
@@ -479,7 +533,7 @@
             });
 
             // Controle da cláusula de reajuste
-            document.getElementById('adjustment_clause').addEventListener('change', function() {
+            document.getElementById('adjustment_clause').addEventListener('change', function () {
                 const adjustmentDetails = document.getElementById('adjustment_details');
                 if (this.checked) {
                     adjustmentDetails.style.display = 'block';
@@ -489,7 +543,7 @@
             });
 
             // Controle das testemunhas
-            document.getElementById('include_witnesses').addEventListener('change', function() {
+            document.getElementById('include_witnesses').addEventListener('change', function () {
                 const witnessesDetails = document.getElementById('witnesses_details');
                 if (this.checked) {
                     witnessesDetails.style.display = 'block';
@@ -499,9 +553,9 @@
             });
 
             // Gerar PDF
-            document.getElementById('generatePdfBtn').addEventListener('click', function() {
+            document.getElementById('generatePdfBtn').addEventListener('click', function () {
                 const form = document.getElementById('contractForm');
-                
+
                 if (!form.checkValidity()) {
                     alert('Por favor, preencha todos os campos obrigatórios.');
                     return;
@@ -515,10 +569,12 @@
                 generatePDF();
             });
 
+            // CORREÇÕES PRINCIPAIS NO JAVASCRIPT - Substitua a função generatePDF() existente
+
             function generatePDF() {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('p', 'mm', 'a4');
-                
+
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const margin = 15;
@@ -536,17 +592,16 @@
                 };
 
                 // Função para adicionar texto com quebra de linha automática
-                // Função para adicionar texto com quebra de linha automática
                 function addText(text, style, isNewPage = false) {
                     if (isNewPage || currentY > pageHeight - 30) {
                         doc.addPage();
                         currentY = margin;
                     }
-                    
+
                     doc.setFontSize(style.fontSize);
                     doc.setFont('helvetica', style.fontStyle);
                     doc.setTextColor(style.textColor[0], style.textColor[1], style.textColor[2]);
-                    
+
                     const lines = doc.splitTextToSize(text, maxWidth);
                     lines.forEach(line => {
                         if (currentY > pageHeight - 20) {
@@ -573,13 +628,13 @@
                 currentY += 5;
 
                 // Dados das partes
-                const clientName = document.getElementById('client_name').value;
-                const clientCpfCnpj = document.getElementById('client_cpf_cnpj').value;
-                const clientAddress = document.getElementById('client_address').value;
-                const clientPhone = document.getElementById('client_phone').value;
-                const clientEmail = document.getElementById('client_email').value;
+                const clientName = document.getElementById('client_name').value || '[NOME DO CLIENTE]';
+                const clientCpfCnpj = document.getElementById('client_cpf_cnpj').value || '[CPF/CNPJ]';
+                const clientAddress = document.getElementById('client_address').value || '[ENDEREÇO]';
+                const clientPhone = document.getElementById('client_phone').value || '[TELEFONE]';
+                const clientEmail = document.getElementById('client_email').value || '';
 
-                addSection('DADOS DAS PARTES', 
+                addSection('DADOS DAS PARTES',
                     `CONTRATANTE: ${clientName}, CPF/CNPJ: ${clientCpfCnpj}, Endereço: ${clientAddress}, Telefone: ${clientPhone}${clientEmail ? `, E-mail: ${clientEmail}` : ''}\n\n` +
                     'CONTRATADO: RGS Climatização, Titular: Rodrigo Gonçalves de Souza, CNPJ: 61.038.796/0001-66, Endereço: Rua Carijós, 52, Filadélfia – Teófilo Otoni/MG, Telefone: (33) 98827-3510, E-mail: rgs.climatizacao.to@gmail.com',
                     'Art. 104 CC'
@@ -595,45 +650,71 @@
                     }
                 });
 
+                if (services.length === 0) {
+                    services.push('Serviços de climatização conforme especificado');
+                }
+
                 addSection('CLÁUSULA 1 - DO OBJETO',
                     `O presente contrato tem por objeto a prestação dos seguintes serviços relacionados a aparelhos de ar-condicionado: ${services.join(', ')}.`,
                     'Art. 593 CC'
                 );
 
                 // Local e prazo
-                const serviceLocation = document.getElementById('service_location').value;
-                const startDate = document.getElementById('start_date').value;
-                const endDate = document.getElementById('end_date').value;
+                const serviceLocation = document.getElementById('service_location').value || '[ENDEREÇO DE PRESTAÇÃO]';
+                const startDateInput = document.getElementById('start_date').value;
+                const endDateInput = document.getElementById('end_date').value;
+
+                // Converter datas do formato YYYY-MM-DD para DD/MM/YYYY
+                const formatDate = (dateString) => {
+                    if (!dateString) return '[DATA]';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('pt-BR');
+                };
+
+                const startDate = formatDate(startDateInput);
+                const endDate = formatDate(endDateInput);
 
                 addSection('CLÁUSULA 2 - DO LOCAL E PRAZO',
-                    `Os serviços serão prestados no seguinte endereço: ${serviceLocation}. Data de início: ${new Date(startDate).toLocaleDateString('pt-BR')}. Data de término prevista: ${new Date(endDate).toLocaleDateString('pt-BR')}.`,
+                    `Os serviços serão prestados no seguinte endereço: ${serviceLocation}. Data de início: ${startDate}. Data de término prevista: ${endDate}.`,
                     'Art. 594 CC'
                 );
 
                 // Valor e pagamento
-                const serviceValue = document.getElementById('service_value').value;
-                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-                const paymentType = document.querySelector('input[name="payment_type"]:checked').value;
-                const complaintPeriod = document.getElementById('complaint_period').value;
+                const serviceValueInput = document.getElementById('service_value').value;
+                const serviceValue = parseFloat(serviceValueInput) || 0;
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'À vista';
+                const paymentTypeSelected = document.querySelector('input[name="payment_type"]:checked');
 
-                let paymentDetails = `Valor total: R$ ${parseFloat(serviceValue).toLocaleString('pt-BR', {minimumFractionDigits: 2})}. Forma de pagamento: ${paymentMethod}`;
-                
-                if (paymentMethod === 'Parcelado') {
-                    const installments = document.getElementById('installments').value;
-                    const installmentValue = document.getElementById('installment_value').value;
-                    paymentDetails += ` em ${installments} vezes de R$ ${parseFloat(installmentValue).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                } else if (paymentMethod === 'Sinal') {
-                    const downpayment = document.getElementById('downpayment').value;
-                    paymentDetails += ` de R$ ${parseFloat(downpayment).toLocaleString('pt-BR', {minimumFractionDigits: 2})} na assinatura e o restante após conclusão`;
+                let paymentType = "Pix"; // Default
+                if (paymentTypeSelected) {
+                    if (paymentTypeSelected.value === 'Outros' && document.getElementById('other_payment').value) {
+                        paymentType = document.getElementById('other_payment').value;
+                    } else if (paymentTypeSelected.value !== 'Outros') {
+                        paymentType = paymentTypeSelected.value;
+                    }
                 }
-                
+
+                const complaintPeriod = document.getElementById('complaint_period').value || '5';
+
+                let paymentDetails = `Valor total: R$ ${serviceValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. Forma de pagamento: ${paymentMethod}`;
+
+                if (paymentMethod === 'Parcelado') {
+                    const installments = document.getElementById('installments').value || '1';
+                    const installmentValue = document.getElementById('installment_value').value || serviceValue;
+                    paymentDetails += ` em ${installments} vezes de R$ ${parseFloat(installmentValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+                } else if (paymentMethod === 'Sinal') {
+                    const downpayment = document.getElementById('downpayment').value || (serviceValue * 0.3).toFixed(2);
+                    const remaining = serviceValue - parseFloat(downpayment);
+                    paymentDetails += ` de R$ ${parseFloat(downpayment).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} na assinatura e R$ ${remaining.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} após conclusão`;
+                }
+
                 paymentDetails += `. Método de pagamento: ${paymentType}. Prazo para comunicar problemas: ${complaintPeriod} dias úteis.`;
 
                 addSection('CLÁUSULA 3 - DO VALOR E FORMA DE PAGAMENTO', paymentDetails, 'Art. 315 CC');
 
                 // Penalidades
-                const penaltyPercentage = document.getElementById('penalty_percentage').value;
-                const lateFee = document.getElementById('late_fee').value;
+                const penaltyPercentage = document.getElementById('penalty_percentage').value || '10';
+                const lateFee = document.getElementById('late_fee').value || '1';
 
                 addSection('CLÁUSULA 4 - DAS PENALIDADES',
                     `Em caso de descumprimento contratual, será aplicada multa de ${penaltyPercentage}% sobre o valor do contrato. Para atraso no pagamento, será cobrada taxa de mora de ${lateFee}% ao mês.`,
@@ -641,15 +722,22 @@
                 );
 
                 // Garantia
-                const warrantyPeriod = document.getElementById('warranty_period').value;
+                const warrantyPeriod = document.getElementById('warranty_period').value || '90';
                 const warrantyCoverage = [];
                 document.querySelectorAll('input[name="warranty_coverage"]:checked').forEach(item => {
                     warrantyCoverage.push(item.value);
                 });
+                if (warrantyCoverage.length === 0) {
+                    warrantyCoverage.push('Defeitos de execução', 'Materiais defeituosos', 'Problemas de instalação');
+                }
+
                 const warrantyExclusions = [];
                 document.querySelectorAll('input[name="warranty_exclusions"]:checked').forEach(item => {
                     warrantyExclusions.push(item.value);
                 });
+                if (warrantyExclusions.length === 0) {
+                    warrantyExclusions.push('Mau uso', 'Interferência de terceiros', 'Problemas elétricos');
+                }
 
                 addSection('CLÁUSULA 5 - DA GARANTIA',
                     `A contratada oferece garantia de ${warrantyPeriod} dias para os serviços prestados. Cobertura: ${warrantyCoverage.join(', ')}. Exclusões: ${warrantyExclusions.join(', ')}.`,
@@ -661,6 +749,9 @@
                 document.querySelectorAll('input[name="liability_limitations"]:checked').forEach(item => {
                     liabilityLimitations.push(item.value);
                 });
+                if (liabilityLimitations.length === 0) {
+                    liabilityLimitations.push('Falhas elétricas da rede local', 'Problemas estruturais do imóvel', 'Danos indiretos ou lucros cessantes', 'Atos de terceiros não autorizados');
+                }
 
                 addSection('CLÁUSULA 6 - DA LIMITAÇÃO DE RESPONSABILIDADE',
                     `A contratada não se responsabiliza por: ${liabilityLimitations.join(', ')}.`,
@@ -668,18 +759,32 @@
                 );
 
                 // Confidencialidade (se marcada)
-                if (document.getElementById('confidentiality_clause').checked) {
+                if (document.getElementById('confidentiality_clause')?.checked) {
                     addSection('CLÁUSULA 7 - DA CONFIDENCIALIDADE',
                         'As partes comprometem-se a manter sigilo sobre todas as informações confidenciais obtidas durante a execução deste contrato.',
                         'Livre Pacto'
                     );
                 }
 
-                // Reajuste (se marcado)
-                if (document.getElementById('adjustment_clause').checked) {
-                    const adjustmentIndex = document.getElementById('adjustment_index').value;
+                // Reajuste (se marcado OU se contrato for superior a 12 meses)
+                const adjustmentClause = document.getElementById('adjustment_clause')?.checked || false;
+                const adjustmentIndex = document.getElementById('adjustment_index')?.value || 'IPCA';
+
+                // Verificar se o contrato tem duração superior a 12 meses
+                let includeAdjustment = adjustmentClause;
+                if (startDateInput && endDateInput) {
+                    const startDateObj = new Date(startDateInput);
+                    const endDateObj = new Date(endDateInput);
+                    const diffMonths = (endDateObj.getFullYear() - startDateObj.getFullYear()) * 12 +
+                        (endDateObj.getMonth() - startDateObj.getMonth());
+                    if (diffMonths > 12) {
+                        includeAdjustment = true;
+                    }
+                }
+
+                if (includeAdjustment) {
                     addSection('CLÁUSULA 8 - DO REAJUSTE',
-                        `Para contratos com duração superior a 12 meses, os valores serão reajustados anualmente com base no índice ${adjustmentIndex}.`,
+                        `Para contratos com duração superior a 12 meses, os valores serão reajustados anualmente com base no índice ${adjustmentIndex}, conforme previsto na Lei 10.192/01.`,
                         'Lei 10.192/01'
                     );
                 }
@@ -691,7 +796,7 @@
 
                 // Assinaturas
                 currentY += 10;
-                addText('Local e Data: Teófilo Otoni/MG, ' + new Date().toLocaleDateString('pt-BR'), styles.normal);
+                addText(`Local e Data: Teófilo Otoni/MG, ${new Date().toLocaleDateString('pt-BR')}`, styles.normal);
                 currentY += 15;
 
                 // Linha de assinatura do contratante
@@ -707,11 +812,11 @@
                 currentY += 10;
 
                 // Testemunhas (se incluídas)
-                if (document.getElementById('include_witnesses').checked) {
-                    const witness1Name = document.getElementById('witness1_name').value;
-                    const witness1Cpf = document.getElementById('witness1_cpf').value;
-                    const witness2Name = document.getElementById('witness2_name').value;
-                    const witness2Cpf = document.getElementById('witness2_cpf').value;
+                if (document.getElementById('include_witnesses')?.checked) {
+                    const witness1Name = document.getElementById('witness1_name').value || '[NOME DA TESTEMUNHA 1]';
+                    const witness1Cpf = document.getElementById('witness1_cpf').value || '[CPF]';
+                    const witness2Name = document.getElementById('witness2_name').value || '[NOME DA TESTEMUNHA 2]';
+                    const witness2Cpf = document.getElementById('witness2_cpf').value || '[CPF]';
 
                     addText('TESTEMUNHAS:', styles.subtitle);
                     currentY += 10;
@@ -719,25 +824,45 @@
                     // Testemunha 1
                     doc.line(margin, currentY, margin + 70, currentY);
                     currentY += 5;
-                    addText(`${witness1Name || '_'.repeat(30)}`, styles.normal);
-                    addText(`CPF: ${witness1Cpf || '_'.repeat(15)}`, styles.normal);
+                    addText(`${witness1Name}`, styles.normal);
+                    addText(`CPF: ${witness1Cpf}`, styles.normal);
                     currentY += 10;
 
                     // Testemunha 2
                     doc.line(margin, currentY, margin + 70, currentY);
                     currentY += 5;
-                    addText(`${witness2Name || '_'.repeat(30)}`, styles.normal);
-                    addText(`CPF: ${witness2Cpf || '_'.repeat(15)}`, styles.normal);
+                    addText(`${witness2Name}`, styles.normal);
+                    addText(`CPF: ${witness2Cpf}`, styles.normal);
                 }
 
                 // Salvar o PDF
                 const fileName = `Contrato_RGS_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
                 doc.save(fileName);
-                
-                alert('Contrato gerado com sucesso!');
+
+                // Feedback para o usuário
+                const toast = document.createElement('div');
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.right = '20px';
+                toast.style.backgroundColor = '#28a745';
+                toast.style.color = 'white';
+                toast.style.padding = '10px 20px';
+                toast.style.borderRadius = '5px';
+                toast.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+                toast.style.zIndex = '1000';
+                toast.textContent = 'Contrato gerado com sucesso!';
+
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.transition = 'opacity 0.5s';
+                    toast.style.opacity = '0';
+                    setTimeout(() => document.body.removeChild(toast), 500);
+                }, 3000);
             }
         });
     </script>
 </body>
+
 </html>
 {% endblock %}

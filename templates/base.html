@@ -5,8 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Ar Condicionado Pro - {% block title %}{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='imagem/logoweb.png') }}">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
     <style>
         /* Reset e estilos base */
         * {
@@ -14,7 +19,7 @@
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: Arial, sans-serif;
             font-size: 14px;
@@ -22,45 +27,45 @@
             color: #333;
             background-color: #f5f5f5;
         }
-        
+
         .container {
             width: 100%;
             max-width: 1200px;
             padding: 0 10px;
             margin: 0 auto;
         }
-        
+
         /* Header */
         header {
             background-color: #2c3e50;
             color: white;
             padding: 10px 0;
         }
-        
+
         header h1 {
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 1.3rem;
         }
-        
+
         /* Navegação */
         nav {
             background-color: #34495e;
             padding: 10px 0;
         }
-        
+
         nav ul {
             display: flex;
             flex-direction: column;
             gap: 5px;
             list-style: none;
         }
-        
+
         nav li {
             width: 100%;
         }
-        
+
         nav a {
             display: flex;
             align-items: center;
@@ -72,11 +77,11 @@
             border-radius: 4px;
             transition: background-color 0.3s;
         }
-        
+
         nav a:hover {
             background-color: #1a252f;
         }
-        
+
         /* Alertas */
         .alert {
             padding: 10px;
@@ -86,22 +91,22 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .alert-success {
             background-color: #d4edda;
             color: #155724;
         }
-        
+
         .alert-danger {
             background-color: #f8d7da;
             color: #721c24;
         }
-        
+
         .alert-info {
             background-color: #d1ecf1;
             color: #0c5460;
         }
-        
+
         /* Footer */
         footer {
             text-align: center;
@@ -110,42 +115,42 @@
             background-color: #2c3e50;
             color: white;
         }
-        
+
         /* Media Queries */
         @media (min-width: 576px) {
             body {
                 font-size: 15px;
             }
-            
+
             nav ul {
                 flex-direction: row;
                 gap: 10px;
             }
-            
+
             header h1 {
                 font-size: 1.5rem;
             }
         }
-        
+
         @media (min-width: 768px) {
             body {
                 font-size: 16px;
             }
-            
+
             .container {
                 padding: 0 15px;
             }
-            
+
             header h1 {
                 font-size: 1.8rem;
             }
-            
+
             nav a {
                 padding: 10px 15px;
                 justify-content: center;
             }
         }
-        
+
         /* Bloco para estilos específicos das páginas */
         {% block style %}{% endblock %}
     </style>
@@ -165,7 +170,7 @@
                 <li><a href="{{ url_for('orcamento') }}"><i class="fas fa-file-invoice-dollar"></i> <span>Novo Orçamento</span></a></li>
                 <li><a href="{{ url_for('precificacao') }}"><i class="fas fa-tags"></i> <span>Precificação</span></a></li>
                 <li><a href="{{ url_for('contract_form') }}"><i class="fas fa-file-contract"></i> <span>Contrato de Serviço</span></a></li>
-                <li><a href="{{ url_for('agenda') }}"><i class="fas fa-calendar-alt"></i> <span>Agenda</span></a></li>                                            
+                <li><a href="{{ url_for('agenda') }}"><i class="fas fa-calendar-alt"></i> <span>Agenda</span></a></li>
             </ul>
         </div>
     </nav>

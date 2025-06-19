@@ -424,6 +424,40 @@ def recibo(id):
         flash('Erro ao gerar recibo', 'error')
         return redirect(url_for('lista_orcamentos'))
 
+@app.route('/download_recibo/<int:id>')
+def download_recibo(id):
+    try:
+        recibo = Recibo.query.get_or_404(id)
+        
+        # Configurações do PDF
+        options = {
+            'page-size': 'A4',
+            'margin-top': '15mm',
+            'margin-right': '15mm',
+            'margin-bottom': '15mm',
+            'margin-left': '15mm',
+            'encoding': 'UTF-8',
+            'quiet': ''
+        }
+        
+        # Gera o PDF
+        pdf = pdfkit.from_string(
+            render_template('recibo_pdf.html', recibo=recibo),
+            False,
+            options=options
+        )
+        
+        # Cria a resposta
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=Recibo_{recibo.numero.replace("/", "-")}.pdf'
+        return response
+        
+    except Exception as e:
+        print(f"Erro ao gerar PDF: {str(e)}")
+        flash('Erro ao gerar PDF', 'error')
+        return redirect(url_for('recibo', id=id))
+
 @app.route('/atualizar_status/<int:id>', methods=['POST'])
 def atualizar_status(id):
     orcamento = Orcamento.query.get_or_404(id)

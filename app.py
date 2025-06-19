@@ -347,15 +347,15 @@ def recibo(id):
                 cliente_nome=orcamento.cliente_nome,
                 cliente_telefone=getattr(orcamento, 'cliente_telefone', ''),
                 cliente_email=getattr(orcamento, 'cliente_email', ''),
-                cliente_documento='Não informado',
+                cliente_documento=getattr(orcamento, 'cliente_documento', 'Não informado'),
                 valor=orcamento.valor_final,
                 valor_extenso=valor_para_extenso(orcamento.valor_final),
                 forma_pagamento=getattr(orcamento, 'forma_pagamento', 'À vista'),
                 parcelas=getattr(orcamento, 'parcelas', 1),
-                valor_parcela=orcamento.valor_final,
+                valor_parcela=orcamento.valor_final / getattr(orcamento, 'parcelas', 1),
                 referente=f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}",
                 emitente_nome="RGS Climatização",
-                emitente_documento="XX.XXX.XXX/0001-XX",
+                emitente_documento="61.038.796/0001-66",
                 data_emissao=datetime.now(tz)
             )
             
@@ -368,51 +368,61 @@ def recibo(id):
                 def __init__(self):
                     self.numero = numero_recibo
                     self.cliente_nome = orcamento.cliente_nome
-                    self.cliente_documento = 'Não informado'
+                    self.cliente_documento = getattr(orcamento, 'cliente_documento', 'Não informado')
                     self.valor = orcamento.valor_final
                     self.valor_extenso = valor_para_extenso(orcamento.valor_final)
                     self.forma_pagamento = getattr(orcamento, 'forma_pagamento', 'À vista')
                     self.parcelas = getattr(orcamento, 'parcelas', 1)
-                    self.valor_parcela = orcamento.valor_final
-                    self.referente = f"Serviço de {orcamento.servico}"
+                    self.valor_parcela = orcamento.valor_final / getattr(orcamento, 'parcelas', 1)
+                    self.referente = f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}"
                     self.data_emissao = datetime.now(tz)
                     self.emitente_nome = "RGS Climatização"
+                    self.emitente_documento = "61.038.796/0001-66"
             
             novo_recibo = ReciboTemp()
         
-        try:
-            rendered = render_template('recibo.html', recibo=novo_recibo)
-            
-            options = {
-                'page-size': 'A4',
-                'margin-top': '0.75in',
-                'margin-right': '0.75in',
-                'margin-bottom': '0.75in',
-                'margin-left': '0.75in',
-                'encoding': 'UTF-8',
-                'no-outline': None
-            }
-            
-            config = None
-            wkhtmltopdf_paths = [
-                r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
-                r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
-            ]
-            
-            for path in wkhtmltopdf_paths:
-                if os.path.exists(path):
-                    config = pdfkit.configuration(wkhtmltopdf=path)
-                    break
-            
-            pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
-            response = make_response(pdf)
-            response.headers['Content-Type'] = 'application/pdf'
-            response.headers['Content-Disposition'] = f'attachment; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
-            return response
-            
-        except Exception as pdf_error:
-            print(f"Erro ao gerar PDF: {pdf_error}")
-            return render_template('recibo.html', recibo=novo_recibo)
+        # Verificar se é uma solicitação de PDF
+        if request.args.get('format') == 'pdf':
+            try:
+                rendered = render_template('recibo_pdf.html', recibo=novo_recibo)
+                
+                options = {
+                    'page-size': 'A4',
+                    'margin-top': '15mm',
+                    'margin-right': '15mm',
+                    'margin-bottom': '15mm',
+                    'margin-left': '15mm',
+                    'encoding': 'UTF-8',
+                    'no-outline': None,
+                    'print-media-type': None
+                }
+                
+                config = None
+                wkhtmltopdf_paths = [
+                    r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
+                    r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
+                    '/usr/local/bin/wkhtmltopdf',
+                    '/usr/bin/wkhtmltopdf'
+                ]
+                
+                for path in wkhtmltopdf_paths:
+                    if os.path.exists(path):
+                        config = pdfkit.configuration(wkhtmltopdf=path)
+                        break
+                
+                pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
+                response = make_response(pdf)
+                response.headers['Content-Type'] = 'application/pdf'
+                response.headers['Content-Disposition'] = f'inline; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
+                return response
+                
+            except Exception as pdf_error:
+                print(f"Erro ao gerar PDF: {pdf_error}")
+                flash('Erro ao gerar PDF. Mostrando versão HTML.', 'warning')
+                return render_template('recibo.html', recibo=novo_recibo)
+        
+        # Versão HTML normal
+        return render_template('recibo.html', recibo=novo_recibo)
     
     except Exception as e:
         flash(f'Erro ao gerar recibo: {str(e)}', 'error')

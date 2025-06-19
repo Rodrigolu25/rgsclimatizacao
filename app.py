@@ -177,8 +177,15 @@ def orcamento():
             db.session.add(novo_orcamento)
             db.session.commit()
 
-            flash(f'Orçamento {novo_numero} criado com sucesso! Data do serviço: {data_servico.strftime("%d/%m/%Y")}', 'success')
-            return redirect(url_for('lista_orcamentos'))
+            # Geração do PDF diretamente
+            rendered = render_template('orcamento_pdf.html', orcamento=novo_orcamento)
+            pdf = pdfkit.from_string(rendered, False)
+            
+            response = make_response(pdf)
+            response.headers['Content-Type'] = 'application/pdf'
+            response.headers['Content-Disposition'] = f'inline; filename=orcamento_{novo_numero}.pdf'
+            
+            return response
 
         except Exception as e:
             db.session.rollback()

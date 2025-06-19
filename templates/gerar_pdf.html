@@ -4,267 +4,212 @@
     <meta charset="UTF-8" />
     <title>Orçamento - RGS Climatização</title>
     <style>
-        :root {
-            --primary-color: #0066cc;
-            --secondary-color: #4a90e2;
-            --accent-color: #e3f2fd;
-            --text-color: #333;
-            --light-text: #666;
-            --border-color: #e0e0e0;
-        }
         body {
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
-            margin: 0 auto;
-            padding: 40px;
-            color: var(--text-color);
-            max-width: 800px;
-            background-color: #f9f9f9;
-            box-shadow: 0 0 25px rgba(0,0,0,0.08);
-            border-radius: 10px;
-        }
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 20px;
-        }
-        .empresa-info {
-            flex: 1;
-        }
-        .empresa {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
-        }
-        .contato {
-            font-size: 13px;
-            color: var(--light-text);
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 15px;
+            color: #333;
             line-height: 1.5;
         }
-        .document-header {
-            text-align: right;
-            background-color: var(--accent-color);
-            padding: 12px 20px;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        
+        .header {
+            display: block;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #0066cc;
         }
-        .document-title {
+        
+        .empresa-nome {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+        
+        .documento-info {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .documento-titulo {
             font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-color);
+            font-weight: bold;
+            color: #0066cc;
         }
-        .document-date {
-            font-size: 14px;
-            color: var(--light-text);
-        }
-        h2 {
-            font-size: 18px;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
-            margin: 30px 0 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-        }
-        h2:after {
-            content: "";
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100px;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-        .dados-grid {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 12px;
+        
+        .secao {
             margin-bottom: 25px;
         }
-        .dados-label {
-            font-weight: 600;
-            color: var(--light-text);
+        
+        .secao-titulo {
+            font-size: 16px;
+            color: #0066cc;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
-        .servicos-container {
-            margin: 30px 0;
-        }
-        table {
+        
+        .tabela-servicos {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 15px 0;
         }
-        th {
-            background-color: var(--primary-color);
+        
+        .tabela-servicos th {
+            background-color: #0066cc;
             color: white;
-            padding: 12px 15px;
+            padding: 8px 10px;
             text-align: left;
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.5px;
+            font-weight: normal;
         }
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: top;
+        
+        .tabela-servicos td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
         }
-        tr:nth-child(even) {
-            background-color: #f8f8f8;
+        
+        .tabela-servicos tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        tr:hover {
-            background-color: var(--accent-color);
+        
+        .destaque-valor {
+            font-weight: bold;
+            color: #0066cc;
         }
+        
         .total-container {
-            display: flex;
-            justify-content: flex-end;
             margin-top: 20px;
+            text-align: right;
         }
+        
         .total-box {
-            background-color: #000000;
+            display: inline-block;
+            background-color: #333;
             color: white;
-            padding: 15px 25px;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
         }
-        .pagamento-grid {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-        .parcelamento-info {
-            background-color: #f0f8ff;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            border-left: 3px solid var(--primary-color);
-        }
-        .observacoes {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-left: 4px solid var(--primary-color);
-            border-radius: 0 4px 4px 0;
-            margin: 20px 0;
-        }
+        
         .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
             text-align: center;
-            font-size: 13px;
-            color: var(--light-text);
-            line-height: 1.6;
+            color: #666;
         }
-        .highlight {
-            color: var(--primary-color);
-            font-weight: 600;
+        
+        .dados-cliente {
+            margin-bottom: 15px;
         }
-        @media print {
-            body {
-                box-shadow: none;
-                padding: 0;
-                background-color: white;
-            }
-            .total-box, .parcelamento-info {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+        
+        .dados-cliente div {
+            margin-bottom: 5px;
+        }
+        
+        .dados-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            min-width: 120px;
         }
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <div class="empresa-info">
-            <div class="empresa">RGS CLIMATIZAÇÃO</div>
-            <div class="contato">
-                CNPJ: 61.038.796/0001-66<br>
-                Endereço: Rua Carijós, 52 - Teófilo Otoni/MG<br>
-                Telefone: (33) 98827-3510 | Email: rgs.climatizacao.to@gmail.com
-            </div>
+    <div class="header">
+        <div class="empresa-nome">RGS CLIMATIZAÇÃO</div>
+        <div style="font-size: 12px; margin-bottom: 10px;">
+            CNPJ: 61.038.796/0001-66 | Rua Carijós, 52 - Teófilo Otoni/MG<br>
+            Telefone: (33) 98827-3510 | Email: rgs.climatizacao.to@gmail.com
         </div>
-        <div class="document-header">
-            <div class="document-title">ORÇAMENTO Nº {{ orcamento.numero }}</div>
-            <div class="document-date">Data: {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</div>
+        
+        <div class="documento-info">
+            <div class="documento-titulo">ORÇAMENTO Nº {{ orcamento.numero }}</div>
+            <div>Data: {{ orcamento.data_criacao.strftime('%d/%m/%Y') }}</div>
+            {% if orcamento.data_servico %}
+            <div>Data do Serviço: {{ orcamento.data_servico.strftime('%d/%m/%Y') }}</div>
+            {% endif %}
         </div>
     </div>
 
-    <h2>Dados do Cliente</h2>
-    <div class="dados-grid">
-        <div class="dados-label">Nome:</div>
-        <div>{{ orcamento.cliente_nome or 'Não informado' }}</div>
-        <div class="dados-label">Telefone:</div>
-        <div>{{ orcamento.cliente_telefone }}</div>
-        <div class="dados-label">Email:</div>
-        <div>{{ orcamento.cliente_email }}</div>
-        <div class="dados-label">Endereço:</div>
-        <div>{{ orcamento.cliente_endereco or 'Não informado' }}</div>
+    <div class="secao">
+        <div class="secao-titulo">DADOS DO CLIENTE</div>
+        <div class="dados-cliente">
+            <div><span class="dados-label">Nome:</span> {{ orcamento.cliente_nome or 'Não informado' }}</div>
+            <div><span class="dados-label">Telefone:</span> {{ orcamento.cliente_telefone or 'Não informado' }}</div>
+            <div><span class="dados-label">Email:</span> {{ orcamento.cliente_email or 'Não informado' }}</div>
+        </div>
     </div>
 
-    <h2>Serviços Propostos</h2>
-    <div class="servicos-container">
-        <table>
+    <div class="secao">
+        <div class="secao-titulo">DETALHES DO SERVIÇO</div>
+        <table class="tabela-servicos">
             <thead>
                 <tr>
                     <th>Descrição</th>
-                    <th>Unidade</th>
-                    <th>Preço Unitário</th>
+                    <th>Valor Unitário</th>
                     <th>Quantidade</th>
-                    <th>Total</th>
+                    <th>Valor Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>{{ orcamento.servico }}</td>
+                    <td class="destaque-valor">R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
                     <td>1</td>
-                    <td>R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
-                    <td>1</td>
-                    <td>R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
+                    <td class="destaque-valor">R$ {{ '%.2f'|format(orcamento.valor_base) }}</td>
                 </tr>
+                {% if orcamento.desconto > 0 %}
+                <tr>
+                    <td colspan="3" style="text-align: right;">Desconto ({{ '%.2f'|format(orcamento.desconto) }}%)</td>
+                    <td class="destaque-valor">- R$ {{ '%.2f'|format(orcamento.valor_base * orcamento.desconto/100) }}</td>
+                </tr>
+                {% endif %}
+                {% if orcamento.taxa_maquina > 0 %}
+                <tr>
+                    <td colspan="3" style="text-align: right;">Taxa ({{ '%.2f'|format(orcamento.taxa_maquina) }}%)</td>
+                    <td class="destaque-valor">+ R$ {{ '%.2f'|format((orcamento.valor_base * (1 - orcamento.desconto/100)) * (orcamento.taxa_maquina/100)) }}</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
+        
         <div class="total-container">
             <div class="total-box">
-                Total: R$ {{ '%.2f'|format(orcamento.valor_final) }}
+                VALOR FINAL: R$ {{ '%.2f'|format(orcamento.valor_final) }}
             </div>
         </div>
     </div>
 
-    <h2>Condições de Pagamento</h2>
-    <div class="pagamento-grid">
-        <div class="dados-label">Forma de Pagamento:</div>
+    <div class="secao">
+        <div class="secao-titulo">CONDIÇÕES DE PAGAMENTO</div>
         <div>
-            {{ orcamento.forma_pagamento|capitalize }}
-            {% if orcamento.forma_pagamento.lower() == 'credito' and orcamento.parcelas %}
-                <div class="parcelamento-info">
-                    <strong>Parcelamento:</strong> {{ orcamento.parcelas }}x de R$ {{ '%.2f'|format(orcamento.valor_final / orcamento.parcelas) }}<br>
-                    <strong>Total Parcelado:</strong> R$ {{ '%.2f'|format(orcamento.valor_final) }}
-                </div>
+            <div><span class="dados-label">Forma de Pagamento:</span> {{ orcamento.forma_pagamento|upper }}</div>
+            {% if orcamento.parcelas > 1 %}
+            <div style="margin-top: 8px; padding: 8px; background-color: #f5f5f5; border-radius: 4px;">
+                <strong>Parcelamento:</strong> {{ orcamento.parcelas }}x de R$ {{ '%.2f'|format(orcamento.valor_final / orcamento.parcelas) }}<br>
+                <strong>Total Parcelado:</strong> R$ {{ '%.2f'|format(orcamento.valor_final) }}
+            </div>
             {% endif %}
         </div>
-
-        <div class="dados-label">Desconto:</div>
-        <div>{{ '%.2f'|format(orcamento.desconto) }}%</div>
     </div>
 
     {% if orcamento.observacoes %}
-        <h2>Observações</h2>
-        <div class="observacoes">
+    <div class="secao">
+        <div class="secao-titulo">OBSERVAÇÕES</div>
+        <div style="padding: 10px; background-color: #f9f9f9; border-left: 3px solid #0066cc;">
             {{ orcamento.observacoes }}
         </div>
+    </div>
     {% endif %}
 
     <div class="footer">
-        <span class="highlight">Obrigado por confiar em nossos serviços!</span><br>
+        <strong>Obrigado por escolher nossos serviços!</strong><br>
         Este orçamento tem validade de 30 dias a partir da data de emissão.<br>
-        Para dúvidas ou agendamentos, entre em contato pelos nossos canais de atendimento.
+        Dúvidas? Entre em contato: (33) 98827-3510 | rgs.climatizacao.to@gmail.com
     </div>
 </body>
 </html>

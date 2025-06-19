@@ -407,7 +407,7 @@ def recibo(id):
             pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
             response = make_response(pdf)
             response.headers['Content-Type'] = 'application/pdf'
-            response.headers['Content-Disposition'] = f'inline; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
+            response.headers['Content-Disposition'] = f'attachment; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
             return response
             
         except Exception as pdf_error:

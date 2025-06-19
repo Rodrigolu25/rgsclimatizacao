@@ -2,135 +2,95 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recibo de Pagamento - {{ recibo.numero }}</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             color: #333;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 12px;
+            line-height: 1.4;
         }
-        
         .header {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #0066cc;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
-        
         .company-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #0066cc;
             margin-bottom: 5px;
         }
-        
         .company-info {
-            font-size: 12px;
+            font-size: 10px;
             color: #555;
         }
-        
         .title {
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
             color: #0066cc;
             text-transform: uppercase;
         }
-        
         .receipt-info {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        
-        .receipt-info tr td {
-            padding: 8px 5px;
+        .receipt-info td {
+            padding: 6px 5px;
             border-bottom: 1px solid #eee;
-            vertical-align: top;
         }
-        
-        .receipt-info tr td:first-child {
+        .receipt-info td:first-child {
             font-weight: bold;
             width: 30%;
             color: #555;
         }
-        
         .amount-in-words {
-            margin: 20px 0;
-            padding: 15px;
+            margin: 15px 0;
+            padding: 10px;
             border: 1px dashed #aaa;
-            border-radius: 4px;
+            border-radius: 3px;
             font-style: italic;
             text-align: center;
-            background-color: #f5f5f5;
+            background-color: #f9f9f9;
+            font-size: 11px;
         }
-        
         .signatures {
-            margin-top: 50px;
+            margin-top: 40px;
             display: flex;
             justify-content: space-between;
         }
-        
         .signature {
             text-align: center;
             width: 45%;
         }
-        
         .signature-line {
             border-top: 1px solid #000;
-            margin: 15px 0 5px;
-            position: relative;
+            margin: 10px 0 5px;
         }
-        
         .signature-name {
             font-weight: bold;
+            font-size: 11px;
         }
-        
         .signature-title {
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
         }
-        
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             color: #888;
             border-top: 1px solid #eee;
-            padding-top: 10px;
+            padding-top: 8px;
         }
-        
-        .download-container {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        .download-btn {
-            display: inline-block;
-            background-color: #0066cc;
-            color: white;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .download-btn:hover {
-            background-color: #0055aa;
-        }
-        
-        @media print {
-            .download-container {
-                display: none;
-            }
+        @page {
+            size: A4;
+            margin: 15mm;
         }
     </style>
 </head>
@@ -139,12 +99,12 @@
         <div class="company-name">RGS CLIMATIZAÇÃO</div>
         <div class="company-info">
             CNPJ: 61.038.796/0001-66 | 
-            Endereço: Rua Carijós, 52 - Teófilo Otoni/MG<br>
-            Email: rgs.climatizacao.to@gmail.com | Tel: (33) 98827-3510
+            Endereço: Rua Carijós, 52 - Teófilo Otoni/MG | 
+            Tel: (33) 98827-3510
         </div>
     </div>
 
-    <div class="title">Recibo de Pagamento</div>
+    <div class="title">RECIBO DE PAGAMENTO</div>
 
     <table class="receipt-info">
         <tr>
@@ -155,10 +115,12 @@
             <td>Cliente:</td>
             <td>{{ recibo.cliente_nome }}</td>
         </tr>
+        {% if recibo.cliente_documento %}
         <tr>
             <td>CPF/CNPJ:</td>
             <td>{{ recibo.cliente_documento }}</td>
         </tr>
+        {% endif %}
         <tr>
             <td>Referente a:</td>
             <td>{{ recibo.referente }}</td>
@@ -184,7 +146,7 @@
     </table>
 
     <div class="amount-in-words">
-        Valor por extenso: {{ recibo.valor_extenso }}
+        <strong>Valor por extenso:</strong> {{ recibo.valor_extenso }}
     </div>
 
     <div class="signatures">
@@ -200,26 +162,8 @@
         </div>
     </div>
 
-    <div class="download-container">
-        <a href="{{ url_for('recibo', id=recibo.id, format='pdf') }}" class="download-btn">
-            Baixar Recibo em PDF
-        </a>
-    </div>
-
     <div class="footer">
         Este documento não substitui uma nota fiscal. Em caso de dúvidas, entre em contato.
     </div>
-
-    <script>
-        // Opcional: Forçar download em dispositivos móveis
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            document.querySelector('.download-btn').addEventListener('click', function(e) {
-                // Adiciona um pequeno atraso para garantir que o clique foi processado
-                setTimeout(function() {
-                    window.location.href = "{{ url_for('recibo', id=recibo.id, format='pdf') }}";
-                }, 300);
-            });
-        }
-    </script>
 </body>
 </html>

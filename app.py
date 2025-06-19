@@ -18,6 +18,8 @@ from fpdf import FPDF
 from datetime import datetime
 import locale
 
+
+
 # Configurar o fuso horário padrão (removido time.tzset() para compatibilidade com Windows)
 os.environ['TZ'] = 'America/Sao_Paulo'
 try:
@@ -327,94 +329,99 @@ def recibo(id):
             try:
                 from num2words import num2words
                 return num2words(valor, lang='pt_BR', to='currency')
-            except:
+            except ImportError:
                 inteiro = int(valor)
                 centavos = int(round((valor - inteiro) * 100))
-                texto = f"{inteiro} reais" if inteiro != 1 else "um real"
+                texto = f"{inteiro} real" if inteiro == 1 else f"{inteiro} reais"
                 if centavos > 0:
-                    texto += f" e {centavos} centavos"
+                    texto += f" e {centavos} centavo" if centavos == 1 else f" e {centavos} centavos"
                 return texto
         
-        ano_atual = datetime.now(tz).year
+        ano_atual = datetime.now().year
         ultimo_recibo = Recibo.query.order_by(Recibo.id.desc()).first()
-        numero_sequencial = 1 if not ultimo_recibo else int(ultimo_recibo.numero.split('/')[0]) + 1
+        numero_sequencial = 1 if not ultimo_recibo else ultimo_recibo.id + 1
         numero_recibo = f"{numero_sequencial:04d}/{ano_atual}"
-        
+
+        # Criar objeto recibo mesmo se falhar o commit no banco
+        recibo_data = {
+            'numero': numero_recibo,
+            'cliente_nome': orcamento.cliente_nome,
+            'cliente_documento': getattr(orcamento, 'cliente_documento', 'Não informado'),
+            'valor': orcamento.valor_final,
+            'valor_extenso': valor_para_extenso(orcamento.valor_final),
+            'forma_pagamento': getattr(orcamento, 'forma_pagamento', 'À vista'),
+            'parcelas': getattr(orcamento, 'parcelas', 1),
+            'valor_parcela': orcamento.valor_final / getattr(orcamento, 'parcelas', 1),
+            'referente': f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}",
+            'data_emissao': datetime.now(),
+            'emitente_nome': "RGS Climatização",
+            'emitente_documento': "61.038.796/0001-66",
+            'id': id
+        }
+
         try:
-            novo_recibo = Recibo(
-                numero=numero_recibo,
-                cliente_nome=orcamento.cliente_nome,
-                cliente_telefone=getattr(orcamento, 'cliente_telefone', ''),
-                cliente_email=getattr(orcamento, 'cliente_email', ''),
-                cliente_documento='Não informado',
-                valor=orcamento.valor_final,
-                valor_extenso=valor_para_extenso(orcamento.valor_final),
-                forma_pagamento=getattr(orcamento, 'forma_pagamento', 'À vista'),
-                parcelas=getattr(orcamento, 'parcelas', 1),
-                valor_parcela=orcamento.valor_final,
-                referente=f"Serviço de {orcamento.servico} - Orçamento {orcamento.numero}",
-                emitente_nome="RGS Climatização",
-                emitente_documento="XX.XXX.XXX/0001-XX",
-                data_emissao=datetime.now(tz)
-            )
-            
+            novo_recibo = Recibo(**recibo_data)
             db.session.add(novo_recibo)
             db.session.commit()
-            
         except Exception as db_error:
-            print(f"Erro ao salvar recibo: {db_error}")
-            class ReciboTemp:
-                def __init__(self):
-                    self.numero = numero_recibo
-                    self.cliente_nome = orcamento.cliente_nome
-                    self.cliente_documento = 'Não informado'
-                    self.valor = orcamento.valor_final
-                    self.valor_extenso = valor_para_extenso(orcamento.valor_final)
-                    self.forma_pagamento = getattr(orcamento, 'forma_pagamento', 'À vista')
-                    self.parcelas = getattr(orcamento, 'parcelas', 1)
-                    self.valor_parcela = orcamento.valor_final
-                    self.referente = f"Serviço de {orcamento.servico}"
-                    self.data_emissao = datetime.now(tz)
-                    self.emitente_nome = "RGS Climatização"
-            
-            novo_recibo = ReciboTemp()
-        
-        try:
-            rendered = render_template('recibo.html', recibo=novo_recibo)
-            
-            options = {
-                'page-size': 'A4',
-                'margin-top': '0.75in',
-                'margin-right': '0.75in',
-                'margin-bottom': '0.75in',
-                'margin-left': '0.75in',
-                'encoding': 'UTF-8',
-                'no-outline': None
-            }
-            
-            config = None
-            wkhtmltopdf_paths = [
-                r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
-                r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe',
-            ]
-            
-            for path in wkhtmltopdf_paths:
-                if os.path.exists(path):
-                    config = pdfkit.configuration(wkhtmltopdf=path)
-                    break
-            
-            pdf = pdfkit.from_string(rendered, False, options=options, configuration=config)
-            response = make_response(pdf)
-            response.headers['Content-Type'] = 'application/pdf'
-            response.headers['Content-Disposition'] = f'inline; filename=recibo_{numero_recibo.replace("/", "_")}.pdf'
-            return response
-            
-        except Exception as pdf_error:
-            print(f"Erro ao gerar PDF: {pdf_error}")
-            return render_template('recibo.html', recibo=novo_recibo)
-    
+            print(f"Erro no banco de dados: {db_error}")
+            # Criar objeto recibo temporário
+            novo_recibo = type('ReciboTemp', (), recibo_data)
+
+        if request.args.get('format') == 'pdf':
+            try:
+                # Configuração do PDF
+                options = {
+                    'page-size': 'A4',
+                    'margin-top': '15mm',
+                    'margin-right': '15mm',
+                    'margin-bottom': '15mm',
+                    'margin-left': '15mm',
+                    'encoding': 'UTF-8',
+                    'quiet': ''
+                }
+
+                # Verifica o caminho do wkhtmltopdf
+                wkhtmltopdf_path = None
+                if os.name == 'nt':  # Windows
+                    paths = [
+                        r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
+                        r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe'
+                    ]
+                else:  # Linux/Unix
+                    paths = ['/usr/local/bin/wkhtmltopdf', '/usr/bin/wkhtmltopdf']
+                
+                for path in paths:
+                    if os.path.exists(path):
+                        wkhtmltopdf_path = path
+                        break
+
+                if not wkhtmltopdf_path:
+                    raise Exception("wkhtmltopdf não encontrado")
+
+                config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
+                pdf = pdfkit.from_string(
+                    render_template('recibo_pdf.html', recibo=novo_recibo),
+                    False,
+                    options=options,
+                    configuration=config
+                )
+
+                response = make_response(pdf)
+                response.headers['Content-Type'] = 'application/pdf'
+                response.headers['Content-Disposition'] = f'attachment; filename=Recibo_{numero_recibo.replace("/", "-")}.pdf'
+                return response
+
+            except Exception as pdf_error:
+                print(f"Erro ao gerar PDF: {pdf_error}")
+                flash('Erro ao gerar PDF. Mostrando versão HTML.', 'warning')
+                return render_template('recibo.html', recibo=novo_recibo)
+
+        return render_template('recibo.html', recibo=novo_recibo)
+
     except Exception as e:
-        flash(f'Erro ao gerar recibo: {str(e)}', 'error')
+        print(f"Erro geral: {str(e)}")
+        flash('Erro ao gerar recibo', 'error')
         return redirect(url_for('lista_orcamentos'))
 
 @app.route('/atualizar_status/<int:id>', methods=['POST'])

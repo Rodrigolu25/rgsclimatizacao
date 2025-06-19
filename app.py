@@ -305,7 +305,8 @@ def gerar_pdf_orcamento(id):
         response = make_response(pdf)
         response.headers['Content-Type'] = 'application/pdf'
         safe_name = orcamento.cliente_nome.replace(" ", "_")
-        response.headers['Content-Disposition'] = f'inline; filename={safe_name}.pdf'
+        response.headers["Content-Disposition"] = f"attachment; filename={safe_name}.pdf"
+
 
         return response
 
